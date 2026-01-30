@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Application.Helpers;
 using Domain.Config;
 using MediatR;
@@ -32,7 +32,7 @@ public class IniciarSesionCommandHandler : ICommandHandler<LoginCommand, Respons
         if (usuario == null) throw new Exception("Usuario no encontrado.");
 
         bool passwordValido = PasswordHasherHelper.VerifyPassword(usuario.Username, usuario.Password, request.RequestLoginDTO.Password);
-        if (!passwordValido) throw new Exception("Usuario o Contraseña incorrecta.");
+        if (!passwordValido) throw new Exception("Usuario o Contrase�a incorrecta.");
 
         JwtConfig jwtConfig = new JwtConfig
         {

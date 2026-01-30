@@ -1,4 +1,4 @@
-﻿
+
 namespace WebClient.Models;
 
 public class HomeViewModel : MainViewModel

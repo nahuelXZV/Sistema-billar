@@ -1,4 +1,4 @@
-﻿using Application.Features.Security.Profile.Commands;
+using Application.Features.Security.Profile.Commands;
 using Application.Features.Security.Profile.Queries;
 using Domain.DTOs.Security;
 using Domain.DTOs.Shared;

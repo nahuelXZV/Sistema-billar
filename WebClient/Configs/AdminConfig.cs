@@ -1,4 +1,4 @@
-﻿namespace WebClient.Configs;
+namespace WebClient.Configs;
 
 public class AdminConfig
 {

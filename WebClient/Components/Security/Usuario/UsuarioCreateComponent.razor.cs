@@ -1,4 +1,4 @@
-ï»¿using Domain.DTOs.Security;
+using Domain.DTOs.Security;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -16,7 +16,7 @@ public partial class UsuarioCreateComponent
     private EditContext _editContext;
     private DotNetObjectReference<UsuarioCreateComponent> _objectHelper;
     private FluentValidationValidator<UsuarioDTO> _fvValidator;
-    public bool ModificarContraseÃ±a { get; set; } = false;
+    public bool ModificarContraseña { get; set; } = false;
     protected override void OnInitialized()
     {
         _editContext = new EditContext(Usuario);
@@ -52,7 +52,7 @@ public partial class UsuarioCreateComponent
     {
         try
         {
-            if (!ModificarContraseÃ±a && Usuario.Id != 0) Usuario.Password = string.Empty;
+            if (!ModificarContraseña && Usuario.Id != 0) Usuario.Password = string.Empty;
 
             if (Usuario.Id != 0)
             {

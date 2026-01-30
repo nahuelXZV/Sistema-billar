@@ -1,4 +1,4 @@
-﻿namespace WebClient.Models;
+namespace WebClient.Models;
 
 using Microsoft.Extensions.Options;
 using WebClient.Configs;
@@ -20,7 +20,7 @@ public class ViewModelFactory
         var context = _httpContextAccessor.HttpContext;
 
         if (context == null)
-            throw new InvalidOperationException("HttpContext no está disponible.");
+            throw new InvalidOperationException("HttpContext no est� disponible.");
 
         instance.Initialize(context, _adminConfig);
         return instance;

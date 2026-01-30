@@ -1,4 +1,4 @@
-﻿namespace Domain.DTOs.Security;
+namespace Domain.DTOs.Security;
 
 public class PerfilAccesoDTO
 {

@@ -1,4 +1,4 @@
-﻿namespace Domain.DTOs.Shared;
+namespace Domain.DTOs.Shared;
 
 public class FilterDTO
 {

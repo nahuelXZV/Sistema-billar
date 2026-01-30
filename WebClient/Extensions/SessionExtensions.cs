@@ -1,4 +1,4 @@
-﻿namespace WebClient.Extensions;
+namespace WebClient.Extensions;
 
 public static class SessionExtensions
 {

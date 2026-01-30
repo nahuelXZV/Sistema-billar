@@ -1,4 +1,4 @@
-ï»¿using System.Text;
+using System.Text;
 using System.Net;
 using Domain.Constants;
 using Domain.Extensions;
@@ -120,11 +120,11 @@ public class AppBaseServices
             if (jsonResponse == "" && (int)response.StatusCode != StatusCodes.Status200OK || response.Content.Headers.ContentType.MediaType != "application/json")
             {
                 jsonResponse = "";
-                //throw new Exception($"OcurriÃ³ un error en la solicitud con el siguiente cÃ³digo: {response.StatusCode}");
+                //throw new Exception($"Ocurrió un error en la solicitud con el siguiente código: {response.StatusCode}");
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: No se encontrÃ³ el recurso para la url solicitada, {response.RequestMessage.RequestUri}");
+                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: No se encontró el recurso para la url solicitada, {response.RequestMessage.RequestUri}");
                     case HttpStatusCode.BadRequest:
                         throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: Hay un Error en la Solicitud realizada");
                     case HttpStatusCode.Unauthorized:
@@ -132,11 +132,11 @@ public class AppBaseServices
                     case HttpStatusCode.Forbidden:
                         throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: La solicitud no tiene acceso al contenido");
                     case HttpStatusCode.RequestTimeout:
-                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: Se expirÃ³ el tiempo de espera para la solicitud");
+                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: Se expiró el tiempo de espera para la solicitud");
                     case HttpStatusCode.ServiceUnavailable:
                         throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: El servicio no esta disponible");
                     default:
-                        throw new Exception($"OcurriÃ³ un error en la solicitud con el siguiente cÃ³digo: {response.StatusCode}");
+                        throw new Exception($"Ocurrió un error en la solicitud con el siguiente código: {response.StatusCode}");
                 }
             }
 

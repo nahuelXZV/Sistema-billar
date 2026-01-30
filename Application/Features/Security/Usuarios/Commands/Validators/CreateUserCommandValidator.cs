@@ -1,4 +1,4 @@
-﻿using Domain.Validators.Security;
+using Domain.Validators.Security;
 using FluentValidation;
 
 namespace Application.Features.Security.Usuarios.Commands.Validators;

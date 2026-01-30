@@ -1,4 +1,4 @@
-﻿namespace Domain.Config;
+namespace Domain.Config;
 
 public class JwtConfig
 {

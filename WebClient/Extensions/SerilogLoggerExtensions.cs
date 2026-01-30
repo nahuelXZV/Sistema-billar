@@ -1,4 +1,4 @@
-﻿using ILogger = Serilog.ILogger;
+using ILogger = Serilog.ILogger;
 using Serilog.Events;
 using Serilog;
 
@@ -7,7 +7,7 @@ namespace WebClient.Extensions;
 public static class SerilogLoggerExtensions
 {
     //public const LogEventLevel SerilogLogEventLevel = LogEventLevel.Information;
-    //public const string LoggerOutputTemplate = "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
+    //public const string LoggerOutputSistemaBillar = "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
 
     //public static ILogger Create(IConfiguration configuration = null)
     //{
@@ -19,7 +19,7 @@ public static class SerilogLoggerExtensions
     //    }
     //    else
     //    {
-    //        loggerConfiguration.WriteTo.Console(SerilogLogEventLevel, LoggerOutputTemplate);
+    //        loggerConfiguration.WriteTo.Console(SerilogLogEventLevel, LoggerOutputSistemaBillar);
     //    }
 
     //    Log.Logger = loggerConfiguration.CreateBootstrapLogger();
@@ -53,7 +53,7 @@ public static class SerilogLoggerExtensions
     //            .ReadFrom.Configuration(context.Configuration)
     //            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
     //            .Enrich.FromLogContext()
-    //            .WriteTo.Console(outputTemplate: LoggerOutputTemplate);
+    //            .WriteTo.Console(outputSistemaBillar: LoggerOutputSistemaBillar);
     //    });
 
     //    return hostBuilder;

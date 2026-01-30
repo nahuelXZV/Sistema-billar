@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Domain.Constants;
 using FluentValidation;
 using WebClient.Configs;

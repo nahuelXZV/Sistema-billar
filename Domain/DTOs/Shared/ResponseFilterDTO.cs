@@ -1,4 +1,4 @@
-﻿namespace Domain.DTOs.Shared;
+namespace Domain.DTOs.Shared;
 public class ResponseFilterDTO<T>
 {
     public long Total { get; set; }

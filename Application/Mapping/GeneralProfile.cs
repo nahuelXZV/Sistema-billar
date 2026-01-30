@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Domain.DTOs.Security;
 using Domain.DTOs.Security.Request;
 using Domain.Entities.Security;

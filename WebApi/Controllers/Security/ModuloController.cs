@@ -1,4 +1,4 @@
-﻿using Application.Features.Security.Modulos.Queries;
+using Application.Features.Security.Modulos.Queries;
 using Domain.DTOs.Shared;
 using Microsoft.AspNetCore.Mvc;
 

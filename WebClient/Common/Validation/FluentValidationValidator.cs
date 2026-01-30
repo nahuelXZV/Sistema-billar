@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace WebClient.Common.Validation;

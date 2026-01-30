@@ -1,4 +1,4 @@
-﻿using Application.Helpers;
+using Application.Helpers;
 using AutoMapper;
 using MediatR;
 using Domain.Interfaces.Shared;
@@ -40,13 +40,17 @@ public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Respo
         if (existUsuario != null && existUsuario.Id != request.UsuarioDTO.Id)
             throw new ArgumentException("El usuario ya se encuentra registrado por otro usuario.");
 
+        var paswordOld = usuario.Password;
         _mapper.Map(request.UsuarioDTO, usuario);
 
-        // Si la contraseña fue modificada, la re-hashamos
         if (!string.IsNullOrEmpty(request.UsuarioDTO.Password))
         {
             string passwordHashed = PasswordHasherHelper.HashPassword(request.UsuarioDTO.Username, request.UsuarioDTO.Password);
             usuario.Password = passwordHashed;
+        }
+        else
+        {
+            usuario.Password = paswordOld;
         }
 
         _repository.Update(usuario);

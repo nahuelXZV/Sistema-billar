@@ -1,4 +1,4 @@
-ï»¿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -40,7 +40,7 @@ public class JwtHelper
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secret);
 
-            // Validar el token usando los parÃ¡metros de validaciÃ³n
+            // Validar el token usando los parámetros de validación
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -59,7 +59,7 @@ public class JwtHelper
         }
         catch
         {
-            return null; // Retorna null si hay algÃºn problema
+            return null; // Retorna null si hay algún problema
         }
     }
 }

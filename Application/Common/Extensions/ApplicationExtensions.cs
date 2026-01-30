@@ -1,4 +1,4 @@
-﻿using Application.Common.Middlewares;
+using Application.Common.Middlewares;
 using Microsoft.AspNetCore.Builder;
 
 namespace Application.Common.Extensions;

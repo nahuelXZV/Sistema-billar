@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Security;
+using Domain.DTOs.Security;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;

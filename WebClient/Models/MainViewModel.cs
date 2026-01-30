@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Security;
+using Domain.DTOs.Security;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.Security.Claims;
 using WebClient.Common;

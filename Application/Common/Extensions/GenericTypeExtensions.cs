@@ -1,4 +1,4 @@
-﻿namespace Application.Common.Extensions;
+namespace Application.Common.Extensions;
 
 public static class GenericTypeExtensions
 {

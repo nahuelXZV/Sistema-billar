@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Security;
+using Domain.DTOs.Security;
 using FluentValidation;
 
 namespace Domain.Validators.Security;

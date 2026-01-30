@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Security;
+using Domain.DTOs.Security;
 using Domain.DTOs.Shared;
 using Microsoft.AspNetCore.Mvc;
 using WebClient.Extensions;

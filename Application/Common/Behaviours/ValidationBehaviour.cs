@@ -1,4 +1,4 @@
-﻿using Application.Common.Extensions;
+using Application.Common.Extensions;
 using FluentValidation.Results;
 using FluentValidation;
 using MediatR;

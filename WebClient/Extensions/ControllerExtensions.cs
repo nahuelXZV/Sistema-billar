@@ -1,4 +1,4 @@
-﻿using WebClient.Common;
+using WebClient.Common;
 using WebClient.Controllers;
 using WebClient.Models;
 

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
 
 namespace Domain.Extensions;
@@ -26,7 +26,7 @@ public static class JsonSerializerExtensions
     }
 
     /// <summary>
-    /// Serializa un objeto a un string JSON, utilizando relfection para determinar el tipo de objeto y no perder la información de los tipos derivados.
+    /// Serializa un objeto a un string JSON, utilizando relfection para determinar el tipo de objeto y no perder la informaci�n de los tipos derivados.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>

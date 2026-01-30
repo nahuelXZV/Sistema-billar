@@ -1,4 +1,4 @@
-﻿using Serilog;
+using Serilog;
 using Serilog.Events;
 
 namespace WebApi.Extensions;
@@ -6,7 +6,7 @@ namespace WebApi.Extensions;
 public static class SerilogLoggerExtensions
 {
     public const LogEventLevel SerilogLogEventLevel = LogEventLevel.Information;
-    public const string LoggerOutputTemplate = "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
+    public const string LoggerOutputSistemaBillar = "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
     public static Serilog.ILogger Create(IConfiguration configuration = null)
     {
         var loggerConfiguration = new LoggerConfiguration().Enrich.FromLogContext();
@@ -18,7 +18,7 @@ public static class SerilogLoggerExtensions
         else
         {
             loggerConfiguration
-            .WriteTo.Console(SerilogLogEventLevel, LoggerOutputTemplate);
+            .WriteTo.Console(SerilogLogEventLevel, LoggerOutputSistemaBillar);
         }
 
         Log.Logger = loggerConfiguration.CreateBootstrapLogger();

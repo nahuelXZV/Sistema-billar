@@ -1,4 +1,4 @@
-﻿
+
 namespace Domain.Entities.Configuration;
 
 public class Concepto : Entity

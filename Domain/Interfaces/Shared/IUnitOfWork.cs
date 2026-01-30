@@ -1,4 +1,4 @@
-﻿namespace Domain.Interfaces.Shared;
+namespace Domain.Interfaces.Shared;
 
 public interface IUnitOfWork
 {

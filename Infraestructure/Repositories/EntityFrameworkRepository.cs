@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Infraestructure.Persistence;
 using System.Linq.Expressions;
 using Domain.Interfaces.Shared;

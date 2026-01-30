@@ -1,4 +1,4 @@
-﻿
+
 using Domain.Entities.Configuration;
 
 namespace Domain.Interfaces.Services.Configuration;

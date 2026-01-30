@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Security.Request;
+using Domain.DTOs.Security.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebClient.Common;
@@ -58,7 +58,7 @@ public class SesionController : Controller
         catch (Exception ex)
         {
             model.Password = null;
-            model.Errores.Add(new ResponseError("Las credenciales ingresadas no son válidas. Por favor, verifique e intente nuevamente.", ex.Message, ex.StackTrace));
+            model.Errores.Add(new ResponseError("Las credenciales ingresadas no son v�lidas. Por favor, verifique e intente nuevamente.", ex.Message, ex.StackTrace));
             model.SetTempData(HttpContext);
 
             return RedirectToAction("Index");

@@ -1,4 +1,4 @@
-﻿using Domain.Interfaces.Shared;
+using Domain.Interfaces.Shared;
 using Domain.Common;
 using Domain.Entities.Security;
 using Application.Interfaces;

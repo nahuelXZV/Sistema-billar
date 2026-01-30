@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Security;
+using Domain.DTOs.Security;
 using Domain.DTOs.Shared;
 
 namespace Domain.Interfaces.Services.Security;

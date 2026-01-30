@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Security;
+using Domain.DTOs.Security;
 using FluentValidation;
 
 namespace Domain.Validators.Security;
@@ -25,7 +25,7 @@ public class CreateUsuarioDTOValidator : AbstractValidator<UsuarioDTO>
         RuleFor(p => p.Email)
             .NotEmpty().WithMessage("{PropertyName} es requerido.")
             .NotNull()
-            .EmailAddress().WithMessage("{PropertyName} no es un email válido.")
+            .EmailAddress().WithMessage("{PropertyName} no es un email v�lido.")
             .MaximumLength(100).WithMessage("{PropertyName} no debe exceder los 100 caracteres.");
 
         RuleFor(p => p.Password)

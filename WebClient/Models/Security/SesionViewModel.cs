@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System.ComponentModel.DataAnnotations;
 using WebClient.Configs;
 using WebClient.Extensions;
@@ -10,7 +10,7 @@ public class SesionViewModel
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Debe ingresar su nombre de usuario")]
     public string Usuario { get; set; }
-    [Required(AllowEmptyStrings = false, ErrorMessage = "Debe ingresar su contraseña")]
+    [Required(AllowEmptyStrings = false, ErrorMessage = "Debe ingresar su contrase�a")]
     public string Password { get; set; }
 
     public string DireccionIp { get; set; }

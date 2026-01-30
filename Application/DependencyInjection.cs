@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Application.Common.Behaviours;
 using FluentValidation;
 using MediatR;

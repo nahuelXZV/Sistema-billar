@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Domain.Interfaces.Shared;
 using Domain.Common;

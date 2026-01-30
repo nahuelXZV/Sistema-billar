@@ -1,4 +1,4 @@
-﻿using Application.Helpers;
+using Application.Helpers;
 using AutoMapper;
 using MediatR;
 using Domain.Interfaces.Shared;

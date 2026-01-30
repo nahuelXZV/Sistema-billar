@@ -1,4 +1,4 @@
-﻿namespace WebClient.Services.Configuration
+namespace WebClient.Services.Configuration
 {
     public class ConceptoService
     {

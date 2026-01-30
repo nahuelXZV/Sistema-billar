@@ -1,4 +1,4 @@
-ï»¿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Domain.Extensions;
@@ -44,7 +44,7 @@ public class ErrorHandlerMiddleware
             errorMessage += $"{Environment.NewLine}{exception.InnerException.Message}";
         }
 
-        var clientErrorMessage = "OcurriÃ³ un error inesperado";
+        var clientErrorMessage = "Ocurrió un error inesperado";
         var stackTrace = exception.StackTrace ?? "Sin StackTrace para el error";
 
         var errorDetails = new Dictionary<string, MessageError>();
@@ -52,19 +52,19 @@ public class ErrorHandlerMiddleware
         switch (exception)
         {
             case TimeoutException ex:
-                clientErrorMessage = "El servidor no respondiÃ³ a tiempo";
+                clientErrorMessage = "El servidor no respondió a tiempo";
                 response.StatusCode = (int)HttpStatusCode.GatewayTimeout;
                 break;
             case SqlException ex:
                 errorMessage = $"{nameof(SqlException)}: {ex.Message} - Fuente: [{ex.Source}]";
-                clientErrorMessage = "OcurriÃ³ un error al realizar una operaciÃ³n en la base de datos";
+                clientErrorMessage = "Ocurrió un error al realizar una operación en la base de datos";
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;
             case AutoMapperMappingException ex:
                 errorMessage = $"{nameof(AutoMapperMappingException)}: {ex.Message} - Fuente: [{ex.Source}]";
                 break;
             case ValidationException ex:
-                clientErrorMessage = "Ocurrieron errores de validaciÃ³n";
+                clientErrorMessage = "Ocurrieron errores de validación";
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 errorMessage = $"{ex.Message}";
 

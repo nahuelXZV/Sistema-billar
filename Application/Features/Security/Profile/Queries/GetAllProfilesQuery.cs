@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Security;

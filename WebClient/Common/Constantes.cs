@@ -1,4 +1,4 @@
-﻿namespace WebClient.Common;
+namespace WebClient.Common;
 
 public class Constantes
 {
