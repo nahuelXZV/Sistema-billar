@@ -1,0 +1,15 @@
+﻿@if (ListaErrores != null && ListaErrores.Count > 0)
+{
+	<div class="invalid-feedback d-block">
+		@foreach (var error in ListaErrores)
+		{
+			<div>@error</div>
+		}
+	</div>
+}
+
+
+@code {
+	[Parameter] public List<string> ListaErrores { get; set; }
+
+}

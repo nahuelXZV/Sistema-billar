@@ -1,0 +1,45 @@
+﻿@using WebClient.Models
+@using WebClient.Models.Security
+@model SesionViewModel
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<title>@ViewData["Title"]</title>
+	<base href="~/" />
+
+	<!-- AdminLTE / Bootstrap -->
+	<link rel="stylesheet" href="~/css/adminlte.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/theme.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+	<!-- Bootstrap Icons -->
+	<link rel="stylesheet"
+		  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+		  crossorigin="anonymous" />
+
+	@RenderSection("Styles", required: false)
+</head>
+
+<body class="hold-transition login-page bg-light">
+
+	<!-- Preloader -->
+	<partial name="_Preloader" />
+	<!-- Modales -->
+	<partial name="_Modales" />
+
+	<!-- Login Content -->
+	<div class="login-box login-box-responsive ">
+		@RenderBody()
+	</div>
+
+	<!-- Scripts -->
+	<script src="~/js/site.js" asp-append-version="true"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

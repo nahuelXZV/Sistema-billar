@@ -1,0 +1,36 @@
+﻿<div class="form-check">
+	<input id="@Id"
+		   type="radio"
+		   name="@Name"
+		   value="@Value"
+		   class="@InputClass"
+		   checked="@IsSelected"
+		   @onchange="OnChange"
+		   required="@Required" />
+
+	<label for="@Id" class="form-check-label">
+		@Label
+	</label>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Radio Button Label";
+    [Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+
+    [Parameter] public string Name { get; set; } = "default-radio";
+    [Parameter] public string Value { get; set; } = string.Empty;
+
+    [Parameter] public string InputClass { get; set; } = "form-check-input";
+    
+    [Parameter] public bool IsSelected { get; set; }
+    [Parameter] public EventCallback<bool> IsSelectedChanged { get; set; }
+
+    [Parameter] public bool Required { get; set; } = false;
+
+    private async Task OnChange(ChangeEventArgs e)
+    {
+        // En radio button: si se dispara onchange, ESTE radio fue seleccionado
+        IsSelected = true;
+        await IsSelectedChanged.InvokeAsync(true);
+    }
+}

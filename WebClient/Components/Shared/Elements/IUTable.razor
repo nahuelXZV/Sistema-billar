@@ -1,0 +1,14 @@
+﻿<div class="table-responsive">
+	<table class="table table-sm table-hover align-middle mb-0">
+		<thead class="table-light">
+			@HeaderContent
+		</thead>
+		<tbody>
+			@BodyContent
+		</tbody>
+	</table>
+</div>
+@code {
+	[Parameter] public RenderFragment? HeaderContent { get; set; }
+	[Parameter] public RenderFragment? BodyContent { get; set; }
+}

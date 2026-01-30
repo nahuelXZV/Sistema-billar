@@ -1,0 +1,140 @@
+﻿@using WebClient.Models
+@model MainViewModel;
+
+<!--begin::Sidebar-->
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+	<!--begin::Sidebar Brand-->
+	<div class="sidebar-brand">
+		<!--begin::Brand Link-->
+		<a href="@Url.Action("Index","Home")" class="brand-link">
+			<img src="./imgs/logo.jpg"
+				 alt="Logo"
+				 class="brand-image" />
+			<span class="brand-text fw-light">EMPRESA</span>
+		</a>
+		<!--end::Brand Link-->
+	</div>
+	<!--end::Sidebar Brand-->
+	<!--begin::Sidebar Wrapper-->
+	<div class="sidebar-wrapper">
+		<nav class="mt-2">
+			<!--begin::Sidebar Menu-->
+			<ul class="nav sidebar-menu flex-column"
+				data-lte-toggle="treeview"
+				role="navigation"
+				aria-label="Main navigation"
+				data-accordion="false"
+				id="navigation">
+
+				<li class="nav-item">
+					<a href="@Url.Action("Index","Home")" class="nav-link">
+						<i class="nav-icon bi bi-house-fill"></i>
+						<p>
+							Inicio
+						</p>
+					</a>
+				</li>
+				@{
+					var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+					var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+				}
+				@foreach (var modulo in Model.ModulosMenu.OrderBy(x => x.Secuencia))
+				{
+					var moduloActivo = modulo.ListaAccesos.Any(a => a.Controlador == currentController && a.Vista == currentAction);
+					<li class="nav-item @(moduloActivo ? "menu-open" : "")">
+						<a href="#" class="nav-link @(moduloActivo ? "active" : "")">
+							<i class="nav-icon @modulo.Icono"></i>
+							<p>
+								@modulo.Nombre
+								<i class="nav-arrow bi bi-chevron-right"></i>
+							</p>
+						</a>
+						@if (modulo.ListaAccesos.Any())
+						{
+							<ul class="nav nav-treeview">
+								@foreach (var acceso in modulo.ListaAccesos)
+								{
+									var accesoActivo = acceso.Controlador == currentController && acceso.Vista == currentAction;
+									<li class="nav-item">
+										<a href="@Url.Action(acceso.Vista, acceso.Controlador)" class="nav-link @(accesoActivo ? "active" : "")">
+											<i class="nav-icon @acceso.Icono" style="margin-right: 5px;margin-left: 25px;"></i>
+											@acceso.Nombre
+										</a>
+									</li>
+								}
+							</ul>
+						}
+					</li>
+				}
+
+				<li class="nav-header">EXAMPLES</li>
+				<li class="nav-item">
+					<a href="#" class="nav-link">
+						<i class="nav-icon bi bi-box-arrow-in-right"></i>
+						<p>
+							Auth
+							<i class="nav-arrow bi bi-chevron-right"></i>
+						</p>
+					</a>
+					<ul class="nav nav-treeview">
+						<li class="nav-item">
+							<a href="#" class="nav-link">
+								<i class="nav-icon bi bi-box-arrow-in-right"></i>
+								<p>
+									Version 1
+									<i class="nav-arrow bi bi-chevron-right"></i>
+								</p>
+							</a>
+							<ul class="nav nav-treeview">
+								<li class="nav-item">
+									<a href="./examples/login.html" class="nav-link">
+										<i class="nav-icon bi bi-circle"></i>
+										<p>Login</p>
+									</a>
+								</li>
+								<li class="nav-item">
+									<a href="./examples/register.html" class="nav-link">
+										<i class="nav-icon bi bi-circle"></i>
+										<p>Register</p>
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li class="nav-item">
+							<a href="#" class="nav-link">
+								<i class="nav-icon bi bi-box-arrow-in-right"></i>
+								<p>
+									Version 2
+									<i class="nav-arrow bi bi-chevron-right"></i>
+								</p>
+							</a>
+							<ul class="nav nav-treeview">
+								<li class="nav-item">
+									<a href="./examples/login-v2.html" class="nav-link">
+										<i class="nav-icon bi bi-circle"></i>
+										<p>Login</p>
+									</a>
+								</li>
+								<li class="nav-item">
+									<a href="./examples/register-v2.html" class="nav-link">
+										<i class="nav-icon bi bi-circle"></i>
+										<p>Register</p>
+									</a>
+								</li>
+							</ul>
+						</li>
+						<li class="nav-item">
+							<a href="./examples/lockscreen.html" class="nav-link">
+								<i class="nav-icon bi bi-circle"></i>
+								<p>Lockscreen</p>
+							</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<!--end::Sidebar Menu-->
+		</nav>
+	</div>
+	<!--end::Sidebar Wrapper-->
+</aside>
+<!--end::Sidebar-->

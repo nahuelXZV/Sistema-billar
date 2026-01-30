@@ -1,0 +1,107 @@
+﻿@typeparam TItem
+@typeparam TValue
+
+<div class="mb-3 position-relative">
+	<label class="form-label">
+		@Label
+		@if (Required)
+		{
+			<span class="text-danger">*</span>
+		}
+	</label>
+
+	<!-- Input -->
+	<input type="text"
+		   class="form-control"
+		   placeholder="@Placeholder"
+		   value="@DisplayText"
+		   @oninput="OnInput"
+		   @onfocus="ShowDropdown"
+		   @onblur="HideDropdownDelayed"
+		   autocomplete="off" />
+
+	<!-- Dropdown -->
+	@if (IsOpen && FilteredOptions.Any())
+	{
+		<ul class="list-group position-absolute w-100 z-3 shadow-sm">
+			@foreach (var item in FilteredOptions)
+			{
+				<li class="list-group-item list-group-item-action"
+					@onclick="() => SelectItem(item)">
+					@GetText(item)
+				</li>
+			}
+		</ul>
+	}
+</div>
+@code {
+	[Parameter] public string Label { get; set; } = "Seleccione";
+	[Parameter] public string Placeholder { get; set; } = "Buscar...";
+	[Parameter] public bool Required { get; set; }
+
+	[Parameter] public IEnumerable<TItem> Options { get; set; } = Enumerable.Empty<TItem>();
+
+	[Parameter] public Func<TItem, TValue?> GetValue { get; set; }
+	[Parameter] public Func<TItem, string?> GetText { get; set; }
+
+	[Parameter] public TValue? Value { get; set; }
+	[Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
+
+	private string SearchText { get; set; } = string.Empty;
+	private string DisplayText { get; set; } = string.Empty;
+	private bool IsOpen { get; set; }
+
+	private IEnumerable<TItem> FilteredOptions =>
+		string.IsNullOrWhiteSpace(SearchText)
+			? Options.Take(10)
+			: Options
+				.Where(o =>
+					!string.IsNullOrEmpty(GetText(o)) &&
+					GetText(o)!.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+				.Take(10);
+
+	protected override void OnParametersSet()
+	{
+		if (Value is null || Options is null)
+		{
+			DisplayText = string.Empty;
+			return;
+		}
+
+		var selectedItem = Options.FirstOrDefault(o =>
+			EqualityComparer<TValue?>.Default.Equals(GetValue(o), Value));
+
+		if (selectedItem != null)
+		{
+			DisplayText = GetText(selectedItem) ?? string.Empty;
+		}
+	}
+
+	private void OnInput(ChangeEventArgs e)
+	{
+		SearchText = e.Value?.ToString() ?? string.Empty;
+		DisplayText = SearchText;
+		IsOpen = true;
+	}
+
+	private async Task SelectItem(TItem item)
+	{
+		DisplayText = GetText(item) ?? string.Empty;
+		SearchText = DisplayText;
+		IsOpen = false;
+
+		Value = GetValue(item);
+		await ValueChanged.InvokeAsync(Value);
+	}
+
+	private void ShowDropdown()
+	{
+		IsOpen = true;
+	}
+
+	private async Task HideDropdownDelayed()
+	{
+		await Task.Delay(150);
+		IsOpen = false;
+	}
+}

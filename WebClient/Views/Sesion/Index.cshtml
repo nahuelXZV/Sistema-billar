@@ -1,0 +1,44 @@
+﻿@using WebClient.Models
+@using WebClient.Models.Security
+@model SesionViewModel;
+@{
+	ViewData["Title"] = "Iniciar Sesion";
+	Layout = "_SesionLayout";
+}
+
+<partial name="_LoginForm" />
+
+@section Scripts {
+	<script>
+		document.getElementById('loginForm')?.addEventListener('submit', function () {
+			document.getElementById('btnLogin')?.setAttribute('disabled', 'disabled');
+		});
+		function processError(jsonError) {
+			const normalized = jsonError
+				.replaceAll(/\\/g, "/")
+				.replaceAll(/\n/g, "\\n")
+				.replaceAll(/\r/g, "\\r");
+
+			return normalized;
+		}
+		function mostrarErrores() {
+			let viewErrors = JSON.parse(processError(`@Json.Serialize(Model.Errores)`));
+			let messageItems = viewErrors?.map(error => `<p>${error.clientMessage}</p>`)?.join('') ?? "";
+			showModal({
+				title: 'Error de autenticación',
+				content: messageItems,
+				type: 'danger'
+			});
+		}
+	</script>
+
+	@if (Model.Errores.Any())
+	{
+		<script>
+			mostrarErrores();
+		</script>
+	}
+
+}
+
+

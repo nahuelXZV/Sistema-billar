@@ -1,0 +1,40 @@
+﻿<div class="mb-3">
+	<label for="@Id" class="form-label">
+		@Label
+		@if (Required)
+		{
+			<span class="text-danger">*</span>
+		}
+	</label>
+
+	<input type="text"
+		   id="@Id"
+		   class="@InputClass"
+		   placeholder="@Placeholder"
+		   value="@Value"
+		   @onchange="OnChange"
+		   required="@Required"
+		   readonly="@Readonly" />
+</div>
+
+@code {
+	[Parameter] public string Label { get; set; } = "Label";
+	[Parameter] public string Placeholder { get; set; } = "";
+	[Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+	[Parameter] public string InputClass { get; set; } = "form-control";
+	[Parameter] public bool Required { get; set; } = false;
+	[Parameter] public bool Readonly { get; set; } = false;
+
+	[Parameter] public string Value { get; set; }
+	[Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+	private async Task OnChange(ChangeEventArgs e)
+	{
+		var newValue = e.Value?.ToString();
+		if (newValue != Value)
+		{
+			Value = newValue;
+			await ValueChanged.InvokeAsync(Value);
+		}
+	}
+}

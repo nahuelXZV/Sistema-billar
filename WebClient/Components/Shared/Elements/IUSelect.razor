@@ -1,0 +1,70 @@
+﻿@typeparam TItem
+@typeparam TValue
+
+<div class="mb-3">
+	<label for="@Id" class="form-label">
+		@Label
+		@if (Required)
+		{
+			<span class="text-danger">*</span>
+		}
+	</label>
+
+	<select id="@Id"
+			class="@SelectClass"
+			value="@FormatValue(Value)"
+			@onchange="OnValueChanged"
+			required="@Required">
+
+		@if (!string.IsNullOrEmpty(Placeholder))
+		{
+			<option value="0" selected>@Placeholder</option>
+		}
+
+		@foreach (var item in Options)
+		{
+			<option value="@FormatValue(GetValue(item))">
+				@GetText(item)
+			</option>
+		}
+	</select>
+</div>
+
+
+@code {
+	[Parameter] public string Label { get; set; } = "Select";
+	[Parameter] public string Placeholder { get; set; } = "Seleccione una opción";
+	[Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+	[Parameter] public bool Required { get; set; } = false;
+
+	// Bootstrap default
+	[Parameter] public string SelectClass { get; set; } = "form-select";
+
+	[Parameter] public IEnumerable<TItem> Options { get; set; }
+	[Parameter] public Func<TItem, TValue> GetValue { get; set; }
+	[Parameter] public Func<TItem, string> GetText { get; set; }
+
+	[Parameter] public TValue Value { get; set; }
+	[Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+
+	private string FormatValue(TValue value) => value?.ToString() ?? string.Empty;
+
+	private async Task OnValueChanged(ChangeEventArgs e)
+	{
+		var selectedValue = e.Value?.ToString();
+
+		var selectedItem = Options.FirstOrDefault(item => FormatValue(GetValue(item)) == selectedValue);
+
+		if (selectedItem != null)
+		{
+			Value = GetValue(selectedItem);
+			await ValueChanged.InvokeAsync(Value);
+		}
+		else
+		{
+			Value = default;
+			await ValueChanged.InvokeAsync(Value);
+		}
+	}
+}
+

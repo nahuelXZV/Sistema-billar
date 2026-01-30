@@ -1,0 +1,47 @@
+﻿@using WebClient.Models
+@model MainViewModel;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"]</title>
+	<meta name="route" content="@Url.RouteUrl("")" />
+	<base href="~/" />
+	<partial name="_Styles" />
+</head>
+<body class="layout-fixed sidebar-mini sidebar-expand-lg sidebar-open bg-body-tertiary">
+	<partial name="_Preloader" />
+	<partial name="_ReloadPage" />
+	<div class="app-wrapper">
+		<partial name="_NavBar" />
+		<partial name="_Aside" />
+
+		<!--begin::App Main-->
+		<main class="app-main">
+			<div class="app-content-header">
+				<div class="container-fluid">
+					@RenderSection("ActionBar", required: false)
+				</div>
+			</div>
+			<div class="app-content">
+				<div class="container-fluid">
+					@RenderBody()
+				</div>
+			</div>
+		</main>
+		<partial name="_Footer" />
+	</div>
+
+	<script>
+		const tempMessages = @Json.Serialize(Model.Messages);
+		const menuItems = @Json.Serialize(Model.ListaItemsMenu);
+	</script>
+	<partial name="_TempMessagesDialog" />
+	<partial name="_Modales" />
+	<partial name="_Scripts" />
+	@RenderSection("PreScripts", required: false)
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

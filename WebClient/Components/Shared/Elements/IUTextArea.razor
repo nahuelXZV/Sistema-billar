@@ -1,0 +1,41 @@
+﻿<div class="mb-3">
+	<label for="@Id" class="form-label">
+		@Label
+		@if (Required)
+		{
+			<span class="text-danger">*</span>
+		}
+	</label>
+
+	<textarea id="@Id"
+			  class="@TextAreaClass"
+			  placeholder="@Placeholder"
+			  rows="@Rows"
+			  @onchange="OnChange"
+			  required="@Required"
+			  readonly="@Readonly">@Value</textarea>
+</div>
+
+@code {
+	[Parameter] public string Label { get; set; } = "Textarea";
+	[Parameter] public string Placeholder { get; set; } = "Ingrese el texto...";
+	[Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+	[Parameter] public string TextAreaClass { get; set; } = "form-control";
+
+	[Parameter] public int Rows { get; set; } = 3;
+	[Parameter] public bool Required { get; set; } = false;
+	[Parameter] public bool Readonly { get; set; } = false;
+
+	[Parameter] public string Value { get; set; }
+	[Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+	private async Task OnChange(ChangeEventArgs e)
+	{
+		var newValue = e.Value?.ToString();
+		if (newValue != Value)
+		{
+			Value = newValue;
+			await ValueChanged.InvokeAsync(Value);
+		}
+	}
+}

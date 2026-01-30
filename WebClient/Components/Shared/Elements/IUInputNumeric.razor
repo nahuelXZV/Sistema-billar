@@ -1,0 +1,48 @@
+﻿@typeparam TValue
+
+<div class="mb-3">
+	<label for="@Id" class="form-label">
+		@Label
+		@if (Required)
+		{
+			<span class="text-danger">*</span>
+		}
+	</label>
+
+	<input type="number"
+		   id="@Id"
+		   class="@InputClass"
+		   placeholder="@Placeholder"
+		   value="@BindConverter.FormatValue(Value)"
+		   @onchange="OnChange"
+		   required="@Required"
+		   readonly="@Readonly" />
+</div>
+
+@code {
+	[Parameter] public string Label { get; set; } = "Label";
+	[Parameter] public string Placeholder { get; set; } = "";
+	[Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+	[Parameter] public string InputClass { get; set; } = "form-control";
+
+	[Parameter] public bool Required { get; set; } = false;
+	[Parameter] public bool Readonly { get; set; } = false;
+
+	[Parameter] public TValue Value { get; set; } = default!;
+	[Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+
+	private async Task OnChange(ChangeEventArgs e)
+	{
+		if (BindConverter.TryConvertTo<TValue>(
+				e?.Value?.ToString(),
+				System.Globalization.CultureInfo.InvariantCulture,
+				out var newValue))
+		{
+			if (!EqualityComparer<TValue>.Default.Equals(Value, newValue))
+			{
+				Value = newValue;
+				await ValueChanged.InvokeAsync(newValue);
+			}
+		}
+	}
+}

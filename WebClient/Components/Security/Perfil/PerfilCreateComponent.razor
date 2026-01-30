@@ -1,0 +1,61 @@
+﻿@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+@inherits Components.MainBaseComponent;
+
+<div class="d-flex flex-column flex-md-row gap-1">
+	<IUCard CustomClass="col-12 col-md-4">
+		<Header>
+			<h3>Datos del perfil</h3>
+		</Header>
+		<Body>
+			<EditForm EditContext="_editContext">
+				<DataAnnotationsValidator />
+				<div class="row">
+					<div class="col-12">
+						<IUInputText Label="Nombre"
+									 Placeholder="Escriba el nombre del perfil..."
+									 @bind-Value="Perfil.Nombre"
+									 Required=true />
+						<ValidationMessage For=@(() => Perfil.Nombre) />
+					</div>
+					<div class="col-12">
+						<IUTextArea Label="Descripcion"
+									Placeholder="Escriba una pequeña descripcion..."
+									@bind-Value="Perfil.Descripcion"
+									Required=true />
+						<ValidationMessage For=@(() => Perfil.Descripcion) />
+					</div>
+				</div>
+			</EditForm>
+		</Body>
+	</IUCard>
+
+	<IUCard CustomClass="col-12 col-md-8">
+		<Header>
+			<h3 class="">Accesos disponibles</h3>
+		</Header>
+		<Body>
+			<div class="row">
+				@foreach (var modulo in ListaModulos)
+				{
+					@if (modulo.ListaAccesos.Count > 0)
+					{
+						<div class="col-12 col-md-6 mb-4">
+							<h4>@modulo.Nombre</h4>
+							<div class="ml-2">
+								@foreach (var acceso in modulo.ListaAccesos)
+								{
+									var isChecked = ListaAccesosSeleccionados.Contains(acceso.Id);
+									<IUInputCheckbox Label="@acceso.Nombre"
+													 Value="@isChecked"
+													 ValueChanged="@(value => OnAccesoSeleccionChanged(acceso.Id, value))" />
+								}
+							</div>
+						</div>
+					}
+				}
+			</div>
+
+		</Body>
+	</IUCard>
+</div>

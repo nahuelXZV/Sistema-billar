@@ -1,0 +1,27 @@
+﻿<div class="card card-outline card-secondary @CustomClass">
+	@if (Header != null)
+	{
+		<div class="card-header">
+			@Header
+		</div>
+	}
+
+	<div class="card-body">
+		@Body
+	</div>
+
+	@if (Footer != null)
+	{
+		<div class="card-footer">
+			@Footer
+		</div>
+	}
+</div>
+@code {
+	[Parameter] public RenderFragment Header { get; set; }
+	[Parameter] public RenderFragment Body { get; set; }
+	[Parameter] public RenderFragment Footer { get; set; }
+
+	// Clases extra (outline, color, spacing, etc.)
+	[Parameter] public string CustomClass { get; set; } = "";
+}

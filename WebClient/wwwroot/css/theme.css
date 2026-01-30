@@ -1,0 +1,108 @@
+﻿:root {
+    /* Primary */
+    --bs-primary: #2563EB;
+    --bs-primary-rgb: 37, 99, 235;
+    /* Success */
+    --bs-success: #16A34A;
+    --bs-success-rgb: 22, 163, 74;
+    /* Warning */
+    --bs-warning: #F59E0B;
+    --bs-warning-rgb: 245, 158, 11;
+    /* Danger */
+    --bs-danger: #DC2626;
+    --bs-danger-rgb: 220, 38, 38;
+    /* Neutral */
+    --bs-body-bg: #F9FAFB;
+    --bs-body-color: #111827;
+    --bs-border-color: #E5E7EB;
+}
+
+.pos-primary {
+    background-color: var(--bs-primary);
+    color: #fff;
+}
+
+.pos-danger {
+    background-color: var(--bs-danger);
+    color: #fff;
+}
+
+.pos-total {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--bs-primary);
+}
+
+.preloader-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dark-mode .preloader-overlay {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Animación */
+.loader-ring {
+    width: 64px;
+    height: 64px;
+    border: 5px solid rgba(37, 99, 235, 0.2);
+    border-top-color: var(--bs-primary);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.login-box-responsive {
+    width: 100%;
+    max-width: 360px; /* mobile */
+    margin: auto;
+}
+
+@media (min-width: 576px) {
+    .login-box-responsive {
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 768px) {
+    .login-box-responsive {
+        max-width: 440px;
+    }
+}
+
+
+.blazor-reconnect-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dark-mode .blazor-reconnect-overlay {
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+.blazor-reconnect-card {
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    padding: 2rem 2.5rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    max-width: 360px;
+    width: 100%;
+}

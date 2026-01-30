@@ -1,0 +1,63 @@
+﻿@using WebClient.Models
+@using WebClient.Models.Security
+@model SesionViewModel
+
+<div class="card card-outline card-primary">
+	<div class="card-header text-center">
+		<h1 class="h4 mb-0">
+			<b>Iniciar</b> Sesión
+		</h1>
+	</div>
+
+	<div class="card-body">
+		<p class="login-box-msg text-muted">
+			Ingresa tu usuario y contraseña
+		</p>
+
+		<form id="loginForm"
+			  asp-controller="Sesion"
+			  asp-action="Iniciar"
+			  method="post">
+
+			<input type="hidden" asp-for="RedirectUrl" />
+
+			<!-- Usuario -->
+			<div class="input-group mb-3">
+				<input asp-for="Usuario"
+					   class="form-control"
+					   placeholder="Usuario"
+					   autocomplete="username" />
+				<div class="input-group-text">
+					<i class="bi bi-person"></i>
+				</div>
+			</div>
+			<span asp-validation-for="Usuario" class="text-danger small"></span>
+
+			<!-- Password -->
+			<div class="input-group mb-3 mt-3">
+				<input asp-for="Password"
+					   type="password"
+					   class="form-control"
+					   placeholder="Contraseña"
+					   autocomplete="current-password" />
+				<div class="input-group-text">
+					<i class="bi bi-lock"></i>
+				</div>
+			</div>
+			<span asp-validation-for="Password" class="text-danger small"></span>
+
+			<!-- Submit -->
+			<div class="row mt-4">
+				<div class="col-12">
+					<button type="submit"
+							class="btn btn-primary w-100"
+							id="btnLogin">
+						<i class="bi bi-box-arrow-in-right me-1"></i>
+						Ingresar
+					</button>
+				</div>
+			</div>
+
+		</form>
+	</div>
+</div>

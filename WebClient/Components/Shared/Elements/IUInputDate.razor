@@ -1,0 +1,43 @@
+﻿<div class="mb-3">
+	<label for="@Id" class="form-label">
+		@Label
+		@if (Required)
+		{
+			<span class="text-danger">*</span>
+		}
+	</label>
+
+	<input type="date"
+		   id="@Id"
+		   class="@InputClass"
+		   value="@(Value?.ToString("yyyy-MM-dd"))"
+		   @onchange="OnChange"
+		   required="@Required"
+		   readonly="@Readonly" />
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Label";
+    [Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+    [Parameter] public string InputClass { get; set; } = "form-control";
+
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public bool Readonly { get; set; } = false;
+
+    [Parameter] public DateTime? Value { get; set; }
+    [Parameter] public EventCallback<DateTime?> ValueChanged { get; set; }
+
+    private async Task OnChange(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var newValue))
+        {
+            Value = newValue.Date;
+        }
+        else
+        {
+            Value = null;
+        }
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+}
