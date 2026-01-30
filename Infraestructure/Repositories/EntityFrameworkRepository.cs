@@ -91,7 +91,7 @@ public class EntityFrameworkRepository<EntityType> : IRepository<EntityType> whe
         return await _context.Set<EntityType>().ToListAsync();
     }
 
-    public async Task<EntityType> GetByIdAsync(long id)
+    public async Task<EntityType?> GetByIdAsync(long id)
     {
         return await _context.Set<EntityType>().FindAsync(id);
     }

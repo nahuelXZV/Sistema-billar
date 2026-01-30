@@ -1,4 +1,5 @@
 
+using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Security;
 
 namespace WebClient.Services.Implementacion;
@@ -14,6 +15,8 @@ public class AppServices : IAppServices
     private IModuloService _moduloService;
     private IUsuarioService _usuarioService;
 
+    private IAlmacenService _almacenService;
+
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
         _serviceProvider = serviceProvider;
@@ -27,6 +30,11 @@ public class AppServices : IAppServices
     public IUsuarioService UsuarioService => _usuarioService ??= _serviceProvider.GetService<IUsuarioService>();
     #endregion
 
+
+    #region INVENTORY
+    public IAlmacenService AlmacenService => _almacenService ??= _serviceProvider.GetService<IAlmacenService>();
+    #endregion
+    
     #region CONFIGURACION
 
     #endregion

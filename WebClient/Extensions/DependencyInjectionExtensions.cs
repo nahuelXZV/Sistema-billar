@@ -8,6 +8,9 @@ using WebClient.Services;
 using Domain.Interfaces.Services.Security;
 using WebClient.Services.Segurity;
 using Domain.Validators.Security;
+using Domain.Interfaces.Services.Inventory;
+using WebClient.Services.Inventory;
+using Domain.Validators.Inventory;
 
 namespace WebClient.Extensions;
 
@@ -25,6 +28,8 @@ public static class DependencyInjectionExtensions
 
         #region Validators
         services.AddValidatorsFromAssemblyContaining<CreateUsuarioDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateAlmacenDTOValidator>();
+        //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         #endregion
 
         #region Services
@@ -34,6 +39,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPerfilService, PerfilService>();
         services.AddScoped<IModuloService, ModuloService>();
         services.AddScoped<IUsuarioService, UsuarioService>();
+
+        services.AddScoped<IAlmacenService, AlmacenService>();
         #endregion
 
         return services;

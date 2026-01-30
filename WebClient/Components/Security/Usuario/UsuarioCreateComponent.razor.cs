@@ -13,14 +13,12 @@ public partial class UsuarioCreateComponent
     [Parameter] public UsuarioDTO Usuario { get; set; }
     [Parameter] public List<PerfilDTO> ListaPerfiles { get; set; }
     [Inject] public IValidator<UsuarioDTO> Validator { get; set; }
-    private EditContext _editContext;
-    private DotNetObjectReference<UsuarioCreateComponent> _objectHelper;
-    private FluentValidationValidator<UsuarioDTO> _fvValidator;
+    private EditContext? _editContext { get; set; }
+    private DotNetObjectReference<UsuarioCreateComponent>? _objectHelper;
     public bool ModificarContraseña { get; set; } = false;
     protected override void OnInitialized()
     {
         _editContext = new EditContext(Usuario);
-        _fvValidator = new FluentValidationValidator<UsuarioDTO>(_editContext, Validator);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -45,7 +43,7 @@ public partial class UsuarioCreateComponent
     [JSInvokable]
     public async Task Validar()
     {
-        if (_editContext.Validate()) await Guardar();
+        if (_editContext?.Validate() ?? false) await Guardar();
     }
 
     private async Task Guardar()

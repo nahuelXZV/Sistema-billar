@@ -1,0 +1,33 @@
+﻿@using Domain.DTOs.Security;
+@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent;
+
+<IUCard>
+	<Header>
+		<h4 class="">Datos del almacen</h4>
+	</Header>
+
+	<Body>
+		<EditForm EditContext="_editContext">
+			<DataAnnotationsValidator />
+
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Nombre"
+								 Placeholder="Escriba el nombre..."
+								 @bind-Value="Almacen.Nombre"
+								 Required=true />
+					<ValidationMessage For=@(() => Almacen.Nombre) />
+				</div>
+				<div class="col-12 col-md-4">
+					<IUTextArea Label="Descripcion"
+								Placeholder="Escribe una descripcion"
+								@bind-Value="Almacen.Descripcion" />
+					<ValidationMessage For="() => Almacen.Descripcion" />
+				</div>
+			</div>
+		</EditForm>
+	</Body>
+</IUCard>
