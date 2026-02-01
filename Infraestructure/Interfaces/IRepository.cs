@@ -1,7 +1,8 @@
 using System.Linq.Expressions;
 using Domain.Entities;
+using Domain.Interfaces.Shared;
 
-namespace Domain.Interfaces.Shared;
+namespace Infraestructure.Interfaces;
 
 public interface IRepository<EntityType> where EntityType : Entity
 {

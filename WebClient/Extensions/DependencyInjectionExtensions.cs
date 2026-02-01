@@ -29,6 +29,7 @@ public static class DependencyInjectionExtensions
         #region Validators
         services.AddValidatorsFromAssemblyContaining<CreateUsuarioDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateAlmacenDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateCategoriaDTOValidator>();
         //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         #endregion
 
@@ -41,6 +42,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUsuarioService, UsuarioService>();
 
         services.AddScoped<IAlmacenService, AlmacenService>();
+        services.AddScoped<ICategoriaService, CategoriaService>();
+
         #endregion
 
         return services;

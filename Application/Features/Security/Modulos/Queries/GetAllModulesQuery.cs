@@ -5,7 +5,7 @@ using Domain.DTOs.Security;
 using Domain.DTOs.Shared;
 using Domain.Entities.Security;
 using Domain.Extensions;
-using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Modulos.Queries;

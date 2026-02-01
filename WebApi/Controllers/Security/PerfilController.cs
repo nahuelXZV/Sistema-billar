@@ -4,7 +4,7 @@ using Domain.DTOs.Security;
 using Domain.DTOs.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers.Segurity;
+namespace WebApi.Controllers.Security;
 
 public class PerfilController : MainController
 {

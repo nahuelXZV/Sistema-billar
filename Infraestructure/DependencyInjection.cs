@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Infraestructure.Repositories;
 using Infraestructure.Persistence;
-using Domain.Interfaces.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Infraestructure.Interfaces;
 
 namespace Infraestructure;
 

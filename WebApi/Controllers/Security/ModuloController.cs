@@ -2,7 +2,7 @@ using Application.Features.Security.Modulos.Queries;
 using Domain.DTOs.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers.Segurity;
+namespace WebApi.Controllers.Security;
 
 public class ModuloController : MainController
 {

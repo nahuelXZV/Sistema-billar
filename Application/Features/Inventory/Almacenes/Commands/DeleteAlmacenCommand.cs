@@ -2,7 +2,7 @@
 using AutoMapper;
 using Domain.Common;
 using Domain.Entities.Inventory;
-using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 using MediatR;
 
 namespace Application.Features.Inventory.Almacenes.Commands;

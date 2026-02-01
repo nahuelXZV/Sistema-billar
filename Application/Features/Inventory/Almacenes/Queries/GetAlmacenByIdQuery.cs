@@ -3,7 +3,7 @@ using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
 using Domain.Entities.Inventory;
-using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Almacenes.Queries;

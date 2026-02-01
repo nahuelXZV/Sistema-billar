@@ -22,7 +22,7 @@ public class AlmacenController : MainController
     public async Task<IActionResult> Listado()
     {
         var model = _viewModelFactory.Create<AlmacenViewModel>();
-        model.IncluirBlazorComponents = true;
+        //model.IncluirBlazorComponents = true;
         return View(model);
     }
 

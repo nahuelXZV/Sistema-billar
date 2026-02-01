@@ -1,7 +1,7 @@
 using Application.Interfaces;
 using Domain.Common;
 using Domain.Entities.Security;
-using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 
 namespace Application.Features.Security.Profile.Commands;
 

@@ -1,0 +1,43 @@
+﻿@using Domain.DTOs.Inventory
+
+<li>
+	<div class="tree-item @(TieneHijos ? "" : "leaf")" onclick="toggleNode(this)">
+		@if (TieneHijos)
+		{
+			<i class="bi bi-chevron-right toggle"></i>
+			<i class="bi bi-folder"></i>
+		}
+		else
+		{
+			<i class="bi bi-file-earmark"></i>
+		}
+
+		@Categoria.Nombre
+		<button class="btn btn-sm btn-outline-primary ms-auto"
+				title="Editar categoría"
+				@onclick="OnEdit">
+			<i class="bi bi-pencil"></i>
+		</button>
+	</div>
+
+	@if (TieneHijos)
+	{
+		<ul class="tree-children">
+			@foreach (var sub in Categoria.SubCategorias)
+			{
+				<CategoriaTreeComponent Categoria="sub" OnCategoriaEdit="OnCategoriaEdit" />
+			}
+		</ul>
+	}
+</li>
+@code {
+	[Parameter] public CategoriaDTO Categoria { get; set; } = default!;
+	[Parameter] public EventCallback<CategoriaDTO> OnCategoriaEdit { get; set; }
+	private bool TieneHijos => Categoria.SubCategorias?.Any() == true;
+
+
+	private async Task OnEdit()
+	{
+		if (OnCategoriaEdit.HasDelegate) await OnCategoriaEdit.InvokeAsync(Categoria);
+	}
+}

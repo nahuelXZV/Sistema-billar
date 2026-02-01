@@ -114,3 +114,17 @@ function showModalAlert(title, message, iconClass) {
 
 
 //FIN MODAL
+
+
+// INICIO ARBOL
+function toggleNode(element) {
+    const parentLi = element.parentElement;
+    const children = parentLi.querySelector(":scope > .tree-children");
+    const toggleIcon = element.querySelector(".toggle");
+
+    if (!children) return;
+
+    children.classList.toggle("open");
+    toggleIcon.classList.toggle("open");
+}
+// FIN ARBOL

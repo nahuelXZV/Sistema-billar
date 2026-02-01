@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.Data;
 using System.Reflection;
 using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 
 namespace Infraestructure.Persistence;
 

@@ -1,12 +1,12 @@
 using Application.Helpers;
 using AutoMapper;
 using MediatR;
-using Domain.Interfaces.Shared;
 using Domain.Common;
 using Domain.Entities.Security;
 using Domain.DTOs.Security;
 using Application.Interfaces;
 using Application.Features.Security.Usuarios.Queries;
+using Infraestructure.Interfaces;
 
 namespace Application.Features.Security.Usuarios.Commands;
 public class CreateUserCommand : ICommand<Response<long>>

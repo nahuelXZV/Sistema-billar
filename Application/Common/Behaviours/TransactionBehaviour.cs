@@ -1,5 +1,5 @@
 using Application.Interfaces;
-using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 using MediatR;
 
 namespace Application.Common.Behaviours;

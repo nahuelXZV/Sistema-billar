@@ -3,7 +3,7 @@ using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Security;
 using Domain.Entities.Security;
-using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Profile.Commands;

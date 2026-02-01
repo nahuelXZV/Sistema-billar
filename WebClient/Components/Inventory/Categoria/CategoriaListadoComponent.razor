@@ -1,0 +1,28 @@
+﻿@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent;
+
+<div class="d-flex flex-column flex-md-row gap-1">
+	<IUCard CustomClass="col-12 col-md-5">
+		<Header>
+			<h4 class="">Categorias</h4>
+		</Header>
+
+		<Body>
+			<div class="row">
+				<ul class="tree">
+					@if (ListaCategorias != null)
+					{
+						@foreach (var categoria in ListaCategorias)
+						{
+							<CategoriaTreeComponent Categoria="categoria" OnCategoriaEdit="CategoriaSeleccionado" />
+						}
+					}
+				</ul>
+
+			</div>
+		</Body>
+	</IUCard>
+	<CategoriaCreateComponent ListaCategorias="ListaCategoriasSinNivel" Categoria="CategoriaSelected" OnCategoriaCreated="Refresh" />
+</div>

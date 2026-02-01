@@ -2,7 +2,7 @@ using Application.Features.Security.Profile.Queries;
 using Domain.Common;
 using Domain.DTOs.Security;
 using Domain.Entities.Security;
-using Domain.Interfaces.Shared;
+using Infraestructure.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

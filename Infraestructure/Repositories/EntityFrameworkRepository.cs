@@ -3,6 +3,7 @@ using Infraestructure.Persistence;
 using System.Linq.Expressions;
 using Domain.Interfaces.Shared;
 using Domain.Entities;
+using Infraestructure.Interfaces;
 
 namespace Infraestructure.Repositories;
 

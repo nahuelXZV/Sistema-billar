@@ -1,0 +1,98 @@
+﻿@using WebClient.Components.Shared.Elements
+@using Domain.DTOs.Inventory;
+
+@inherits Components.MainBaseComponent;
+
+<IUCard CustomClass="col-12 col-md-7">
+	<Header>
+		<h4 class="mb-0">Datos de la categoría</h4>
+	</Header>
+
+	<Body>
+		<EditForm EditContext="_editContext">
+			<DataAnnotationsValidator />
+
+			<div class="row">
+
+				<div class="col-12 col-md-4">
+					<label class="form-label fw-semibold">Imagen de la categoría</label>
+
+					<div class="image-preview-container mb-2">
+						@if (!string.IsNullOrWhiteSpace(Categoria.ImagenUrl))
+						{
+							<img src="@Categoria.ImagenUrl"
+								 class="img-fluid rounded"
+								 alt="Imagen categoría"
+								 onerror="this.style.display='none'" />
+						}
+						else
+						{
+							<div class="image-placeholder">
+								<i class="bi bi-image"></i>
+								<span>Sin imagen</span>
+							</div>
+						}
+					</div>
+
+					<IUInputText Label="Url Imagen"
+								 Placeholder="https://ejemplo.com/imagen.png"
+								 @bind-Value="Categoria.ImagenUrl" />
+					<ValidationMessage For="@(() => Categoria.ImagenUrl)" />
+				</div>
+
+				@* Datos *@
+				<div class="col-12 col-md-8">
+					<div class="row">
+
+						<div class="col-12 col-md-6">
+							<IUInputText Label="Nombre"
+										 Placeholder="Escriba el nombre..."
+										 @bind-Value="Categoria.Nombre"
+										 Required="true" />
+							<ValidationMessage For="@(() => Categoria.Nombre)" />
+						</div>
+
+						<div class="col-12 col-md-6">
+							<IUInputNumeric Label="Orden visual"
+											Placeholder="0"
+											@bind-Value="Categoria.OrdenVisual"
+											Required="true" />
+						</div>
+
+						<div class="col-12">
+							<IUTextArea Label="Descripción"
+										Placeholder="Escribe una descripción..."
+										@bind-Value="Categoria.Descripcion" />
+							<ValidationMessage For="@(() => Categoria.Descripcion)" />
+						</div>
+
+						<div class="col-12 col-md-6">
+							<IUSelectFilterComponent TItem="CategoriaDTO"
+													 TValue="long?"
+													 Label="Categoría Padre"
+													 Placeholder="Selecciona una categoría"
+													 Options="@ListaCategorias"
+													 GetText="@(c => c.Nombre)"
+													 GetValue="@(c => c.Id)"
+													 @bind-Value="Categoria.IdCategoriaPadre" />
+						</div>
+
+						<div class="col-12 col-md-6 ">
+							<label class="d-none d-md-block invisible mb-2">Activo</label>
+							<IUInputCheckbox Label="Activo" @bind-Value="Categoria.Activo" />
+						</div>
+
+					</div>
+				</div>
+
+				@* Acciones *@
+				<div class="col-12 text-end">
+					<IUButton IconCss="bi bi-floppy-fill"
+							  Text="Guardar"
+							  OnClick="() => Validar()" />
+				</div>
+
+			</div>
+		</EditForm>
+	</Body>
+</IUCard>

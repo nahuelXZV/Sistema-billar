@@ -5,7 +5,7 @@ using Domain.DTOs.Security.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers.Segurity;
+namespace WebApi.Controllers.Security;
 
 public class AuthController : MainController
 {

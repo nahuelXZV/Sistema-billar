@@ -22,6 +22,8 @@ public class GeneralProfile : Profile
         CreateMap<Modulo, ModuloDTO>();
 
         CreateMap<Almacen, AlmacenDTO>();
+        CreateMap<Categoria, CategoriaDTO>();
+
 
         #endregion
 
@@ -33,6 +35,7 @@ public class GeneralProfile : Profile
         CreateMap<AccesoDTO, Acceso>();
         CreateMap<ModuloDTO, Modulo>();
         CreateMap<AlmacenDTO, Almacen>();
+        CreateMap<CategoriaDTO, Categoria>();
         #endregion
 
     }

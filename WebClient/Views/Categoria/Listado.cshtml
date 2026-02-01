@@ -1,0 +1,66 @@
+﻿@using WebClient.Common
+@using WebClient.Components
+@using WebClient.Components.Inventory.Almacen
+@using WebClient.Components.Inventory.Categoria
+@using WebClient.Models.Inventory
+@model CategoriaViewModel
+
+@{
+	ViewData["Title"] = "Categoria";
+	ViewData["Module"] = "Categoria";
+	ViewData["Action"] = "Crear";
+	ViewData["Url"] = Url.Action("Listado", "Categoria");
+
+	var componentName = nameof(CategoriaListadoComponent);
+	var componentParameters = new Dictionary<string, object>
+	{
+		{ nameof(CategoriaListadoComponent.ListaCategorias), Model.ListaCategorias}
+	};
+}
+<script>
+	class @componentName {
+		componentInstance;
+		guardarButton;
+
+		constructor(componentInstance) {
+			this.componentInstance = componentInstance;
+			this.guardarButton = document.getElementById('btn-create');
+			this.guardarButton.addEventListener('click', ev => this.Crear());
+		}
+
+		async Crear() {
+			await this.componentInstance.invokeMethodAsync('Crear');
+		}
+
+		static init(componentInstance) {
+			window.@componentName = new @(componentName)(componentInstance);
+		}
+	}
+
+	window.@componentName = @componentName;
+</script>
+
+@section ActionBar {
+	<div class="card card-outline card-primary action-bar">
+		<div class="card-body py-2">
+			<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+				<!-- ZONA IZQUIERDA -->
+				<div class="action-bar-left d-flex gap-2">
+					<button id="btn-create" type="button" class="btn btn-primary btn-sm px-3 py-1">
+						<i class="bi bi-plus-lg"></i>
+						Nueva Categoria
+					</button>
+				</div>
+				<!-- ZONA DERECHA -->
+				<div class="action-bar-right d-flex gap-2">
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<component type="typeof(MainComponent)"
+		   param-ComponentTypeName="typeof(CategoriaListadoComponent).FullName"
+		   param-Parameters="@componentParameters"
+		   render-mode="ServerPrerendered" />
+
