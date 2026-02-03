@@ -23,6 +23,7 @@ public class GeneralProfile : Profile
 
         CreateMap<Almacen, AlmacenDTO>();
         CreateMap<Categoria, CategoriaDTO>();
+        CreateMap<UnidadMedida, UnidadMedidaDTO>();
 
 
         #endregion
@@ -36,6 +37,7 @@ public class GeneralProfile : Profile
         CreateMap<ModuloDTO, Modulo>();
         CreateMap<AlmacenDTO, Almacen>();
         CreateMap<CategoriaDTO, Categoria>();
+        CreateMap<UnidadMedidaDTO, UnidadMedida>();
         #endregion
 
     }

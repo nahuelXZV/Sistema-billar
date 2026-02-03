@@ -17,6 +17,7 @@ public class AppServices : IAppServices
 
     private IAlmacenService _almacenService;
     private ICategoriaService _categoriaService;
+    private IUnidadMedidaService _unidadMedidaService;
 
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
@@ -35,6 +36,7 @@ public class AppServices : IAppServices
     #region INVENTORY
     public IAlmacenService AlmacenService => _almacenService ??= _serviceProvider.GetService<IAlmacenService>();
     public ICategoriaService CategoriaService => _categoriaService ??= _serviceProvider.GetService<ICategoriaService>();
+    public IUnidadMedidaService UnidadMedidaService => _unidadMedidaService ??= _serviceProvider.GetService<IUnidadMedidaService>();
     #endregion
 
     #region CONFIGURACION

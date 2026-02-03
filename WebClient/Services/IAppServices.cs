@@ -9,6 +9,8 @@ public interface IAppServices
     public IPerfilService PerfilService { get; }
     public IModuloService ModuloService { get; }
     public IUsuarioService UsuarioService { get; }
+
     public IAlmacenService AlmacenService { get; }
     public ICategoriaService CategoriaService { get; }
+    public IUnidadMedidaService UnidadMedidaService { get; }
 }

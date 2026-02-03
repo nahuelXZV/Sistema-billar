@@ -12,4 +12,12 @@ public static class Constantes
         public const string ClienteWeb = "ClienteWeb";
         public const string AllowOrigin = "AllowOrigin";
     }
+
+    public enum TipoUnidadMedida
+    {
+        Unidad = 1,
+        Peso = 2,
+        Volumen = 3,
+        Longitud = 4
+    }
 }

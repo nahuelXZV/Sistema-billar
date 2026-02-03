@@ -31,7 +31,7 @@ public class GetAlmacenByIdHandler : ICommandHandler<GetAlmacenByIdQuery, Respon
             .Where(p => p.Id == request.Id);
 
         var almacen = await query.FirstOrDefaultAsync();
-        if (almacen == null) throw new Exception("Usuario no encontrado.");
+        if (almacen == null) throw new Exception("Almacen no encontrado.");
 
         var almacenDTO = _mapper.Map<AlmacenDTO>(almacen);
         return new Response<AlmacenDTO>(almacenDTO);

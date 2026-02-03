@@ -1,0 +1,47 @@
+﻿@using Domain.DTOs.Security;
+@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+@using Domain.DTOs.Shared;
+
+@inherits Components.MainBaseComponent;
+
+<IUCard>
+	<Header>
+		<h4 class="">Datos de la unidad</h4>
+	</Header>
+
+	<Body>
+		<EditForm EditContext="_editContext">
+			<DataAnnotationsValidator />
+
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Nombre"
+								 Placeholder="Escriba el nombre..."
+								 @bind-Value="Unidad.Nombre"
+								 Required=true />
+					<ValidationMessage For=@(() => Unidad.Nombre) />
+				</div>
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Abreviatura"
+								 Placeholder="Escribe una abreviatura"
+								 @bind-Value="Unidad.Abreviatura"
+								 Required=true />
+					<ValidationMessage For="() => Unidad.Abreviatura" />
+				</div>
+				<div class="col-12 col-md-4">
+					<IUSelect TItem="SelectOptionDTO<int>"
+							  TValue="int"
+							  Label="Seleccionar Tipo"
+							  Placeholder="Seleccionar un tipo"
+							  Options="@ListaUnidades"
+							  GetText="@(c => c.Label)"
+							  GetValue="@(c => c.Value)"
+							  @bind-Value="Unidad.Tipo"
+							  Required="true" />
+					<ValidationMessage For="() => Unidad.Tipo" />
+				</div>
+			</div>
+		</EditForm>
+	</Body>
+</IUCard>
