@@ -18,6 +18,7 @@ public class AppServices : IAppServices
     private IAlmacenService _almacenService;
     private ICategoriaService _categoriaService;
     private IUnidadMedidaService _unidadMedidaService;
+    private IProductoService _productoService;
 
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
@@ -37,6 +38,7 @@ public class AppServices : IAppServices
     public IAlmacenService AlmacenService => _almacenService ??= _serviceProvider.GetService<IAlmacenService>();
     public ICategoriaService CategoriaService => _categoriaService ??= _serviceProvider.GetService<ICategoriaService>();
     public IUnidadMedidaService UnidadMedidaService => _unidadMedidaService ??= _serviceProvider.GetService<IUnidadMedidaService>();
+    public IProductoService ProductoService => _productoService ??= _serviceProvider.GetService<IProductoService>();
     #endregion
 
     #region CONFIGURACION

@@ -31,6 +31,7 @@ public static class DependencyInjectionExtensions
         services.AddValidatorsFromAssemblyContaining<CreateAlmacenDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateCategoriaDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateUnidadMedidaDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateProductoDTOValidartor>();
         //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         #endregion
 
@@ -45,6 +46,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IAlmacenService, AlmacenService>();
         services.AddScoped<ICategoriaService, CategoriaService>();
         services.AddScoped<IUnidadMedidaService, UnidadMedidaService>();
+        services.AddScoped<IProductoService, ProductoService>();
         #endregion
 
         return services;

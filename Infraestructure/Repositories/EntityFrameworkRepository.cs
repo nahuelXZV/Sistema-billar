@@ -27,6 +27,11 @@ public class EntityFrameworkRepository<EntityType> : IRepository<EntityType> whe
         await _context.Set<EntityType>().AddRangeAsync(entities);
     }
 
+    public void Attach(EntityType entity)
+    {
+        _context.Set<EntityType>().Attach(entity);
+    }
+
     public void Update(EntityType entity, bool updateRelations = false)
     {
         if (updateRelations)

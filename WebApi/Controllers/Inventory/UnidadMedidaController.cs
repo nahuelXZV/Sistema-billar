@@ -18,7 +18,13 @@ public class UnidadMedidaController : MainController
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] FilterDTO? filter)
     {
-        return Ok(await Mediator.Send(new GetUnidadesMedidasQuery() { Filter = filter }));
+        return Ok(await Mediator.Send(new GetUnidadesMedidasFilterQuery() { Filter = filter }));
+    }
+    
+    [HttpGet("GetAll")]
+    public async Task<IActionResult> Get()
+    {
+        return Ok(await Mediator.Send(new GetUnidadesMedidasQuery() { }));
     }
 
     [HttpGet("{idUnd}")]

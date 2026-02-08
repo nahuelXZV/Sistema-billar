@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using AutoMapper;
 using Domain.DTOs.Inventory;
 using Domain.DTOs.Security;
@@ -24,6 +25,9 @@ public class GeneralProfile : Profile
         CreateMap<Almacen, AlmacenDTO>();
         CreateMap<Categoria, CategoriaDTO>();
         CreateMap<UnidadMedida, UnidadMedidaDTO>();
+        CreateMap<Producto, ProductoDTO>();
+        CreateMap<ProductoCompuesto, ProductoCompuestoDTO>();
+
 
 
         #endregion
@@ -38,6 +42,8 @@ public class GeneralProfile : Profile
         CreateMap<AlmacenDTO, Almacen>();
         CreateMap<CategoriaDTO, Categoria>();
         CreateMap<UnidadMedidaDTO, UnidadMedida>();
+        CreateMap<ProductoCompuestoDTO, ProductoCompuesto>();
+        CreateMap<ProductoDTO, Producto>();
         #endregion
 
     }

@@ -13,4 +13,5 @@ public interface IAppServices
     public IAlmacenService AlmacenService { get; }
     public ICategoriaService CategoriaService { get; }
     public IUnidadMedidaService UnidadMedidaService { get; }
+    public IProductoService ProductoService { get; }
 }

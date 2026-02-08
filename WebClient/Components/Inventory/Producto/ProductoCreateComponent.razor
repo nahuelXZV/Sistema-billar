@@ -1,0 +1,197 @@
+﻿@using Domain.DTOs.Security;
+@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+@using Domain.DTOs.Inventory;
+
+@inherits Components.MainBaseComponent;
+<div class="d-flex flex-column flex-md-row gap-1">
+	<IUCard CustomClass="col-12 col-md-5">
+		<Header>
+			<h4 class="">Datos del producto</h4>
+		</Header>
+
+		<Body>
+			<EditForm EditContext="_editContext">
+				<DataAnnotationsValidator />
+
+				<div class="row">
+					<div class="col-12 col-md-4">
+						<label class="form-label fw-semibold">Imagen de la producto</label>
+
+						<div class="image-preview-container mb-2">
+							@if (!string.IsNullOrWhiteSpace(Producto.UrlImagen))
+							{
+								<img src="@Producto.UrlImagen"
+									 class="img-fluid rounded"
+									 alt="Imagen categoría"
+									 onerror="this.style.display='none'" />
+							}
+							else
+							{
+								<div class="image-placeholder">
+									<i class="bi bi-image"></i>
+									<span>Sin imagen</span>
+								</div>
+							}
+						</div>
+
+						<IUInputText Label="Url Imagen"
+									 Placeholder="https://ejemplo.com/imagen.png"
+									 @bind-Value="Producto.UrlImagen" />
+						<ValidationMessage For="@(() => Producto.UrlImagen)" />
+					</div>
+
+					@* Datos *@
+					<div class="col-12 col-md-8">
+						<div class="row">
+							<div class="col-12 col-md-12">
+								<IUInputText Label="Nombre"
+											 Placeholder="Escriba el nombre..."
+											 @bind-Value="Producto.Nombre"
+											 Required="true" />
+								<ValidationMessage For="@(() => Producto.Nombre)" />
+							</div>
+
+							<div class="col-12">
+								<IUTextArea Label="Descripción"
+											Placeholder="Escribe una descripción..."
+											@bind-Value="Producto.Descripcion" />
+								<ValidationMessage For="@(() => Producto.Descripcion)" />
+							</div>
+							<div class="col-12 col-md-12">
+								<IUInputText Label="Marca"
+											 Placeholder="Escriba la marca..."
+											 @bind-Value="Producto.Marca"
+											 Required="true" />
+								<ValidationMessage For="@(() => Producto.Marca)" />
+							</div>
+							<div class="col-12 col-md-6">
+								<IUSelectFilterComponent TItem="CategoriaDTO"
+														 TValue="long"
+														 Label="Categoría"
+														 Placeholder="Selecciona una categoría"
+														 Options="@ListadoCategorias"
+														 GetText="@(c => c.Nombre)"
+														 GetValue="@(c => c.Id)"
+														 @bind-Value="Producto.IdCategoria" />
+								<ValidationMessage For="@(() => Producto.IdCategoria)" />
+							</div>
+							<div class="col-12 col-md-6">
+								<IUSelectFilterComponent TItem="UnidadMedidaDTO"
+														 TValue="long"
+														 Label="Unidad de medida"
+														 Placeholder="Selecciona una unidad de medida"
+														 Options="@ListadoUnidadesMedidas"
+														 GetText="@(c => c.Nombre)"
+														 GetValue="@(c => c.Id)"
+														 @bind-Value="Producto.IdUnidadMedida" />
+								<ValidationMessage For="@(() => Producto.IdUnidadMedida)" />
+							</div>
+
+							<div class="col-12 col-md-6 ">
+								<label class="d-none d-md-block invisible mb-2">Activo</label>
+								<IUInputCheckbox Label="Activo" @bind-Value="Producto.Activo" />
+							</div>
+							<div class="col-12 col-md-6 ">
+								<label class="d-none d-md-block invisible mb-2">Es Compuesto</label>
+								<IUInputCheckbox Label="Compuesto" @bind-Value="Producto.EsCompuesto" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</EditForm>
+		</Body>
+	</IUCard>
+	<IUCard CustomClass="col-12 col-md-7">
+		<Header>
+			<h4 class="">Configuraciones</h4>
+		</Header>
+
+		<Body>
+			<div class="row">
+				<ul class="nav nav-tabs mb-4">
+					<li class="nav-item">
+						<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#compuesto">
+							Producto compuesto
+						</button>
+					</li>
+					<li class="nav-item">
+						<button class="nav-link " data-bs-toggle="tab" data-bs-target="#stock">
+							Stock
+						</button>
+					</li>
+				</ul>
+
+				<div class="tab-content">
+					<div class="tab-pane fade show active" id="compuesto">
+						@if (Producto.EsCompuesto)
+						{
+							<div class="row">
+								<div class="col-12 col-md-7">
+									<IUSelectFilterComponent TItem="ProductoDTO"
+															 TValue="long"
+															 Label="Producto"
+															 Placeholder="Selecciona un producto"
+															 Options="@ListadoProductos"
+															 GetText="@(c => c.Nombre)"
+															 GetValue="@(c => c.Id)"
+															 @bind-Value="ProdCompuesto.IdProductoComponente" />
+								</div>
+								<div class="col-12 col-md-3">
+									<IUInputNumeric Label="Cantidad"
+													Placeholder="0"
+													@bind-Value="ProdCompuesto.Cantidad" />
+								</div>
+
+								<div class="col-12 col-md-2">
+									<label class="d-none d-md-block invisible mb-2">Agregar</label>
+									<IUButton IconCss="bi bi-plus-lg"
+											  Text="Agregar"
+											  OnClick="AgregarComponente" />
+								</div>
+							</div>
+							@if (ListadoProdCompuesto.Count > 0)
+							{
+								<table class="table table-bordered mt-4">
+									<thead>
+										<tr>
+											<th>Producto</th>
+											<th>Cantidad</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach (var item in ListadoProdCompuesto)
+										{
+											<tr>
+												<td>@item.ProductoComponente?.Nombre</td>
+												<td>@item.Cantidad</td>
+												<td>
+													<button class="btn btn-danger btn-sm" @onclick="() => EliminarComponente(item.IdProductoComponente)">
+														<i class="bi bi-trash"></i> Eliminar
+													</button>
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							}
+							else
+							{
+								<p class="mt-3">No hay componentes agregados para este producto compuesto.</p>
+							}
+						}
+						else
+						{
+							<p>Marque el producto como compuesto para configurar sus componentes</p>
+						}
+					</div>
+					<div class="tab-pane fade" id="stock">
+						<p>Configuración de stock</p>
+					</div>
+				</div>
+			</div>
+
+		</Body>
+	</IUCard>
+</div>

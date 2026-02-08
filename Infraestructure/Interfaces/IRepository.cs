@@ -9,6 +9,7 @@ public interface IRepository<EntityType> where EntityType : Entity
     IUnitOfWork UnitOfWork { get; }
     Task<EntityType> AddAsync(EntityType entity);
     Task AddRangeAsync(IEnumerable<EntityType> entities);
+    public void Attach(EntityType entity);
     void Update(EntityType entity, bool updateRelations = false);
     void UpdateRange(IEnumerable<EntityType> entities, bool updateRelations = false);
     void Delete(EntityType entity, bool softDelete = true);

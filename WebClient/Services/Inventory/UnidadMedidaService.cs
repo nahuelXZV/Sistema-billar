@@ -29,6 +29,11 @@ public class UnidadMedidaService : AppBaseServices, IUnidadMedidaService
         var uri = AplicarFiltro(filter);
         return await GetAsync<ResponseFilterDTO<UnidadMedidaDTO>>(uri);
     }
+    public async Task<List<UnidadMedidaDTO>> GetAll()
+    {
+        var uri = "GetAll";
+        return await GetAsync<List<UnidadMedidaDTO>>(uri);
+    }
 
     public async Task<UnidadMedidaDTO> GetById(long id)
     {

@@ -10,4 +10,5 @@ public interface IUnidadMedidaService
     Task<bool> Delete(long id);
     Task<UnidadMedidaDTO> GetById(long id);
     Task<ResponseFilterDTO<UnidadMedidaDTO>> GetAll(FilterDTO? filter);
+    Task<List<UnidadMedidaDTO>> GetAll();
 }

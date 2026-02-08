@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using WebClient.Common.Validation;
 
 namespace WebClient.Components.Inventory.Categoria;
 
@@ -12,10 +13,12 @@ public partial class CategoriaCreateComponent
     [Parameter] public CategoriaDTO Categoria { get; set; } = new();
     [Parameter] public EventCallback OnCategoriaCreated { get; set; }
     private EditContext? _editContext { get; set; }
+    private FluentValidationValidator<CategoriaDTO> _fvValidator;
 
     protected override void OnInitialized()
     {
         _editContext = new EditContext(Categoria);
+        _fvValidator = new FluentValidationValidator<CategoriaDTO>(_editContext, Validator);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

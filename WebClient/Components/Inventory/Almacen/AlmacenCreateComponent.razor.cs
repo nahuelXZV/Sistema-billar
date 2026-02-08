@@ -14,10 +14,12 @@ public partial class AlmacenCreateComponent
     [Parameter] public AlmacenDTO Almacen { get; set; }
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<AlmacenCreateComponent>? _objectHelper;
+    private FluentValidationValidator<AlmacenDTO> _fvValidator;
 
     protected override void OnInitialized()
     {
         _editContext = new EditContext(Almacen);
+        _fvValidator = new FluentValidationValidator<AlmacenDTO>(_editContext, Validator);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

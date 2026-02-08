@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using WebClient.Configs;
 using Domain.DTOs.Shared;
+using WebClient.Common.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebClient.Components.Inventory.UnidadMedida;
 
@@ -16,11 +18,14 @@ public partial class UnidadMedidaCreateComponent
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<UnidadMedidaCreateComponent>? _objectHelper;
     private List<SelectOptionDTO<int>> ListaUnidades { get; set; }
+    private FluentValidationValidator<UnidadMedidaDTO> _fvValidator;
 
     protected override void OnInitialized()
     {
         _editContext = new EditContext(Unidad);
+        _fvValidator = new FluentValidationValidator<UnidadMedidaDTO>(_editContext, Validator);
         ListaUnidades = new List<SelectOptionDTO<int>>()
+
         {
             new SelectOptionDTO<int>() { Value = (int)Domain.Constants.Constantes.TipoUnidadMedida.Unidad, Label = "Unidad" },
             new SelectOptionDTO<int>() { Value = (int)Domain.Constants.Constantes.TipoUnidadMedida.Peso, Label = "Peso" },

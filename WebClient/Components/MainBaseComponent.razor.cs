@@ -62,7 +62,7 @@ public partial class MainBaseComponent : ComponentBase
 
         if (ex != null)
         {
-            string clientDetails = "";
+            //string clientDetails = "";
             string diagnosticDetails = "";
 
             string details =

@@ -24,7 +24,7 @@ public class DeleteCategoriaHandler : ICommandHandler<DeleteCategoriaCommand, Re
         var categoria = await _repository.GetByIdAsync(request.CategoriaId);
         if (categoria == null) throw new ArgumentException("La categoria no existe.");
 
-        _repository.Update(categoria);
+        _repository.Attach(categoria);
         categoria.Eliminado = true;
 
         await _repository.UnitOfWork.SaveEntitiesAsync(cancellationToken);

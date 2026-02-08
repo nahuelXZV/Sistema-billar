@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Validators.Inventory;
+using FluentValidation;
 
 namespace Application.Features.Inventory.UnidadesMedidas.Commands.Validators;
 
-public class CreateUnidadMedidaValidator
+public class CreateUnidadMedidaValidator : AbstractValidator<CreateUnidadMedidaCommand>
 {
+    public CreateUnidadMedidaValidator()
+    {
+        RuleFor(command => command.UnidadMedidaDTO)
+            .SetValidator(new CreateUnidadMedidaDTOValidator());
+    }
 }
+
