@@ -11,9 +11,10 @@
 			  class="@TextAreaClass"
 			  placeholder="@Placeholder"
 			  rows="@Rows"
-			  @onchange="OnChange"
+			  value="@Value"
+			  @oninput="OnInput"
 			  required="@Required"
-			  readonly="@Readonly">@Value</textarea>
+			  readonly="@Readonly"></textarea>
 </div>
 
 @code {
@@ -29,9 +30,19 @@
 	[Parameter] public string Value { get; set; }
 	[Parameter] public EventCallback<string> ValueChanged { get; set; }
 
-	private async Task OnChange(ChangeEventArgs e)
+	// private async Task OnChange(ChangeEventArgs e)
+	// {
+	// 	var newValue = e.Value?.ToString();
+	// 	if (newValue != Value)
+	// 	{
+	// 		Value = newValue;
+	// 		await ValueChanged.InvokeAsync(Value);
+	// 	}
+	// }
+	private async Task OnInput(ChangeEventArgs e)
 	{
-		var newValue = e.Value?.ToString();
+		var newValue = e.Value?.ToString() ?? string.Empty;
+
 		if (newValue != Value)
 		{
 			Value = newValue;

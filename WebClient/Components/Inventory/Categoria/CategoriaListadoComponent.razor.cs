@@ -12,6 +12,7 @@ public partial class CategoriaListadoComponent
     public CategoriaDTO CategoriaSelected { get; set; } = new();
     private DotNetObjectReference<CategoriaListadoComponent>? _objectHelper;
     public List<CategoriaDTO> ListaCategoriasSinNivel { get; set; } = new();
+    public CategoriaCreateComponent categoriaCreateComponent { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -36,15 +37,20 @@ public partial class CategoriaListadoComponent
 
     public void CategoriaSeleccionado(CategoriaDTO categoria)
     {
-        CategoriaSelected = categoria;
-        Console.WriteLine($"Categoría seleccionada: {categoria.Nombre}");
+        CategoriaSelected.IdCategoriaPadre = categoria.IdCategoriaPadre;
+        CategoriaSelected.Activo = categoria.Activo;
+        CategoriaSelected.Descripcion = categoria.Descripcion;
+        CategoriaSelected.ImagenUrl = categoria.ImagenUrl;
+        CategoriaSelected.Nombre = categoria.Nombre;
+        CategoriaSelected.OrdenVisual = categoria.OrdenVisual;
+        CategoriaSelected.Id = categoria.Id;
     }
 
     [JSInvokable]
-    public void Crear()
+    public async Task Crear()
     {
-        CategoriaSelected = new();
-        StateHasChanged();
+        if (categoriaCreateComponent != null) await categoriaCreateComponent.Refresh();
+        await InvokeAsync(StateHasChanged);
     }
 
     public async Task Refresh()

@@ -31,9 +31,9 @@ public partial class CategoriaCreateComponent
         if (_editContext?.Validate() ?? false) await Guardar();
     }
 
-    private async Task Refresh()
+    public async Task Refresh()
     {
-        Categoria = new CategoriaDTO();
+        ResetCategoria();
         ListaCategorias = await AppServices.CategoriaService.GetAllSinNivel();
         StateHasChanged();
     }
@@ -51,7 +51,7 @@ public partial class CategoriaCreateComponent
                 var respuesta = await AppServices.CategoriaService.Create(Categoria);
             }
 
-            await Refresh();
+            //await Refresh();
             await ShowSuccessMessage("Categoria guardado correctamente");
             await OnCategoriaCreated.InvokeAsync();
         }
@@ -61,4 +61,33 @@ public partial class CategoriaCreateComponent
         }
 
     }
+
+    private async Task Eliminar()
+    {
+        try
+        {
+            if (Categoria.Id == 0) return;
+            await AppServices.CategoriaService.Delete(Categoria.Id);
+            //await ();
+            await ShowSuccessMessage("Categoria eliminado correctamente");
+            await OnCategoriaCreated.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorMessage(ex.Message);
+        }
+
+    }
+
+    private void ResetCategoria()
+    {
+        Categoria.Id = 0;
+        Categoria.Nombre = string.Empty;
+        Categoria.Descripcion = string.Empty;
+        Categoria.ImagenUrl = string.Empty;
+        Categoria.IdCategoriaPadre = null;
+        Categoria.OrdenVisual = 0;
+        Categoria.Activo = true;
+    }
+
 }

@@ -65,8 +65,13 @@
 		if (Value is null || Options is null)
 		{
 			DisplayText = string.Empty;
+			SearchText = string.Empty;
+			IsOpen = false;
 			return;
 		}
+
+		if (Options is null)
+			return;
 
 		var selectedItem = Options.FirstOrDefault(o =>
 			EqualityComparer<TValue?>.Default.Equals(GetValue(o), Value));

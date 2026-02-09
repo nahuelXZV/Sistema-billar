@@ -86,10 +86,18 @@
 				</div>
 
 				@* Acciones *@
-				<div class="col-12 text-end">
+				<div class="col-12 d-flex gap-2 flex-row-reverse">
 					<IUButton IconCss="bi bi-floppy-fill"
 							  Text="Guardar"
 							  OnClick="() => Validar()" />
+
+					@if (Categoria.Id != 0)
+					{
+						<IUButton CssClass="btn btn-danger btn-sm px-3 py-1"
+								  IconCss="bi bi-trash-fill"
+								  Text="Eliminar"
+								  OnClick="() => Eliminar()" />
+					}
 				</div>
 
 			</div>
