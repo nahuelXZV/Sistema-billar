@@ -52,7 +52,23 @@
 					name: 'Imagen',
 					formatter: (cell) => gridjs.html(`<img src="${cell}" alt="Imagen del producto" style="width: 75px; height: 75px; object-fit: cover;">`)
 				},
-				'Nombre', "Descripcion", "Marca", "Categoria", "Unidad Medida",
+				'Nombre', "Descripcion",
+				{
+					name: "Tipo",
+					formatter: (cell) => {
+					  const tipos = {
+						1: 'Producto',
+						2: 'Servicio',
+					  };
+					  const colores = {
+						  1: 'primary',
+						  2: 'success',
+					  };
+					  return gridjs.html(
+						`<span class="badge bg-${colores[cell]}">${tipos[cell] ?? 'N/A'}</span>`
+					  );
+					}
+				},"Marca", "Categoria", "Unidad Medida",
 				{
 					name: 'Acciones',
 					formatter: (cell, row) => gridjs.html(this.menuTableHandler(row._cells[0].data))
@@ -61,7 +77,7 @@
 			server: {
 			  url: urlWeb + "Producto/GetAll",
 			  then: data => data.data.map(producto => [
-				producto.id, producto.urlImagen ,producto.nombre, producto.descripcion, producto.marca, producto.categoria.nombre, producto.unidadMedida.nombre
+				producto.id, producto.urlImagen ,producto.nombre, producto.descripcion,producto.tipo , producto.marca,producto.categoria.nombre, producto.unidadMedida.nombre
 			  ]),
 			  total: data => data.total
 			},

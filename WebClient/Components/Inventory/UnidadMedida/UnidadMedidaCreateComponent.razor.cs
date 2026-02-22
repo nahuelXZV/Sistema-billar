@@ -31,6 +31,7 @@ public partial class UnidadMedidaCreateComponent
             new SelectOptionDTO<int>() { Value = (int)Domain.Constants.Constantes.TipoUnidadMedida.Peso, Label = "Peso" },
             new SelectOptionDTO<int>() { Value = (int)Domain.Constants.Constantes.TipoUnidadMedida.Volumen, Label = "Volumen" },
             new SelectOptionDTO<int>() { Value = (int)Domain.Constants.Constantes.TipoUnidadMedida.Longitud, Label = "Longitud" },
+            new SelectOptionDTO<int>() { Value = (int)Domain.Constants.Constantes.TipoUnidadMedida.Tiempo, Label = "Tiempo" },
         };
     }
 

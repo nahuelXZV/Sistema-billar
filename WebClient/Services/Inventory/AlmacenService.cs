@@ -30,6 +30,12 @@ public class AlmacenService : AppBaseServices, IAlmacenService
         return await GetAsync<ResponseFilterDTO<AlmacenDTO>>(uri);
     }
 
+    public async Task<List<AlmacenDTO>> GetAll()
+    {
+        var uri = "GetAll";
+        return await GetAsync<List<AlmacenDTO>>(uri);
+    }
+
     public async Task<AlmacenDTO> GetById(long id)
     {
         var uri = $"{id}";

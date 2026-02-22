@@ -1,0 +1,42 @@
+﻿@if (Visible)
+{
+    <div class="iu-modal-backdrop">
+        <div class="iu-modal">
+
+            <div class="iu-modal-header">
+                <h5>@Title</h5>
+                <button class="iu-btn-close" @onclick="Cerrar">✕</button>
+            </div>
+
+            <div class="iu-modal-body">
+                @Body
+            </div>
+
+            @if (Footer != null)
+            {
+                <div class="iu-modal-footer">
+                    @Footer
+                </div>
+            }
+
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter] public string Title { get; set; } = "Modal";
+
+    [Parameter] public RenderFragment? Body { get; set; }
+
+    [Parameter] public RenderFragment? Footer { get; set; }
+
+    [Parameter] public bool Visible { get; set; }
+
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+
+    private async Task Cerrar()
+    {
+        await VisibleChanged.InvokeAsync(false);
+    }
+}

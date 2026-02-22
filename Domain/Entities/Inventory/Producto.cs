@@ -14,6 +14,7 @@ public class Producto : Entity
     public bool EsCompuesto { get; set; }
     public long IdCategoria { get; set; }
     public long IdUnidadMedida { get; set; }
+    public short Tipo { get; set; }
 
     [NotMapped]
     public Categoria? Categoria { get; set; }

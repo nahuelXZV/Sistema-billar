@@ -5,6 +5,7 @@ using WebClient.Extensions;
 using WebClient.Models.Inventory;
 using WebClient.Models;
 using WebClient.Services;
+using Domain.Constants;
 
 namespace WebClient.Controllers.Inventory;
 
@@ -55,6 +56,11 @@ public class ProductoController : MainController
         model.ListadoUnidadesMedidas = await _appServices.UnidadMedidaService.GetAll();
         model.ListaProductos = await _appServices.ProductoService.GetAll();
         model.ListaProductos = model.ListaProductos.Where(p => p.Id != id).ToList();
+        model.ListaTipoProducto = new List<SelectOptionDTO<short>>()
+        {
+            new SelectOptionDTO<short>() { Value = (short)Constantes.TipoProducto.Producto, Label = "Producto" },
+            new SelectOptionDTO<short>() { Value = (short)Constantes.TipoProducto.Servicio, Label = "Servicio" },
+        };
 
         if (id != 0)
             model.Producto = await _appServices.ProductoService.GetById(id);

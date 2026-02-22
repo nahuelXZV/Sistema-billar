@@ -14,4 +14,8 @@ public interface IAppServices
     public ICategoriaService CategoriaService { get; }
     public IUnidadMedidaService UnidadMedidaService { get; }
     public IProductoService ProductoService { get; }
+    public IInventarioService InventarioService { get; }
+    public ITransaccionInventarioService TransaccionInventarioService { get; }
+    public IListaPreciosService ListaPreciosService { get; }
+    public ILoteService LoteService { get; }
 }

@@ -27,8 +27,12 @@ public class GeneralProfile : Profile
         CreateMap<UnidadMedida, UnidadMedidaDTO>();
         CreateMap<Producto, ProductoDTO>();
         CreateMap<ProductoCompuesto, ProductoCompuestoDTO>();
-
-
+        CreateMap<Inventario, InventarioDTO>();
+        CreateMap<Lote, LoteDTO>();
+        CreateMap<TransaccionInventario, TransaccionInventarioDTO>();
+        CreateMap<TransaccionInventarioDetalle, TransaccionInventarioDetalleDTO>();
+        CreateMap<ListaPrecios, ListaPrecioDTO>();
+        CreateMap<ListaPreciosDetalle, ListaPrecioDetalleDTO>();
 
         #endregion
 
@@ -44,6 +48,12 @@ public class GeneralProfile : Profile
         CreateMap<UnidadMedidaDTO, UnidadMedida>();
         CreateMap<ProductoCompuestoDTO, ProductoCompuesto>();
         CreateMap<ProductoDTO, Producto>();
+        CreateMap<InventarioDTO, Inventario>();
+        CreateMap<LoteDTO, Lote>();
+        CreateMap<TransaccionInventarioDTO, TransaccionInventario>();
+        CreateMap<TransaccionInventarioDetalleDTO, TransaccionInventarioDetalle>();
+        CreateMap<ListaPrecioDTO, ListaPrecios>();
+        CreateMap<ListaPrecioDetalleDTO, ListaPreciosDetalle>();
         #endregion
 
     }

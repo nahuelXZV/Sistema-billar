@@ -18,7 +18,13 @@ public class AlmacenController : MainController
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] FilterDTO? filter)
     {
-        return Ok(await Mediator.Send(new GetAlmacenesQuery() { Filter = filter }));
+        return Ok(await Mediator.Send(new GetAlmacenesFilterQuery() { Filter = filter }));
+    }
+
+    [HttpGet("GetAll")]
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await Mediator.Send(new GetAlmacenesQuery() { }));
     }
 
     [HttpGet("{idAlm}")]

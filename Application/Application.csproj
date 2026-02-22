@@ -22,6 +22,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Features\Inventory\Inventarios\Commands\Validators\" />
+	  <Folder Include="Features\Inventory\ListaPrecio\Commands\Validators\" />
+	  <Folder Include="Features\Inventory\Lotes\Commands\Validators\" />
+	  <Folder Include="Features\Inventory\TransaccionInventarios\Command\Validators\" />
 	  <Folder Include="Features\Security\Auth\Queries\" />
 	  <Folder Include="Features\Security\Modulos\Commands\" />
 	</ItemGroup>

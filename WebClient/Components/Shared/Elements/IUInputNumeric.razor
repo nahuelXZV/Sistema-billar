@@ -1,4 +1,5 @@
 ﻿@typeparam TValue
+@inherits InputBase<TValue>
 
 <div class="mb-3">
 	<label for="@Id" class="form-label">
@@ -13,36 +14,32 @@
 		   id="@Id"
 		   class="@InputClass"
 		   placeholder="@Placeholder"
-		   value="@BindConverter.FormatValue(Value)"
-		   @onchange="OnChange"
-		   required="@Required"
+		   @bind="CurrentValueAsString"
+		   @bind:event="oninput"
 		   readonly="@Readonly" />
 </div>
 
 @code {
+
 	[Parameter] public string Label { get; set; } = "Label";
 	[Parameter] public string Placeholder { get; set; } = "";
 	[Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
 	[Parameter] public string InputClass { get; set; } = "form-control";
+	[Parameter] public bool Required { get; set; }
+	[Parameter] public bool Readonly { get; set; }
 
-	[Parameter] public bool Required { get; set; } = false;
-	[Parameter] public bool Readonly { get; set; } = false;
-
-	[Parameter] public TValue Value { get; set; } = default!;
-	[Parameter] public EventCallback<TValue> ValueChanged { get; set; }
-
-	private async Task OnChange(ChangeEventArgs e)
+	protected override bool TryParseValueFromString(string? value, out TValue result, out string validationErrorMessage)
 	{
 		if (BindConverter.TryConvertTo<TValue>(
-				e?.Value?.ToString(),
-				System.Globalization.CultureInfo.InvariantCulture,
-				out var newValue))
+			value,
+			System.Globalization.CultureInfo.InvariantCulture,
+			out result))
 		{
-			if (!EqualityComparer<TValue>.Default.Equals(Value, newValue))
-			{
-				Value = newValue;
-				await ValueChanged.InvokeAsync(newValue);
-			}
+			validationErrorMessage = null!;
+			return true;
 		}
+
+		validationErrorMessage = "Valor inválido";
+		return false;
 	}
 }

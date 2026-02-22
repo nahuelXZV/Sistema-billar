@@ -23,7 +23,9 @@ public class CreateProductoDTOValidartor : AbstractValidator<ProductoDTO>
 
         RuleFor(p => p.Marca)
             .MaximumLength(100).WithMessage("{PropertyName} no debe exceder los 100 caracteres.");
-
+        
+        RuleFor(p => (int)p.Tipo)
+            .NotEqual(0).WithMessage("{PropertyName} es requerido.");
     }
 }
 

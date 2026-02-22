@@ -9,8 +9,6 @@
 			<span class="text-danger">*</span>
 		}
 	</label>
-
-	<!-- Input -->
 	<input type="text"
 		   class="form-control"
 		   placeholder="@Placeholder"
@@ -19,8 +17,6 @@
 		   @onfocus="ShowDropdown"
 		   @onblur="HideDropdownDelayed"
 		   autocomplete="off" />
-
-	<!-- Dropdown -->
 	@if (IsOpen && FilteredOptions.Any())
 	{
 		<ul class="list-group position-absolute w-100 z-3 shadow-sm">
@@ -51,13 +47,9 @@
 	private string DisplayText { get; set; } = string.Empty;
 	private bool IsOpen { get; set; }
 
-	private IEnumerable<TItem> FilteredOptions =>
-		string.IsNullOrWhiteSpace(SearchText)
+	private IEnumerable<TItem> FilteredOptions => string.IsNullOrWhiteSpace(SearchText)
 			? Options.Take(10)
-			: Options
-				.Where(o =>
-					!string.IsNullOrEmpty(GetText(o)) &&
-					GetText(o)!.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+			: Options.Where(o => !string.IsNullOrEmpty(GetText(o)) && GetText(o)!.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
 				.Take(10);
 
 	protected override void OnParametersSet()

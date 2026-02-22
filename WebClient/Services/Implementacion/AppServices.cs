@@ -19,6 +19,10 @@ public class AppServices : IAppServices
     private ICategoriaService _categoriaService;
     private IUnidadMedidaService _unidadMedidaService;
     private IProductoService _productoService;
+    private IInventarioService _inventarioService;
+    private ITransaccionInventarioService _transaccionInventarioService;
+    private IListaPreciosService _listaPrecioService;
+    private ILoteService _loteService;
 
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
@@ -39,6 +43,10 @@ public class AppServices : IAppServices
     public ICategoriaService CategoriaService => _categoriaService ??= _serviceProvider.GetService<ICategoriaService>();
     public IUnidadMedidaService UnidadMedidaService => _unidadMedidaService ??= _serviceProvider.GetService<IUnidadMedidaService>();
     public IProductoService ProductoService => _productoService ??= _serviceProvider.GetService<IProductoService>();
+    public IInventarioService InventarioService => _inventarioService ??= _serviceProvider.GetService<IInventarioService>();
+    public ITransaccionInventarioService TransaccionInventarioService => _transaccionInventarioService ??= _serviceProvider.GetService<ITransaccionInventarioService>();
+    public IListaPreciosService ListaPreciosService => _listaPrecioService ??= _serviceProvider.GetService<IListaPreciosService>();
+    public ILoteService LoteService => _loteService ??= _serviceProvider.GetService<ILoteService>();
     #endregion
 
     #region CONFIGURACION

@@ -14,8 +14,9 @@ public class ProductoDTO
     public bool EsCompuesto { get; set; }
     public long IdCategoria { get; set; }
     public long IdUnidadMedida { get; set; }
-
+    public short Tipo { get; set; }
     public Categoria? Categoria { get; set; }
     public UnidadMedida? UnidadMedida { get; set; }
     public List<ProductoCompuestoDTO>? ProductosCompuestos { get; set; }
+    public List<LoteDTO>? ListadoLotes { get; set; }
 }

@@ -1,0 +1,37 @@
+﻿@using Domain.DTOs.Security;
+@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+@using Domain.DTOs.Inventory;
+
+@inherits Components.MainBaseComponent;
+
+
+<div class="d-flex flex-column flex-md-row gap-1">
+	<EditForm EditContext="_editContext">
+		<DataAnnotationsValidator />
+		<div class="row">
+			<div class="col-12">
+				<IUInputText Label="Codigo"
+							 Placeholder="Escriba el Codigo del lote..."
+							 @bind-Value="Lote.Codigo"
+							 Required=true />
+				<ValidationMessage For=@(() => Lote.Codigo) />
+			</div>
+			<div class="col-12">
+				<IUInputDate Label="Fecha Fabricacion"
+							 @bind-Value="Lote.FechaFabricacion"
+							 Required=true />
+				<ValidationMessage For=@(() => Lote.FechaFabricacion) />
+			</div>
+			<div class="col-12">
+				<IUInputDate Label="Fecha Vencimiento"
+							 @bind-Value="Lote.FechaVencimiento"
+							 Required=true />
+				<ValidationMessage For=@(() => Lote.FechaVencimiento) />
+			</div>
+
+			<div class="col-12">
+			</div>
+		</div>
+	</EditForm>
+</div>

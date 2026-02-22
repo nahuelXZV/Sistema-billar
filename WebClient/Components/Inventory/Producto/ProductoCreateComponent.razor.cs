@@ -1,7 +1,8 @@
 ﻿using Domain.DTOs.Inventory;
+using Domain.DTOs.Shared;
 using FluentValidation;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using WebClient.Common.Validation;
 
@@ -15,6 +16,7 @@ public partial class ProductoCreateComponent
     [Parameter] public List<CategoriaDTO> ListadoCategorias { get; set; } = new();
     [Parameter] public List<UnidadMedidaDTO> ListadoUnidadesMedidas { get; set; } = new();
     [Parameter] public List<ProductoDTO> ListadoProductos { get; set; } = new();
+    [Parameter] public List<SelectOptionDTO<short>> ListaTiposProductos { get; set; } = new();
     public ProductoCompuestoDTO ProdCompuesto { get; set; } = new();
     public List<ProductoCompuestoDTO> ListadoProdCompuesto { get; set; } = new();
     private FluentValidationValidator<ProductoDTO> _fvValidator;

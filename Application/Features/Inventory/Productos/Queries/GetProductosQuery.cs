@@ -27,6 +27,14 @@ public class GetProductosQueryHandler : ICommandHandler<GetProductosQuery, Respo
     {
         var listaProductos = await _repository.Query().Where(p => !p.Eliminado).ToListAsync(cancellationToken);
         var listaProductosDtos = _mapper.Map<List<ProductoDTO>>(listaProductos);
+
+        var lotes = await _repository.Query<Lote>().Where(l => !l.Eliminado).ToListAsync(cancellationToken);
+        var lotesDtos = _mapper.Map<List<LoteDTO>>(lotes);
+        foreach (var productoDto in listaProductosDtos)
+        {
+            productoDto.ListadoLotes = lotesDtos.Where(l => l.IdProducto == productoDto.Id).ToList();
+        }
+
         return new Response<List<ProductoDTO>>(listaProductosDtos);
     }
 }

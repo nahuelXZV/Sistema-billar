@@ -18,6 +18,20 @@ public static class Constantes
         Unidad = 1,
         Peso = 2,
         Volumen = 3,
-        Longitud = 4
+        Longitud = 4,
+        Tiempo = 5
+    }
+
+    public enum TipoTransaccionInventario
+    {
+        Ingreso = 1,
+        Salida = 2,
+        Merma = 3,
+    }
+
+    public enum TipoProducto
+    {
+        Producto = 1,
+        Servicio = 2
     }
 }

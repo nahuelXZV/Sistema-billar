@@ -2,6 +2,7 @@
 @using WebClient.Components
 @using WebClient.Components.Shared.Elements
 @using Domain.DTOs.Inventory;
+@using Domain.DTOs.Shared;
 
 @inherits Components.MainBaseComponent;
 <div class="d-flex flex-column flex-md-row gap-1">
@@ -66,6 +67,17 @@
 								<ValidationMessage For="@(() => Producto.Marca)" />
 							</div>
 							<div class="col-12 col-md-6">
+								<IUSelectFilterComponent TItem="SelectOptionDTO<short>"
+														 TValue="short"
+														 Label="Tipo producto"
+														 Placeholder="Seleccionar un tipo producto"
+														 Options="@ListaTiposProductos"
+														 GetText="@(c => c.Label)"
+														 GetValue="@(c => c.Value)"
+														 @bind-Value="Producto.Tipo" />
+								<ValidationMessage For="@(() => Producto.Tipo)" />
+							</div>
+							<div class="col-12 col-md-6">
 								<IUSelectFilterComponent TItem="CategoriaDTO"
 														 TValue="long"
 														 Label="Categoría"
@@ -91,9 +103,6 @@
 							<div class="col-12 col-md-6 ">
 								<label class="d-none d-md-block invisible mb-2">Activo</label>
 								<IUInputCheckbox Label="Activo" @bind-Value="Producto.Activo" />
-							</div>
-							<div class="col-12 col-md-6 ">
-								<label class="d-none d-md-block invisible mb-2">Es Compuesto</label>
 								<IUInputCheckbox Label="Compuesto" @bind-Value="Producto.EsCompuesto" />
 							</div>
 						</div>
@@ -138,9 +147,13 @@
 															 @bind-Value="ProdCompuesto.IdProductoComponente" />
 								</div>
 								<div class="col-12 col-md-3">
-									<IUInputNumeric Label="Cantidad"
-													Placeholder="0"
-													@bind-Value="ProdCompuesto.Cantidad" />
+									<div class="mb-3">
+										<label class="form-label">Cantidad</label>
+										<input type="number"
+											   class="form-control"
+											   placeholder="0"
+											   @bind-value="ProdCompuesto.Cantidad" />
+									</div>
 								</div>
 
 								<div class="col-12 col-md-2">

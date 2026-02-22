@@ -55,13 +55,15 @@
 						1: 'Unidad',
 						2: 'Peso',
 						3: 'Volumen',
-						4: 'Longitud'
+						4: 'Longitud',
+						5: 'Tiempo',
 					  };
 					  const colores = {
 						  1: 'primary',
 						  2: 'warning',
 						  3: 'success',
-						  4: 'secondary'
+						  4: 'secondary',
+						  5: 'info'
 					  };
 					  return gridjs.html(
 						`<span class="badge bg-${colores[cell]}">${tipos[cell] ?? 'N/A'}</span>`

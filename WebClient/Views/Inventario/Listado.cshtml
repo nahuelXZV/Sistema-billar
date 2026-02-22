@@ -1,0 +1,49 @@
+﻿@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Inventory
+@model InventarioViewModel
+
+@{
+	ViewData["Title"] = "Stock";
+	ViewData["Module"] = "Stock";
+	ViewData["Action"] = "Listado";
+
+	Model.ListaItemsMenu = new List<ItemMenu>
+	{
+	};
+}
+
+@section ActionBar {
+	<div class="card card-outline card-primary action-bar">
+		<div class="card-body py-2">
+			<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+				<!-- ZONA IZQUIERDA -->
+				
+				<!-- ZONA DERECHA -->
+				<div class="action-bar-right d-flex gap-2">
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<div class="card card-outline card-secondary">
+	<div class="card-body p-3">
+		<div id="table-wrapper"></div>
+	</div>
+</div>
+@section Scripts {
+	<script>
+		new gridjs.Grid({
+			columns: ['Id','Producto','Lote','Almacen','Cantidad'],
+			server: {
+			  url: urlWeb + "Inventario/GetAll",
+			  then: data => data.data.map(inventario => [
+				inventario.id, inventario.producto.nombre ,inventario.lote.codigo, inventario.almacen.nombre, inventario.cantidad
+			  ]),
+			  total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById("table-wrapper"));
+	</script>
+}

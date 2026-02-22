@@ -22,7 +22,6 @@ public class ProductoController : MainController
         return Ok(await Mediator.Send(new GetProductosFilterQuery() { Filter = filter }));
     }
 
-    //GetProductosQuery
 
     [HttpGet("GetAll")]
     public async Task<IActionResult> Get()
