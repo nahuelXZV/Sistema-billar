@@ -1,4 +1,5 @@
 
+using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Security;
 
@@ -23,6 +24,7 @@ public class AppServices : IAppServices
     private ITransaccionInventarioService _transaccionInventarioService;
     private IListaPreciosService _listaPrecioService;
     private ILoteService _loteService;
+    private ITipoMesaService _tipoMesaService;
 
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
@@ -47,6 +49,7 @@ public class AppServices : IAppServices
     public ITransaccionInventarioService TransaccionInventarioService => _transaccionInventarioService ??= _serviceProvider.GetService<ITransaccionInventarioService>();
     public IListaPreciosService ListaPreciosService => _listaPrecioService ??= _serviceProvider.GetService<IListaPreciosService>();
     public ILoteService LoteService => _loteService ??= _serviceProvider.GetService<ILoteService>();
+    public ITipoMesaService TipoMesaService => _tipoMesaService ??= _serviceProvider.GetService<ITipoMesaService>();
     #endregion
 
     #region CONFIGURACION

@@ -1,8 +1,10 @@
 using System.Net.Http.Headers;
 using AutoMapper;
+using Domain.DTOs.Configuration;
 using Domain.DTOs.Inventory;
 using Domain.DTOs.Security;
 using Domain.DTOs.Security.Request;
+using Domain.Entities.Configuration;
 using Domain.Entities.Inventory;
 using Domain.Entities.Security;
 
@@ -34,6 +36,10 @@ public class GeneralProfile : Profile
         CreateMap<ListaPrecios, ListaPrecioDTO>();
         CreateMap<ListaPreciosDetalle, ListaPrecioDetalleDTO>();
 
+        CreateMap<Mesa, MesaDTO>();
+        CreateMap<TipoMesa, TipoMesaDTO>();
+
+
         #endregion
 
         #region  DTO To Entity
@@ -54,6 +60,9 @@ public class GeneralProfile : Profile
         CreateMap<TransaccionInventarioDetalleDTO, TransaccionInventarioDetalle>();
         CreateMap<ListaPrecioDTO, ListaPrecios>();
         CreateMap<ListaPrecioDetalleDTO, ListaPreciosDetalle>();
+
+        CreateMap<MesaDTO, Mesa>();
+        CreateMap<TipoMesaDTO, TipoMesa>();
         #endregion
 
     }

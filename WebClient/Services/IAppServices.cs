@@ -1,3 +1,4 @@
+using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Security;
 
@@ -18,4 +19,6 @@ public interface IAppServices
     public ITransaccionInventarioService TransaccionInventarioService { get; }
     public IListaPreciosService ListaPreciosService { get; }
     public ILoteService LoteService { get; }
+
+    public ITipoMesaService TipoMesaService { get; }
 }

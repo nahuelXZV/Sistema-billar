@@ -22,6 +22,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Features\Configuration\Mesas\Commands\Validators\" />
+	  <Folder Include="Features\Configuration\TipoMesas\Commands\Validators\" />
 	  <Folder Include="Features\Inventory\Inventarios\Commands\Validators\" />
 	  <Folder Include="Features\Inventory\ListaPrecio\Commands\Validators\" />
 	  <Folder Include="Features\Inventory\Lotes\Commands\Validators\" />

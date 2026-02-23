@@ -11,6 +11,9 @@ using Domain.Validators.Security;
 using Domain.Interfaces.Services.Inventory;
 using WebClient.Services.Inventory;
 using Domain.Validators.Inventory;
+using Domain.Interfaces.Services.Configuration;
+using WebClient.Services.Configuration;
+using Domain.Validators.Configuration;
 
 namespace WebClient.Extensions;
 
@@ -35,6 +38,7 @@ public static class DependencyInjectionExtensions
         services.AddValidatorsFromAssemblyContaining<CreateListaPreciosDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateTransaccionInventarioDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateLoteDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateTipoMesaDTOValidator>();
         //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());CreateTransaccionInventarioDTOValidator
         #endregion
 
@@ -54,6 +58,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITransaccionInventarioService, TransaccionInventarioService>();
         services.AddScoped<IListaPreciosService, ListaPreciosService>();
         services.AddScoped<ILoteService, LoteService>();
+        services.AddScoped<ITipoMesaService, TipoMesaService>();
         #endregion
 
         return services;
