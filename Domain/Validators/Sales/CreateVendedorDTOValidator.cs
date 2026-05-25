@@ -20,6 +20,15 @@ public class CreateVendedorDTOValidator : AbstractValidator<VendedorDTO>
         RuleFor(p => p.IdUsuario)
             .GreaterThan(0)
             .When(p => p.IdUsuario.HasValue)
-            .WithMessage("{PropertyName} no es válido.");
+            .WithMessage("{PropertyName} no es valido.");
+
+        RuleForEach(p => p.ListaAlmacenes)
+            .Must(p => p.IdAlmacen > 0)
+            .WithMessage("El almacen seleccionado no es valido.");
+
+        RuleFor(p => p.IdListaPrecio)
+            .GreaterThan(0)
+            .When(p => p.IdListaPrecio.HasValue)
+            .WithMessage("{PropertyName} no es valido.");
     }
 }

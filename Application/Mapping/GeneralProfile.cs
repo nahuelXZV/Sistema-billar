@@ -1,10 +1,12 @@
 using System.Net.Http.Headers;
 using AutoMapper;
+using Domain.DTOs.Contact;
 using Domain.DTOs.Configuration;
 using Domain.DTOs.Inventory;
 using Domain.DTOs.Sales;
 using Domain.DTOs.Security;
 using Domain.DTOs.Security.Request;
+using Domain.Entities.Contact;
 using Domain.Entities.Configuration;
 using Domain.Entities.Inventory;
 using Domain.Entities.Sales;
@@ -38,9 +40,13 @@ public class GeneralProfile : Profile
         CreateMap<ListaPrecios, ListaPrecioDTO>();
         CreateMap<ListaPreciosDetalle, ListaPrecioDetalleDTO>();
 
+        CreateMap<Cliente, ClienteDTO>();
         CreateMap<Mesa, MesaDTO>();
         CreateMap<TipoMesa, TipoMesaDTO>();
-        CreateMap<Vendedor, VendedorDTO>();
+        CreateMap<Vendedor, VendedorDTO>()
+            .ForMember(dest => dest.UsuarioDTO, opt => opt.MapFrom(src => src.Usuario))
+            .ForMember(dest => dest.ListaPrecioDTO, opt => opt.MapFrom(src => src.ListaPrecio));
+        CreateMap<VendedorAlmacenes, VendedorAlmacenDTO>();
 
 
         #endregion
@@ -64,9 +70,14 @@ public class GeneralProfile : Profile
         CreateMap<ListaPrecioDTO, ListaPrecios>();
         CreateMap<ListaPrecioDetalleDTO, ListaPreciosDetalle>();
 
+        CreateMap<ClienteDTO, Cliente>();
         CreateMap<MesaDTO, Mesa>();
         CreateMap<TipoMesaDTO, TipoMesa>();
-        CreateMap<VendedorDTO, Vendedor>();
+        CreateMap<VendedorDTO, Vendedor>()
+            .ForMember(dest => dest.Usuario, opt => opt.Ignore())
+            .ForMember(dest => dest.ListaPrecio, opt => opt.Ignore())
+            .ForMember(dest => dest.ListaAlmacenes, opt => opt.Ignore());
+        CreateMap<VendedorAlmacenDTO, VendedorAlmacenes>();
         #endregion
 
     }

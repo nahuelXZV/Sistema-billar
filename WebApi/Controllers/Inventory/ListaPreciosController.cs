@@ -21,6 +21,12 @@ public class ListaPreciosController : MainController
         return Ok(await Mediator.Send(new GetListaPreciosFilterQuery() { Filter = filter }));
     }
 
+    [HttpGet("GetAll")]
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await Mediator.Send(new GetListaPreciosQuery()));
+    }
+
     [HttpGet("{idAlm}")]
     public async Task<IActionResult> GetById(long idAlm)
     {

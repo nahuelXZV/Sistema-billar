@@ -1,5 +1,6 @@
 using System.Reflection;
 using Domain.Constants;
+using Domain.Interfaces.Services.Contact;
 using FluentValidation;
 using WebClient.Configs;
 using WebClient.Common.Middlewares;
@@ -14,8 +15,10 @@ using WebClient.Services.Inventory;
 using Domain.Validators.Inventory;
 using Domain.Interfaces.Services.Configuration;
 using WebClient.Services.Configuration;
+using Domain.Validators.Contact;
 using Domain.Validators.Configuration;
 using Domain.Validators.Sales;
+using WebClient.Services.Contact;
 using WebClient.Services.Sales;
 
 namespace WebClient.Extensions;
@@ -43,6 +46,7 @@ public static class DependencyInjectionExtensions
         services.AddValidatorsFromAssemblyContaining<CreateLoteDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateTipoMesaDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateVendedorDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateClienteDTOValidator>();
         //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());CreateTransaccionInventarioDTOValidator
         #endregion
 
@@ -53,6 +57,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPerfilService, PerfilService>();
         services.AddScoped<IModuloService, ModuloService>();
         services.AddScoped<IUsuarioService, UsuarioService>();
+        services.AddScoped<IClienteService, ClienteService>();
 
         services.AddScoped<IAlmacenService, AlmacenService>();
         services.AddScoped<ICategoriaService, CategoriaService>();

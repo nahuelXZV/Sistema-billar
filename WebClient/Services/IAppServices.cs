@@ -1,3 +1,4 @@
+using Domain.Interfaces.Services.Contact;
 using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Sales;
@@ -11,6 +12,7 @@ public interface IAppServices
     public IPerfilService PerfilService { get; }
     public IModuloService ModuloService { get; }
     public IUsuarioService UsuarioService { get; }
+    public IClienteService ClienteService { get; }
 
     public IAlmacenService AlmacenService { get; }
     public ICategoriaService CategoriaService { get; }

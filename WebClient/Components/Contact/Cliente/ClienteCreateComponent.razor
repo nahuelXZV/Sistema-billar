@@ -1,0 +1,42 @@
+@using Domain.DTOs.Contact;
+@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent;
+
+<IUCard>
+	<Header>
+		<h4 class="">Datos del cliente</h4>
+	</Header>
+
+	<Body>
+		<EditForm EditContext="_editContext">
+			<DataAnnotationsValidator />
+
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Nombre"
+								 Placeholder="Escriba el nombre..."
+								 @bind-Value="Cliente.Nombre"
+								 Required=true />
+					<ValidationMessage For=@(() => Cliente.Nombre) />
+				</div>
+
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Documento"
+								 Placeholder="Escriba el documento..."
+								 @bind-Value="Cliente.Documento"
+								 Required=true />
+					<ValidationMessage For=@(() => Cliente.Documento) />
+				</div>
+
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Telefono"
+								 Placeholder="Escriba el telefono..."
+								 @bind-Value="Cliente.Telefono" />
+					<ValidationMessage For=@(() => Cliente.Telefono) />
+				</div>
+			</div>
+		</EditForm>
+	</Body>
+</IUCard>

@@ -52,11 +52,13 @@ public class VendedorController : MainController
 
         model.IncluirBlazorComponents = true;
         model.ListaUsuarios = (await _appServices.UsuarioService.GetAll(new FilterDTO { Limit = 1000 })).Data;
+        model.ListaAlmacenes = await _appServices.AlmacenService.GetAll();
+        model.ListaPrecios = await _appServices.ListaPreciosService.GetAll();
 
         if (id != 0)
             model.Vendedor = await _appServices.VendedorService.GetById(id);
         else
-            model.Vendedor = new() { Activo = true };
+            model.Vendedor = new() { Activo = true, ListaAlmacenes = new() };
 
         return View(model);
     }

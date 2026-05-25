@@ -30,6 +30,9 @@ public class GetVendedoresFilterQueryHandler : ICommandHandler<GetVendedoresFilt
     {
         var baseQuery = _repository.Query()
             .Include(p => p.Usuario)
+            .Include(p => p.ListaPrecio)
+            .Include(p => p.ListaAlmacenes.Where(a => !a.Eliminado))
+            .ThenInclude(a => a.Almacen)
             .Where(p => !p.Eliminado);
 
         var search = request.Filter?.Search;

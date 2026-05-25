@@ -56,6 +56,14 @@
 					formatter: (cell) => cell ?? "-"
 				},
 				{
+					name: 'Almacenes',
+					formatter: (cell) => cell ?? "-"
+				},
+				{
+					name: 'Lista de precios',
+					formatter: (cell) => cell ?? "-"
+				},
+				{
 					name: 'Acciones',
 					formatter: (cell, row) => gridjs.html(this.menuTableHandler(row._cells[0].data))
 				}
@@ -63,7 +71,13 @@
 			server: {
 			  url: urlWeb + "Vendedor/GetAll",
 			  then: data => data.data.map(vendedor => [
-				vendedor.id, vendedor.nombre, vendedor.documento, vendedor.activo, vendedor.nombre
+				vendedor.id,
+				vendedor.nombre,
+				vendedor.documento,
+				vendedor.activo,
+				vendedor.usuarioDTO?.username ?? vendedor.usuarioDTO?.nombre ?? null,
+				(vendedor.listaAlmacenes ?? []).map(item => item.almacen?.nombre).filter(Boolean).join(', '),
+				vendedor.listaPrecioDTO?.nombre ?? null
 			  ]),
 			  total: data => data.total
 			},

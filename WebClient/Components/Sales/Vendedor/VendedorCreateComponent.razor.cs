@@ -1,3 +1,4 @@
+using Domain.DTOs.Inventory;
 using Domain.DTOs.Sales;
 using Domain.DTOs.Security;
 using FluentValidation;
@@ -10,16 +11,26 @@ namespace WebClient.Components.Sales.Vendedor;
 
 public partial class VendedorCreateComponent
 {
-    [Inject] public NavigationManager Navigation { get; set; }
-    [Inject] public IValidator<VendedorDTO> Validator { get; set; }
-    [Parameter] public VendedorDTO Vendedor { get; set; }
+    [Inject] public required NavigationManager Navigation { get; set; }
+    [Inject] public required IValidator<VendedorDTO> Validator { get; set; }
+    [Parameter] public required VendedorDTO Vendedor { get; set; }
     [Parameter] public List<UsuarioDTO> ListaUsuarios { get; set; } = new();
+    [Parameter] public List<AlmacenDTO> ListaAlmacenesDisponibles { get; set; } = new();
+    [Parameter] public List<ListaPrecioDTO> ListaPreciosDisponibles { get; set; } = new();
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<VendedorCreateComponent>? _objectHelper;
-    private FluentValidationValidator<VendedorDTO> _fvValidator;
+    private FluentValidationValidator<VendedorDTO>? _fvValidator;
+    private List<long> ListaAlmacenesSeleccionados { get; set; } = new();
 
     protected override void OnInitialized()
     {
+        Vendedor.ListaAlmacenes ??= new();
+        ListaAlmacenesSeleccionados = Vendedor.ListaAlmacenes
+            .Where(p => p.IdAlmacen > 0)
+            .Select(p => p.IdAlmacen)
+            .Distinct()
+            .ToList();
+
         _editContext = new EditContext(Vendedor);
         _fvValidator = new FluentValidationValidator<VendedorDTO>(_editContext, Validator);
     }
@@ -59,17 +70,54 @@ public partial class VendedorCreateComponent
         return usuario.Id;
     }
 
+    private string GetListaPrecioText(ListaPrecioDTO listaPrecio)
+    {
+        return listaPrecio.Nombre;
+    }
+
+    private long? GetListaPrecioValue(ListaPrecioDTO listaPrecio)
+    {
+        return listaPrecio.Id;
+    }
+
+    private void OnAlmacenSeleccionChanged(long idAlmacen, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!ListaAlmacenesSeleccionados.Contains(idAlmacen))
+                ListaAlmacenesSeleccionados.Add(idAlmacen);
+        }
+        else
+        {
+            ListaAlmacenesSeleccionados.Remove(idAlmacen);
+        }
+    }
+
     private async Task Guardar()
     {
         try
         {
+            Vendedor.ListaAlmacenes = ListaAlmacenesSeleccionados
+                .Distinct()
+                .Select(idAlmacen => new VendedorAlmacenDTO
+                {
+                    IdVendedor = Vendedor.Id,
+                    IdAlmacen = idAlmacen
+                })
+                .ToList();
+            Vendedor.IdListaPrecio = Vendedor.IdListaPrecio > 0 ? Vendedor.IdListaPrecio : null;
+
             if (Vendedor.Id != 0)
             {
-                var respuesta = await AppServices.VendedorService.Update(Vendedor);
+                Vendedor.UsuarioDTO = null;
+                Vendedor.ListaPrecioDTO = null;
+                await AppServices.VendedorService.Update(Vendedor);
             }
             else
             {
-                var respuesta = await AppServices.VendedorService.Create(Vendedor);
+                Vendedor.UsuarioDTO = null;
+                Vendedor.ListaPrecioDTO = null;
+                await AppServices.VendedorService.Create(Vendedor);
             }
 
             await ShowSuccessMessage("Vendedor guardado correctamente");

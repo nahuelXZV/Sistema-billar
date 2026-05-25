@@ -1,22 +1,19 @@
 @using WebClient.Common
 @using WebClient.Components
-@using WebClient.Components.Sales.Vendedor
-@using WebClient.Models.Sales
-@model VendedorViewModel
+@using WebClient.Components.Contact.Cliente
+@using WebClient.Models.Contact
+@model ClienteViewModel
 
 @{
-	ViewData["Title"] = "Vendedor";
-	ViewData["Module"] = "Vendedor";
+	ViewData["Title"] = "Cliente";
+	ViewData["Module"] = "Cliente";
 	ViewData["Action"] = "Crear";
-	ViewData["Url"] = Url.Action("Listado", "Vendedor");
+	ViewData["Url"] = Url.Action("Listado", "Cliente");
 
-	var componentName = nameof(VendedorCreateComponent);
+	var componentName = nameof(ClienteCreateComponent);
 	var componentParameters = new Dictionary<string, object>
 	{
-		{ nameof(VendedorCreateComponent.Vendedor), Model.Vendedor },
-		{ nameof(VendedorCreateComponent.ListaUsuarios), Model.ListaUsuarios },
-		{ nameof(VendedorCreateComponent.ListaAlmacenesDisponibles), Model.ListaAlmacenes },
-		{ nameof(VendedorCreateComponent.ListaPreciosDisponibles), Model.ListaPrecios }
+		{ nameof(ClienteCreateComponent.Cliente), Model.Cliente }
 	};
 }
 <script>
@@ -66,6 +63,6 @@
 }
 
 <component type="typeof(MainComponent)"
-		   param-ComponentTypeName="typeof(VendedorCreateComponent).FullName"
+		   param-ComponentTypeName="typeof(ClienteCreateComponent).FullName"
 		   param-Parameters="@componentParameters"
 		   render-mode="ServerPrerendered" />

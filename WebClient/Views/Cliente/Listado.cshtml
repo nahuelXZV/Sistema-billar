@@ -1,0 +1,65 @@
+@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Contact
+@model ClienteViewModel
+
+@{
+	ViewData["Title"] = "Cliente";
+	ViewData["Module"] = "Cliente";
+	ViewData["Action"] = "Listado";
+
+	Model.ListaItemsMenu = new List<ItemMenu>
+	{
+		new ItemMenu { Id = MenuItemId.Editar, Text = "Editar", IconCss = "fa fa-pencil", Url = Url.Action("Crear", "Cliente"), ActionType = MenuItemActionType.POST },
+		new ItemMenu { Id = MenuItemId.Eliminar, Text = "Eliminar", IconCss = "fa fa-trash", Url = Url.Action("Eliminar", "Cliente"), ActionType = MenuItemActionType.POST, Confirm = true, ConfirmMessage = "Esta seguro de eliminar este cliente?" },
+	};
+}
+
+@section ActionBar {
+	<div class="card card-outline card-primary action-bar">
+		<div class="card-body py-2">
+			<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+				<form id="FormCrear" asp-controller="Cliente" asp-action="Crear" method="post" style="display: none;">
+					@Html.AntiForgeryToken()
+				</form>
+				<div class="action-bar-left d-flex gap-2">
+					<button type="submit"
+							form="FormCrear"
+							class="btn btn-primary btn-sm">
+						<i class="bi bi-plus-lg"></i>
+						Crear
+					</button>
+				</div>
+				<div class="action-bar-right d-flex gap-2">
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<div class="card card-outline card-secondary">
+	<div class="card-body p-3">
+		<div id="table-wrapper"></div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		new gridjs.Grid({
+			columns: ['Id', 'Nombre', 'Documento', 'Telefono',
+				{
+					name: 'Acciones',
+					formatter: (cell, row) => gridjs.html(this.menuTableHandler(row._cells[0].data))
+				}
+			],
+			server: {
+			  url: urlWeb + "Cliente/GetAll",
+			  then: data => data.data.map(cliente => [
+				cliente.id, cliente.nombre, cliente.documento, cliente.telefono
+			  ]),
+			  total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById("table-wrapper"));
+	</script>
+}

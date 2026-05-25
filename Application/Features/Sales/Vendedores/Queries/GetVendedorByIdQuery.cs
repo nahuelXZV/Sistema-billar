@@ -29,7 +29,10 @@ public class GetVendedorByIdQueryHandler : ICommandHandler<GetVendedorByIdQuery,
         var query = _repository.Query()
             .Where(p => !p.Eliminado)
             .Where(p => p.Id == request.Id)
-            .Include(p => p.Usuario);
+            .Include(p => p.Usuario)
+            .Include(p => p.ListaPrecio)
+            .Include(p => p.ListaAlmacenes.Where(a => !a.Eliminado))
+            .ThenInclude(a => a.Almacen);
 
         var vendedor = await query.FirstOrDefaultAsync(cancellationToken);
         if (vendedor == null) throw new Exception("Vendedor no encontrado.");

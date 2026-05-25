@@ -25,7 +25,14 @@ public class GetVendedoresQueryHandler : ICommandHandler<GetVendedoresQuery, Res
 
     public async Task<Response<List<VendedorDTO>>> Handle(GetVendedoresQuery request, CancellationToken cancellationToken)
     {
-        var listaVendedores = await _repository.Query().Include(p => p.Usuario).Where(p => !p.Eliminado).ToListAsync(cancellationToken);
+        var listaVendedores = await _repository.Query()
+            .Include(p => p.Usuario)
+            .Include(p => p.ListaPrecio)
+            .Include(p => p.ListaAlmacenes.Where(a => !a.Eliminado))
+            .ThenInclude(a => a.Almacen)
+            .Where(p => !p.Eliminado)
+            .ToListAsync(cancellationToken);
+
         var listaVendedoresDTO = _mapper.Map<List<VendedorDTO>>(listaVendedores);
         return new Response<List<VendedorDTO>>(listaVendedoresDTO);
     }

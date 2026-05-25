@@ -1,4 +1,5 @@
 
+using Domain.Interfaces.Services.Contact;
 using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Sales;
@@ -16,6 +17,7 @@ public class AppServices : IAppServices
     private IPerfilService _perfilService;
     private IModuloService _moduloService;
     private IUsuarioService _usuarioService;
+    private IClienteService _clienteService;
 
     private IAlmacenService _almacenService;
     private ICategoriaService _categoriaService;
@@ -40,6 +42,7 @@ public class AppServices : IAppServices
     public IPerfilService PerfilService => _perfilService ??= _serviceProvider.GetService<IPerfilService>();
     public IModuloService ModuloService => _moduloService ??= _serviceProvider.GetService<IModuloService>();
     public IUsuarioService UsuarioService => _usuarioService ??= _serviceProvider.GetService<IUsuarioService>();
+    public IClienteService ClienteService => _clienteService ??= _serviceProvider.GetService<IClienteService>();
     #endregion
 
 

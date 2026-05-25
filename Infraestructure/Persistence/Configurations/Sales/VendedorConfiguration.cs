@@ -16,5 +16,14 @@ public class VendedorConfiguration : IEntityTypeConfiguration<Vendedor>
             .WithMany()
             .HasForeignKey(a => a.IdUsuario)
             .IsRequired(false);
+
+        builder.HasOne(a => a.ListaPrecio)
+            .WithMany()
+            .HasForeignKey(a => a.IdListaPrecio)
+            .IsRequired(false);
+
+        builder.HasMany(a => a.ListaAlmacenes)
+            .WithOne(a => a.Vendedor)
+            .HasForeignKey(a => a.IdVendedor);
     }
 }
