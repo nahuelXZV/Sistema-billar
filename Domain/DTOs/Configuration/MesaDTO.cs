@@ -6,4 +6,6 @@ public class MesaDTO
     public string Nombre { get; set; }
     public long IdTipoMesa { get; set; }
     public bool Activo { get; set; }
+
+    public TipoMesaDTO? TipoMesa { get; set; }
 }

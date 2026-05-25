@@ -1,13 +1,14 @@
-using Domain.Entities.Security;
+using Domain.DTOs.Security;
 
-namespace Domain.Entities.Sales;
+namespace Domain.DTOs.Sales;
 
-public class Vendedor : Entity
+public class VendedorDTO
 {
+    public long Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string Documento { get; set; } = string.Empty;
     public long? IdUsuario { get; set; }
     public bool Activo { get; set; }
 
-    public Usuario? Usuario { get; set; }
+    public UsuarioDTO? UsuarioDTO { get; set; }
 }

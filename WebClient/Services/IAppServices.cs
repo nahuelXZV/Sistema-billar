@@ -1,5 +1,6 @@
 using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
+using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Security;
 
 namespace WebClient.Services;
@@ -21,4 +22,6 @@ public interface IAppServices
     public ILoteService LoteService { get; }
 
     public ITipoMesaService TipoMesaService { get; }
+    public IMesasService MesasService { get; }
+    public IVendedorService VendedorService { get; }
 }

@@ -12,7 +12,7 @@ public class MesaConfiguration : IEntityTypeConfiguration<Mesa>
 
         builder.HasKey(a => a.Id);
 
-        builder.HasOne<TipoMesa>()
+        builder.HasOne(c => c.TipoMesa)
             .WithMany()
             .HasForeignKey(c => c.IdTipoMesa);
     }

@@ -1,13 +1,13 @@
 ﻿@using Domain.DTOs.Security;
 @using WebClient.Components
 @using WebClient.Components.Shared.Elements
-@using Domain.DTOs.Inventory;
+@using Domain.DTOs.Configuration;
 
 @inherits Components.MainBaseComponent;
 
 <IUCard>
 	<Header>
-		<h4 class="">Datos del tipo de mesa</h4>
+		<h4 class="">Datos de la mesa</h4>
 	</Header>
 
 	<Body>
@@ -18,23 +18,23 @@
 				<div class="col-12 col-md-4">
 					<IUInputText Label="Nombre"
 								 Placeholder="Escriba el nombre..."
-								 @bind-Value="TipoMesa.Nombre"
+								 @bind-Value="Mesa.Nombre"
 								 Required=true />
-					<ValidationMessage For=@(() => TipoMesa.Nombre) />
+					<ValidationMessage For=@(() => Mesa.Nombre) />
 				</div>
 				<div class="col-12 col-md-4">
-					<IUSelectFilterComponent TItem="ProductoDTO"
-											 TValue="long?"
-											 Label="Producto"
-											 Placeholder="Selecciona un producto"
-											 Options="@ListaProductos"
+					<IUSelectFilterComponent TItem="TipoMesaDTO"
+											 TValue="long"
+											 Label="Tipo de mesa"
+											 Placeholder="Selecciona un tipo de mesa"
+											 Options="@ListaTipoMesas"
 											 GetText="@(c => c.Nombre)"
 											 GetValue="@(c => c.Id)"
-											 @bind-Value="TipoMesa.IdProducto" />
+											 @bind-Value="Mesa.IdTipoMesa" />
 				</div>
 				<div class="col-12 col-md-4">
-					<label class="d-none d-md-block invisible mb-2">Cobra por tiempo</label>
-					<IUInputCheckbox Label="Cobra por tiempo" @bind-Value="TipoMesa.CobroPorTiempo" />
+					<label class="d-none d-md-block invisible mb-2">Activo</label>
+					<IUInputCheckbox Label="Activo" @bind-Value="Mesa.Activo" />
 				</div>
 			</div>
 		</EditForm>

@@ -1,0 +1,53 @@
+@using Domain.DTOs.Sales;
+@using Domain.DTOs.Security;
+@using WebClient.Components
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent;
+
+<IUCard>
+	<Header>
+		<h4 class="">Datos del vendedor</h4>
+	</Header>
+
+	<Body>
+		<EditForm EditContext="_editContext">
+			<DataAnnotationsValidator />
+
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Nombre"
+								 Placeholder="Escriba el nombre..."
+								 @bind-Value="Vendedor.Nombre"
+								 Required=true />
+					<ValidationMessage For=@(() => Vendedor.Nombre) />
+				</div>
+
+				<div class="col-12 col-md-4">
+					<IUInputText Label="Documento"
+								 Placeholder="Escriba el documento..."
+								 @bind-Value="Vendedor.Documento"
+								 Required=true />
+					<ValidationMessage For=@(() => Vendedor.Documento) />
+				</div>
+
+				<div class="col-12 col-md-4">
+					<IUSelectFilterComponent TItem="UsuarioDTO"
+											 TValue="long?"
+											 Label="Usuario asociado"
+											 Placeholder="Selecciona un usuario"
+											 Options="@ListaUsuarios"
+											 GetText="GetUsuarioText"
+											 GetValue="GetUsuarioValue"
+											 @bind-Value="Vendedor.IdUsuario" />
+					<ValidationMessage For=@(() => Vendedor.IdUsuario) />
+				</div>
+
+				<div class="col-12 col-md-2">
+					<label class="d-none d-md-block invisible mb-2">Activo</label>
+					<IUInputCheckbox Label="Activo" @bind-Value="Vendedor.Activo" />
+				</div>
+			</div>
+		</EditForm>
+	</Body>
+</IUCard>

@@ -1,6 +1,7 @@
 
 using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
+using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Security;
 
 namespace WebClient.Services.Implementacion;
@@ -25,6 +26,8 @@ public class AppServices : IAppServices
     private IListaPreciosService _listaPrecioService;
     private ILoteService _loteService;
     private ITipoMesaService _tipoMesaService;
+    private IMesasService _mesasService;
+    private IVendedorService _vendedorService;
 
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
@@ -49,10 +52,14 @@ public class AppServices : IAppServices
     public ITransaccionInventarioService TransaccionInventarioService => _transaccionInventarioService ??= _serviceProvider.GetService<ITransaccionInventarioService>();
     public IListaPreciosService ListaPreciosService => _listaPrecioService ??= _serviceProvider.GetService<IListaPreciosService>();
     public ILoteService LoteService => _loteService ??= _serviceProvider.GetService<ILoteService>();
-    public ITipoMesaService TipoMesaService => _tipoMesaService ??= _serviceProvider.GetService<ITipoMesaService>();
     #endregion
 
     #region CONFIGURACION
+    public ITipoMesaService TipoMesaService => _tipoMesaService ??= _serviceProvider.GetService<ITipoMesaService>();
+    public IMesasService MesasService => _mesasService ??= _serviceProvider.GetService<IMesasService>();
+    #endregion
 
+    #region SALES
+    public IVendedorService VendedorService => _vendedorService ??= _serviceProvider.GetService<IVendedorService>();
     #endregion
 }

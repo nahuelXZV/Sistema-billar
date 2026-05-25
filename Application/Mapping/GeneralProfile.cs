@@ -2,10 +2,12 @@ using System.Net.Http.Headers;
 using AutoMapper;
 using Domain.DTOs.Configuration;
 using Domain.DTOs.Inventory;
+using Domain.DTOs.Sales;
 using Domain.DTOs.Security;
 using Domain.DTOs.Security.Request;
 using Domain.Entities.Configuration;
 using Domain.Entities.Inventory;
+using Domain.Entities.Sales;
 using Domain.Entities.Security;
 
 namespace Application.Mapping;
@@ -38,6 +40,7 @@ public class GeneralProfile : Profile
 
         CreateMap<Mesa, MesaDTO>();
         CreateMap<TipoMesa, TipoMesaDTO>();
+        CreateMap<Vendedor, VendedorDTO>();
 
 
         #endregion
@@ -63,6 +66,7 @@ public class GeneralProfile : Profile
 
         CreateMap<MesaDTO, Mesa>();
         CreateMap<TipoMesaDTO, TipoMesa>();
+        CreateMap<VendedorDTO, Vendedor>();
         #endregion
 
     }
