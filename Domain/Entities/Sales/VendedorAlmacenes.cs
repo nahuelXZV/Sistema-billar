@@ -1,4 +1,3 @@
-using Domain.Entities;
 using Domain.Entities.Inventory;
 
 namespace Domain.Entities.Sales;

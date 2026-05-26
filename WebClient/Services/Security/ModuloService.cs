@@ -3,7 +3,7 @@ using Domain.DTOs.Shared;
 using Domain.Interfaces.Services.Security;
 using WebClient.Services.Implementacion;
 
-namespace WebClient.Services.Segurity;
+namespace WebClient.Services.Security;
 
 public class ModuloService : AppBaseServices, IModuloService
 {

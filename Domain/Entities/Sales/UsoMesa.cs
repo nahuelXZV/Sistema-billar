@@ -1,0 +1,19 @@
+using Domain.Entities.Configuration;
+
+namespace Domain.Entities.Sales;
+
+public class UsoMesa : Entity
+{
+    public long IdOrdenVenta { get; set; }
+    public long IdMesa { get; set; }
+    public DateTime FechaInicio { get; set; }
+    public DateTime? FechaFin { get; set; }
+    public double MinutosConsumidos { get; set; }
+    public double TarifaAplicada { get; set; }
+    public double MontoCalculado { get; set; }
+    public short Estado { get; set; }
+    public string Observacion { get; set; } = string.Empty;
+
+    public OrdenVenta? OrdenVenta { get; set; }
+    public Mesa? Mesa { get; set; }
+}

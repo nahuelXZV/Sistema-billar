@@ -9,8 +9,8 @@ using Domain.DTOs.Security.Request;
 using Domain.Entities.Contact;
 using Domain.Entities.Configuration;
 using Domain.Entities.Inventory;
-using Domain.Entities.Sales;
 using Domain.Entities.Security;
+using Domain.Entities.Sales;
 
 namespace Application.Mapping;
 
@@ -47,6 +47,11 @@ public class GeneralProfile : Profile
             .ForMember(dest => dest.UsuarioDTO, opt => opt.MapFrom(src => src.Usuario))
             .ForMember(dest => dest.ListaPrecioDTO, opt => opt.MapFrom(src => src.ListaPrecio));
         CreateMap<VendedorAlmacenes, VendedorAlmacenDTO>();
+        CreateMap<OrdenVenta, OrdenVentaDTO>();
+        CreateMap<OrdenVentaDetalle, OrdenVentaDetalleDTO>();
+        CreateMap<Venta, VentaDTO>();
+        CreateMap<VentaDetalle, VentaDetalleDTO>();
+        CreateMap<UsoMesa, UsoMesaDTO>();
 
 
         #endregion
@@ -78,6 +83,11 @@ public class GeneralProfile : Profile
             .ForMember(dest => dest.ListaPrecio, opt => opt.Ignore())
             .ForMember(dest => dest.ListaAlmacenes, opt => opt.Ignore());
         CreateMap<VendedorAlmacenDTO, VendedorAlmacenes>();
+        CreateMap<OrdenVentaDTO, OrdenVenta>();
+        CreateMap<OrdenVentaDetalleDTO, OrdenVentaDetalle>();
+        CreateMap<VentaDTO, Venta>();
+        CreateMap<VentaDetalleDTO, VentaDetalle>();
+        CreateMap<UsoMesaDTO, UsoMesa>();
         #endregion
 
     }

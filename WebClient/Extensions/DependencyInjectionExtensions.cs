@@ -7,7 +7,6 @@ using WebClient.Common.Middlewares;
 using WebClient.Services.Implementacion;
 using WebClient.Services;
 using Domain.Interfaces.Services.Security;
-using WebClient.Services.Segurity;
 using Domain.Validators.Security;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Sales;
@@ -20,6 +19,7 @@ using Domain.Validators.Configuration;
 using Domain.Validators.Sales;
 using WebClient.Services.Contact;
 using WebClient.Services.Sales;
+using WebClient.Services.Security;
 
 namespace WebClient.Extensions;
 
@@ -70,6 +70,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITipoMesaService, TipoMesaService>();
         services.AddScoped<IMesasService, MesasService>();
         services.AddScoped<IVendedorService, VendedorService>();
+        services.AddScoped<IUsoMesaService, UsoMesaService>();
+        services.AddScoped<IOrdenVentaService, OrdenVentaService>();
+        services.AddScoped<IVentaService, VentaService>();
         #endregion
 
         return services;

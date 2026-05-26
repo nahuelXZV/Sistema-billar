@@ -1,0 +1,28 @@
+using Domain.Entities.Sales;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Infraestructure.Persistence.Configurations.Sales;
+
+public class VentaConfiguration : IEntityTypeConfiguration<Venta>
+{
+    public void Configure(EntityTypeBuilder<Venta> builder)
+    {
+        builder.ToTable("Venta", "Venta");
+
+        builder.HasKey(a => a.Id);
+
+        builder.HasOne(a => a.OrdenVenta)
+            .WithMany()
+            .HasForeignKey(a => a.IdOrdenVenta)
+            .IsRequired(false);
+
+        builder.HasOne(a => a.Cliente)
+            .WithMany()
+            .HasForeignKey(a => a.IdCliente);
+
+        builder.HasOne(a => a.Vendedor)
+            .WithMany()
+            .HasForeignKey(a => a.IdVendedor);
+    }
+}

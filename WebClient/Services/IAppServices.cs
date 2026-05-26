@@ -26,4 +26,7 @@ public interface IAppServices
     public ITipoMesaService TipoMesaService { get; }
     public IMesasService MesasService { get; }
     public IVendedorService VendedorService { get; }
+    public IUsoMesaService UsoMesaService { get; }
+    public IOrdenVentaService OrdenVentaService { get; }
+    public IVentaService VentaService { get; }
 }

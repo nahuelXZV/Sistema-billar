@@ -1,5 +1,5 @@
-using Domain.Entities.Security;
 using Domain.Entities.Inventory;
+using Domain.Entities.Security;
 
 namespace Domain.Entities.Sales;
 
@@ -7,8 +7,8 @@ public class Vendedor : Entity
 {
     public string Nombre { get; set; } = string.Empty;
     public string Documento { get; set; } = string.Empty;
-    public long? IdUsuario { get; set; }
-    public long? IdListaPrecio { get; set; }
+    public long IdUsuario { get; set; }
+    public long IdListaPrecio { get; set; }
     public bool Activo { get; set; }
 
     public Usuario? Usuario { get; set; }

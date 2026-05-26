@@ -30,6 +30,9 @@ public class AppServices : IAppServices
     private ITipoMesaService _tipoMesaService;
     private IMesasService _mesasService;
     private IVendedorService _vendedorService;
+    private IUsoMesaService _usoMesaService;
+    private IOrdenVentaService _ordenVentaService;
+    private IVentaService _ventaService;
 
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
@@ -64,5 +67,8 @@ public class AppServices : IAppServices
 
     #region SALES
     public IVendedorService VendedorService => _vendedorService ??= _serviceProvider.GetService<IVendedorService>();
+    public IUsoMesaService UsoMesaService => _usoMesaService ??= _serviceProvider.GetService<IUsoMesaService>();
+    public IOrdenVentaService OrdenVentaService => _ordenVentaService ??= _serviceProvider.GetService<IOrdenVentaService>();
+    public IVentaService VentaService => _ventaService ??= _serviceProvider.GetService<IVentaService>();
     #endregion
 }
