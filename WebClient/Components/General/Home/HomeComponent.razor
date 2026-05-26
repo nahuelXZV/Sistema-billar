@@ -1,4 +1,226 @@
-﻿@using WebClient.Components.Shared.Elements
+@using WebClient.Components.Shared.Elements
 @inherits Components.MainBaseComponent;
 
-<h1>HOME</h1>
+@if (Dashboard is null)
+{
+    <div class="home-dashboard home-dashboard-loading">
+        <div class="home-skeleton hero"></div>
+        <div class="home-skeleton-row">
+            <div class="home-skeleton card"></div>
+            <div class="home-skeleton card"></div>
+            <div class="home-skeleton card"></div>
+            <div class="home-skeleton card"></div>
+        </div>
+    </div>
+}
+else
+{
+    <section class="home-dashboard">
+        <div class="home-hero">
+            <div class="home-hero-copy">
+                <span class="home-eyebrow">
+                    <i class="bi bi-stars"></i>
+                    Centro de control
+                </span>
+                <h1>@Dashboard.GreetingTitle</h1>
+                <p>@Dashboard.GreetingDescription</p>
+
+                <div class="home-hero-meta">
+                    <div class="home-hero-pill">
+                        <i class="bi bi-calendar3"></i>
+                        @Dashboard.TodayLabel
+                    </div>
+                    <div class="home-hero-pill">
+                        <i class="bi bi-activity"></i>
+                        Turno @Dashboard.ActiveShift
+                    </div>
+                    <div class="home-hero-pill">
+                        <i class="bi bi-broadcast-pin"></i>
+                        @Dashboard.LiveStatus
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-hero-highlight">
+                <div class="home-highlight-label">Ingresos del dia</div>
+                <div class="home-highlight-value">@Dashboard.HighlightAmount</div>
+                <div class="home-highlight-caption">@Dashboard.HighlightCaption</div>
+
+                <div class="home-highlight-progress">
+                    <div class="home-highlight-progress-bar" style="width:@($"{Dashboard.HighlightProgress}%")"></div>
+                </div>
+                <small>@Dashboard.HighlightSubtext</small>
+            </div>
+        </div>
+
+        <div class="home-kpi-grid">
+            @foreach (var metric in Dashboard.Metrics)
+            {
+                <article class="home-kpi-card">
+                    <div class="home-kpi-icon @metric.ToneClass">
+                        <i class="@metric.IconCss"></i>
+                    </div>
+                    <div class="home-kpi-content">
+                        <span>@metric.Label</span>
+                        <strong>@metric.Value</strong>
+                        <small>@metric.Caption</small>
+                    </div>
+                </article>
+            }
+        </div>
+
+        <div class="home-main-grid">
+            <div class="home-column-stack">
+                <section class="home-panel home-panel-felt">
+                    <div class="home-panel-header">
+                        <div>
+                            <span class="home-panel-kicker">Operacion en sala</span>
+                            <h2>Estado de mesas</h2>
+                        </div>
+                        <span class="badge text-bg-primary">@Dashboard.TableSummaryLabel</span>
+                    </div>
+
+                    <div class="home-table-status-grid">
+                        @foreach (var table in Dashboard.Tables)
+                        {
+                            <article class="home-table-status-card @table.StateClass">
+                                <div class="home-table-status-top">
+                                    <span class="home-table-name">@table.Name</span>
+                                    <span class="badge @table.BadgeClass">@table.State</span>
+                                </div>
+                                <strong>@table.PrimaryText</strong>
+                                <small>@table.SecondaryText</small>
+                            </article>
+                        }
+                    </div>
+                </section>
+
+                <section class="home-panel">
+                    <div class="home-panel-header">
+                        <div>
+                            <span class="home-panel-kicker">Agenda inmediata</span>
+                            <h2>Reservas proximas</h2>
+                        </div>
+                        <a href="/Mesas/Listado" class="home-inline-link">Ver mesas</a>
+                    </div>
+
+                    <div class="home-reservation-list">
+                        @foreach (var reservation in Dashboard.UpcomingReservations)
+                        {
+                            <article class="home-reservation-item">
+                                <div class="home-reservation-time">
+                                    <strong>@reservation.Time</strong>
+                                    <span>@reservation.Duration</span>
+                                </div>
+                                <div class="home-reservation-details">
+                                    <strong>@reservation.ClientName</strong>
+                                    <span>@reservation.Detail</span>
+                                </div>
+                                <span class="badge @reservation.BadgeClass">@reservation.Status</span>
+                            </article>
+                        }
+                    </div>
+                </section>
+            </div>
+
+            <div class="home-column-stack">
+                <section class="home-panel">
+                    <div class="home-panel-header">
+                        <div>
+                            <span class="home-panel-kicker">Radar del negocio</span>
+                            <h2>Resumen de hoy</h2>
+                        </div>
+                    </div>
+
+                    <div class="home-progress-stack">
+                        @foreach (var summary in Dashboard.Summaries)
+                        {
+                            <div class="home-progress-item">
+                                <div class="home-progress-copy">
+                                    <strong>@summary.Label</strong>
+                                    <span>@summary.ValueText</span>
+                                </div>
+                                <div class="home-progress-track">
+                                    <div class="home-progress-bar @summary.ToneClass" style="width:@($"{summary.Progress}%")"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </section>
+
+                <section class="home-panel">
+                    <div class="home-panel-header">
+                        <div>
+                            <span class="home-panel-kicker">Ultimos movimientos</span>
+                            <h2>Actividad reciente</h2>
+                        </div>
+                        <a href="/Producto/Listado" class="home-inline-link">Inventario</a>
+                    </div>
+
+                    <div class="home-activity-list">
+                        @foreach (var activity in Dashboard.RecentActivities)
+                        {
+                            <article class="home-activity-item">
+                                <span class="home-activity-dot @activity.ToneClass"></span>
+                                <div class="home-activity-copy">
+                                    <strong>@activity.Title</strong>
+                                    <span>@activity.Description</span>
+                                </div>
+                                <time>@activity.TimeLabel</time>
+                            </article>
+                        }
+                    </div>
+                </section>
+
+                <section class="home-panel">
+                    <div class="home-panel-header">
+                        <div>
+                            <span class="home-panel-kicker">Atencion requerida</span>
+                            <h2>Alertas operativas</h2>
+                        </div>
+                    </div>
+
+                    <div class="home-alert-list">
+                        @foreach (var alert in Dashboard.Alerts)
+                        {
+                            <article class="home-alert-item">
+                                <div class="home-alert-icon @alert.ToneClass">
+                                    <i class="@alert.IconCss"></i>
+                                </div>
+                                <div class="home-alert-copy">
+                                    <strong>@alert.Title</strong>
+                                    <span>@alert.Description</span>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <section class="home-panel">
+            <div class="home-panel-header">
+                <div>
+                    <span class="home-panel-kicker">Acciones rapidas</span>
+                    <h2>Atajos del sistema</h2>
+                </div>
+            </div>
+
+            <div class="home-quick-actions">
+                @foreach (var action in Dashboard.QuickActions)
+                {
+                    <a class="home-quick-action" href="@action.Url">
+                        <div class="home-quick-action-icon @action.ToneClass">
+                            <i class="@action.IconCss"></i>
+                        </div>
+                        <div class="home-quick-action-copy">
+                            <strong>@action.Title</strong>
+                            <span>@action.Description</span>
+                        </div>
+                        <i class="bi bi-arrow-up-right"></i>
+                    </a>
+                }
+            </div>
+        </section>
+    </section>
+}
