@@ -1,0 +1,52 @@
+﻿@using WebClient.Common
+@using WebClient.Components
+@using WebClient.Components.Sales.Venta
+@using WebClient.Models.Sales
+@model VentaViewModel;
+
+@{
+	ViewData["Title"] = "Venta";
+	ViewData["Module"] = "Venta";
+	ViewData["Action"] = "Venta Directa";
+	ViewData["Url"] = Url.Action("Listado", "Venta");
+
+	var componentName = nameof(VentaComponent);
+	var componentParameters = new Dictionary<string, object>
+	{
+		{ nameof(VentaComponent.Model), Model },
+	};
+}
+<script>
+	class @componentName {
+		componentInstance;
+		guardarButton;
+
+		constructor(componentInstance) {
+			this.componentInstance = componentInstance;
+			this.guardarButton = document.getElementById('btn-save');
+			this.guardarButton.addEventListener('click', ev => this.Validar());
+		}
+
+		async Validar() {
+			await this.componentInstance.invokeMethodAsync('Validar');
+		}
+
+		static init(componentInstance) {
+			window.@componentName = new @(componentName)(componentInstance);
+		}
+	}
+
+	window.@componentName = @componentName;
+</script>
+
+@section ActionBar {
+}
+
+@section Styles {
+	<link href="~/css/venta.css" rel="stylesheet" asp-append-version="true" />
+}
+
+<component type="typeof(MainComponent)"
+		   param-ComponentTypeName="typeof(VentaComponent).FullName"
+		   param-Parameters="@componentParameters"
+		   render-mode="ServerPrerendered" />

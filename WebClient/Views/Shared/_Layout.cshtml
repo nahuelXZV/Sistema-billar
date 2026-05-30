@@ -10,6 +10,7 @@
 	<meta name="route" content="@Url.RouteUrl("")" />
 	<base href="~/" />
 	<partial name="_Styles" />
+	@RenderSection("Styles", required: false)
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary dark-mode" data-bs-theme="dark">
 	<partial name="_Preloader" />
