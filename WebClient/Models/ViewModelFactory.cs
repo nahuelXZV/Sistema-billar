@@ -1,5 +1,6 @@
-namespace WebClient.Models;
+ï»¿namespace WebClient.Models;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using WebClient.Configs;
 
@@ -20,9 +21,17 @@ public class ViewModelFactory
         var context = _httpContextAccessor.HttpContext;
 
         if (context == null)
-            throw new InvalidOperationException("HttpContext no está disponible.");
+            throw new InvalidOperationException("HttpContext no esta disponible.");
 
         instance.Initialize(context, _adminConfig);
+
+        var permiteAnonimo = context.GetEndpoint()?.Metadata?.GetMetadata<IAllowAnonymous>() != null;
+        if (!permiteAnonimo && instance is MainViewModel mainViewModel && !mainViewModel.SesionUsuarioValida)
+        {
+            context.Session.Clear();
+            throw new UnauthorizedAccessException("La sesion ha expirado o no es valida.");
+        }
+
         return instance;
     }
 }

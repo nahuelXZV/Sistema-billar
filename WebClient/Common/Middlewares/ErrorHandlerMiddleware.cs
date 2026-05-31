@@ -1,4 +1,6 @@
 using System.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace WebClient.Common.Middlewares;
 
@@ -21,7 +23,9 @@ public class ErrorHandlerMiddleware
         }
         catch (UnauthorizedAccessException)
         {
-            context.Response.Redirect("/");
+            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            context.Session.Clear();
+            context.Response.Redirect("/Sesion/Index");
         }
         catch (Exception ex)
         {

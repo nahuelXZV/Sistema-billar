@@ -20,7 +20,6 @@ public class ItemMenu
     public string Url { get; set; }
     public bool Separator { get; set; }
     public object Data { get; set; }
-    //public List<ContextMenuItem> Items { get; set; } = new List<ContextMenuItem>();
     public MenuItemActionType ActionType { get; set; } = MenuItemActionType.GET;
     public bool Confirm { get; set; }
     public string ConfirmMessage { get; set; }
@@ -34,6 +33,7 @@ public class MessageModel
 
 public class MainViewModel : IMainViewModel
 {
+    public bool SesionUsuarioValida { get; private set; }
     public long IdUsuarioLoggedIn { get; set; }
     public long IdPerfil { get; set; }
     public string NombreUsuarioLoggedIn { get; set; }
@@ -52,16 +52,16 @@ public class MainViewModel : IMainViewModel
     public MainViewModel(HttpContext context)
     {
         CargarTempMessages(context);
+        SesionUsuarioValida = CargarDatosUsuarioLoggedIn(context.User);
         CargarAccesos(context);
-        CargarDatosUsuarioLoggedIn(context.User);
     }
 
     public virtual void Initialize(HttpContext context, AdminConfig adminConfig)
     {
         Configuraciones = adminConfig;
         CargarTempMessages(context);
+        SesionUsuarioValida = CargarDatosUsuarioLoggedIn(context.User);
         CargarAccesos(context);
-        CargarDatosUsuarioLoggedIn(context.User);
     }
 
     private void CargarTempMessages(HttpContext context)
@@ -72,15 +72,44 @@ public class MainViewModel : IMainViewModel
         Messages = tempData.Get<List<MessageModel>>("Messages") ?? new List<MessageModel>();
     }
 
-    private void CargarDatosUsuarioLoggedIn(ClaimsPrincipal userClaims)
+    private bool CargarDatosUsuarioLoggedIn(ClaimsPrincipal userClaims)
     {
-        IdUsuarioLoggedIn = long.Parse(userClaims.GetClaimValue(Constantes.ClaimTypes.UsuarioId));
-        IdPerfil = long.Parse(userClaims.GetClaimValue(Constantes.ClaimTypes.PerfilId));
+        LimpiarDatosUsuarioLoggedIn();
+
+        if (userClaims?.Identity?.IsAuthenticated != true)
+        {
+            return false;
+        }
+
+        if (!long.TryParse(userClaims.GetClaimValue(Constantes.ClaimTypes.UsuarioId), out var idUsuario))
+        {
+            return false;
+        }
+
+        if (!long.TryParse(userClaims.GetClaimValue(Constantes.ClaimTypes.PerfilId), out var idPerfil))
+        {
+            return false;
+        }
+
+        IdUsuarioLoggedIn = idUsuario;
+        IdPerfil = idPerfil;
         NombreUsuarioLoggedIn = userClaims.GetClaimValue(Constantes.ClaimTypes.NombreUsuario);
         ApellidoUsuarioLoggedIn = userClaims.GetClaimValue(Constantes.ClaimTypes.ApellidoUsuario);
         NombreCompletoUsuarioLoggedIn = userClaims.GetClaimValue(Constantes.ClaimTypes.NombreCompleto);
         CorreoLoggedIn = userClaims.GetClaimValue(Constantes.ClaimTypes.Correo);
         FotoUsuarioLoggedIn = "";
+        return true;
+    }
+
+    private void LimpiarDatosUsuarioLoggedIn()
+    {
+        IdUsuarioLoggedIn = 0;
+        IdPerfil = 0;
+        NombreUsuarioLoggedIn = string.Empty;
+        ApellidoUsuarioLoggedIn = string.Empty;
+        NombreCompletoUsuarioLoggedIn = string.Empty;
+        CorreoLoggedIn = string.Empty;
+        FotoUsuarioLoggedIn = string.Empty;
     }
 
     private void CargarAccesos(HttpContext context)
