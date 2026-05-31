@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.DataProtection;
 using WebClient.Common.Middlewares;
 using WebClient.Configs;
 using WebClient.Extensions;
 using WebClient.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Host.UseCustomLogger();
 
 #region Variables
 IConfiguration configuration = builder.Configuration;
@@ -70,10 +68,7 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-if (environment.IsDevelopment())
-    app.UseExceptionHandler("/Error");
-else
-    app.UseExceptionHandler("/Error");
+app.UseExceptionHandler("/Error");
 
 app.UseRequestLocalization("es-ES");
 app.UseDefaultFiles();
@@ -88,11 +83,7 @@ app.UseAuthentication();
 app.UseSession();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    //pattern: "{controller=Home}/{action=Index}/{id?}")
-    pattern: "{controller=Sesion}/{action=Index}/{id?}")
-    .RequireAuthorization();
+app.MapControllerRoute(name: "default", pattern: "{controller=Sesion}/{action=Index}/{id?}").RequireAuthorization();
 
 app.MapRazorPages();
 app.MapBlazorHub(options => options.CloseOnAuthenticationExpiration = true).RequireAuthorization();

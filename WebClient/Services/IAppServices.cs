@@ -3,6 +3,7 @@ using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Security;
+using Domain.Interfaces.Services.Shared;
 
 namespace WebClient.Services;
 
@@ -29,4 +30,5 @@ public interface IAppServices
     public IUsoMesaService UsoMesaService { get; }
     public IOrdenVentaService OrdenVentaService { get; }
     public IVentaService VentaService { get; }
+    public IArchivoService ArchivoService { get; }
 }

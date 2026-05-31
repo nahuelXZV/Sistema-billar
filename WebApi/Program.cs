@@ -120,6 +120,7 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 app.UseCors(Constantes.CorsPolicies.AllowOrigin);
 app.UseApplicationMiddlewares();
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

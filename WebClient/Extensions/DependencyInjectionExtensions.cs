@@ -10,6 +10,7 @@ using Domain.Interfaces.Services.Security;
 using Domain.Validators.Security;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Sales;
+using Domain.Interfaces.Services.Shared;
 using WebClient.Services.Inventory;
 using Domain.Validators.Inventory;
 using Domain.Interfaces.Services.Configuration;
@@ -20,6 +21,7 @@ using Domain.Validators.Sales;
 using WebClient.Services.Contact;
 using WebClient.Services.Sales;
 using WebClient.Services.Security;
+using WebClient.Services.Shared;
 
 namespace WebClient.Extensions;
 
@@ -73,6 +75,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUsoMesaService, UsoMesaService>();
         services.AddScoped<IOrdenVentaService, OrdenVentaService>();
         services.AddScoped<IVentaService, VentaService>();
+        services.AddScoped<IArchivoService, ArchivoService>();
         #endregion
 
         return services;

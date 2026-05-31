@@ -1,4 +1,7 @@
 @using Microsoft.AspNetCore.Components.Forms
+@using Domain.DTOs.Shared
+@using Domain.Interfaces.Services.Shared
+@inject IArchivoService ArchivoService
 
 <div class="mb-3">
 	<label for="@Id" class="form-label">
@@ -11,10 +14,20 @@
 	<InputFile id="@Id"
 			   class="@InputClass"
 			   OnChange="HandleChange"
-			   multiple="@Multiple" />
+			   multiple="@Multiple"
+			   accept="@Accept"
+			   disabled="@Disabled" />
 	@if (!string.IsNullOrWhiteSpace(HelpText))
 	{
 		<div class="form-text">@HelpText</div>
+	}
+	@if (IsUploading)
+	{
+		<div class="form-text">@UploadingText</div>
+	}
+	@if (!string.IsNullOrWhiteSpace(ErrorMessage))
+	{
+		<div class="invalid-feedback d-block">@ErrorMessage</div>
 	}
 </div>
 
@@ -23,12 +36,68 @@
 	[Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
 	[Parameter] public string InputClass { get; set; } = "form-control";
 	[Parameter] public string? HelpText { get; set; }
+	[Parameter] public string? Accept { get; set; }
 	[Parameter] public bool Required { get; set; }
 	[Parameter] public bool Multiple { get; set; }
+	[Parameter] public bool Disabled { get; set; }
+	[Parameter] public bool UploadOnChange { get; set; } = true;
+	[Parameter] public long MaxFileSize { get; set; } = 10 * 1024 * 1024;
+	[Parameter] public string UploadingText { get; set; } = "Subiendo archivo...";
+	[Parameter] public string? Value { get; set; }
+	[Parameter] public EventCallback<string?> ValueChanged { get; set; }
 	[Parameter] public EventCallback<InputFileChangeEventArgs> OnChange { get; set; }
+	[Parameter] public EventCallback<FileUploadResultDTO> OnUploaded { get; set; }
+	[Parameter] public EventCallback<IReadOnlyList<FileUploadResultDTO>> OnUploadedFiles { get; set; }
+	[Parameter] public EventCallback<string> OnUploadError { get; set; }
+
+	private bool IsUploading { get; set; }
+	private string? ErrorMessage { get; set; }
 
 	private async Task HandleChange(InputFileChangeEventArgs args)
 	{
 		await OnChange.InvokeAsync(args);
+
+		if (!UploadOnChange || args.FileCount == 0)
+		{
+			return;
+		}
+
+		IsUploading = true;
+		ErrorMessage = null;
+
+		try
+		{
+			var uploadedFiles = new List<FileUploadResultDTO>();
+			IEnumerable<IBrowserFile> files = Multiple
+				? args.GetMultipleFiles()
+				: new List<IBrowserFile> { args.File };
+
+			foreach (var file in files)
+			{
+				await using var stream = file.OpenReadStream(MaxFileSize);
+				var uploaded = await ArchivoService.UploadAsync(stream, file.Name, file.ContentType);
+				uploadedFiles.Add(uploaded);
+
+				await OnUploaded.InvokeAsync(uploaded);
+			}
+
+			var selectedUrl = uploadedFiles.FirstOrDefault()?.Url;
+			if (!string.IsNullOrWhiteSpace(selectedUrl))
+			{
+				Value = selectedUrl;
+				await ValueChanged.InvokeAsync(Value);
+			}
+
+			await OnUploadedFiles.InvokeAsync(uploadedFiles);
+		}
+		catch (Exception ex)
+		{
+			ErrorMessage = ex.Message;
+			await OnUploadError.InvokeAsync(ex.Message);
+		}
+		finally
+		{
+			IsUploading = false;
+		}
 	}
 }

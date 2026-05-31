@@ -17,6 +17,5 @@ public static class DependencyInjection
         });
         services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
         services.AddScoped<IDbContext, AppDbContext>();
-
     }
 }

@@ -4,6 +4,7 @@ using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Security;
+using Domain.Interfaces.Services.Shared;
 
 namespace WebClient.Services.Implementacion;
 
@@ -33,6 +34,7 @@ public class AppServices : IAppServices
     private IUsoMesaService _usoMesaService;
     private IOrdenVentaService _ordenVentaService;
     private IVentaService _ventaService;
+    private IArchivoService _archivoService;
 
     public AppServices(IServiceProvider serviceProvider, ILogger<AppServices> logger)
     {
@@ -70,5 +72,9 @@ public class AppServices : IAppServices
     public IUsoMesaService UsoMesaService => _usoMesaService ??= _serviceProvider.GetService<IUsoMesaService>();
     public IOrdenVentaService OrdenVentaService => _ordenVentaService ??= _serviceProvider.GetService<IOrdenVentaService>();
     public IVentaService VentaService => _ventaService ??= _serviceProvider.GetService<IVentaService>();
+    #endregion
+
+    #region SHARED
+    public IArchivoService ArchivoService => _archivoService ??= _serviceProvider.GetService<IArchivoService>();
     #endregion
 }

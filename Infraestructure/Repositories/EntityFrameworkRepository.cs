@@ -10,13 +10,13 @@ namespace Infraestructure.Repositories;
 public class EntityFrameworkRepository<EntityType> : IRepository<EntityType> where EntityType : Entity
 {
     private readonly AppDbContext _context;
+    public IUnitOfWork UnitOfWork => _context;
 
     public EntityFrameworkRepository(AppDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public IUnitOfWork UnitOfWork => _context;
     public async Task<EntityType> AddAsync(EntityType entity)
     {
         return (await _context.Set<EntityType>().AddAsync(entity)).Entity;

@@ -33,19 +33,24 @@
 						</div>
 					}
 				</div>
-
-				<IUInputText Label="Url Imagen"
-							 Placeholder="https://ejemplo.com/imagen.png"
-							 @bind-Value="Categoria.ImagenUrl" />
-				<ValidationMessage For="@(() => Categoria.ImagenUrl)" />
-			</div>
-
-			<div>
 				<IUInputText Label="Nombre"
 							 Placeholder="Escriba el nombre..."
 							 @bind-Value="Categoria.Nombre"
 							 Required="true" />
 				<ValidationMessage For="@(() => Categoria.Nombre)" />
+
+			</div>
+
+			<div>
+				<IUInputFile Label="Subir imagen"
+							 Accept="image/*"
+							 HelpText="Seleccione una imagen para guardarla en el servidor."
+							 @bind-Value="Categoria.ImagenUrl" />
+
+				<IUInputText Label="Url Imagen"
+							 Placeholder="https://ejemplo.com/imagen.png"
+							 @bind-Value="Categoria.ImagenUrl" />
+				<ValidationMessage For="@(() => Categoria.ImagenUrl)" />
 			</div>
 
 			<div>

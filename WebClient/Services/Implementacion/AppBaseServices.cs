@@ -10,7 +10,7 @@ namespace WebClient.Services.Implementacion;
 public class AppBaseServices
 {
     protected readonly string _serviceBaseUrl;
-    private readonly HttpClient _httpClient;
+    protected readonly HttpClient _httpClient;
     protected readonly ILogger _logger;
 
     public AppBaseServices(
@@ -63,6 +63,15 @@ public class AppBaseServices
     {
         var body = new StringContent(content.Serialize(), Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync($"{_serviceBaseUrl}/{uri}", body);
+
+        var cinemaResponse = await ProcessResponse<Response<TResult>>(response);
+        ValidateResponse(cinemaResponse);
+        return cinemaResponse.Data;
+    }
+
+    protected async Task<TResult> PostMultipartAsync<TResult>(string uri, MultipartFormDataContent content) where TResult : new()
+    {
+        var response = await _httpClient.PostAsync($"{_serviceBaseUrl}/{uri}", content);
 
         var cinemaResponse = await ProcessResponse<Response<TResult>>(response);
         ValidateResponse(cinemaResponse);
