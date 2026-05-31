@@ -17,8 +17,11 @@ public partial class TransaccionInventarioCrearComponent
     [Parameter] public List<AlmacenDTO> ListadoAlmacenes { get; set; } = new();
     [Parameter] public List<ProductoDTO> ListadoProductos { get; set; } = new();
     [Parameter] public List<SelectOptionDTO<short>> ListadoTipos { get; set; } = new();
+    public bool IsEditing => TransaccionInventario?.Id > 0;
     public List<TransaccionInventarioDetalleDTO> ListadoDetalles { get; set; } = new();
     public List<LoteDTO> ListadoLotes { get; set; } = new();
+    public List<LoteDTO> ListadoLotesDisponibles =>
+        ListadoProductos.FirstOrDefault(p => p.Id == DetalleDTO.IdProducto)?.ListadoLotes ?? new List<LoteDTO>();
     private TransaccionInventarioDetalleDTO DetalleDTO { get; set; } = new();
     private FluentValidationValidator<TransaccionInventarioDTO> _fvValidator;
     private EditContext? _editContext { get; set; }
@@ -28,8 +31,15 @@ public partial class TransaccionInventarioCrearComponent
 
     protected override void OnInitialized()
     {
+        TransaccionInventario ??= new TransaccionInventarioDTO();
         _editContext = new EditContext(TransaccionInventario);
         _fvValidator = new FluentValidationValidator<TransaccionInventarioDTO>(_editContext, Validator);
+    }
+
+    protected override void OnParametersSet()
+    {
+        TransaccionInventario ??= new TransaccionInventarioDTO();
+        ListadoDetalles = TransaccionInventario.Detalles?.ToList() ?? new();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -84,9 +94,9 @@ public partial class TransaccionInventarioCrearComponent
 
     public async Task AgregarProducto()
     {
-        if (DetalleDTO.IdProducto == 0)
+        if (DetalleDTO.IdProducto == 0 || DetalleDTO.IdAlmacen == 0 || DetalleDTO.Cantidad <= 0)
         {
-            await ShowErrorMessage("Debe seleccionar un producto y asignar una cantidad mayor a cero.");
+            await ShowErrorMessage("Debe seleccionar producto, almacen y una cantidad mayor a cero.");
             return;
         }
         var detalle = ListadoDetalles.Where(pd => pd.IdProducto == DetalleDTO.IdProducto)
@@ -160,6 +170,8 @@ public partial class TransaccionInventarioCrearComponent
     public async Task LoteCreado(LoteDTO lote)
     {
         ListadoLotes.Add(lote);
+        var producto = ListadoProductos.FirstOrDefault(p => p.Id == DetalleDTO.IdProducto);
+        producto?.ListadoLotes?.Add(lote);
         DetalleDTO.IdLote = lote.Id;
         CerrarModalCrearLote();
         await ShowSuccessMessage("Lote creado correctamente");

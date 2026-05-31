@@ -1,4 +1,4 @@
-﻿@using WebClient.Common
+@using WebClient.Common
 @using WebClient.Components
 @using WebClient.Components.Inventory.Almacen
 @using WebClient.Models.Inventory
@@ -40,32 +40,23 @@
 </script>
 
 @section ActionBar {
-	<div class="card card-outline card-primary action-bar">
-		<div class="card-body py-2">
-			<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-				<!-- ZONA IZQUIERDA -->
-				<div class="action-bar-left d-flex gap-2">
-					<button type="button"
-							class="btn btn-outline-secondary btn-sm px-3 py-1"
-							onclick="history.back()">
-						<i class="bi bi-reply-fill"></i>
-						Volver
-					</button>
-					<button id="btn-save" type="button" class="btn btn-primary btn-sm px-3 py-1">
-						<i class="bi bi-floppy-fill mr-1"></i>
-						Guardar
-					</button>
-				</div>
-				<!-- ZONA DERECHA -->
-				<div class="action-bar-right d-flex gap-2">
-				</div>
-			</div>
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="button" class="iu-btn iu-btn-secondary" onclick="history.back()">
+				<i class="bi bi-arrow-left"></i>
+				Volver
+			</button>
+			<button id="btn-save" type="button" class="iu-btn iu-btn-primary">
+				<i class="bi bi-floppy"></i>
+				Guardar
+			</button>
 		</div>
 	</div>
 }
 
-<component type="typeof(MainComponent)"
-		   param-ComponentTypeName="typeof(AlmacenCreateComponent).FullName"
-		   param-Parameters="@componentParameters"
-		   render-mode="ServerPrerendered" />
-
+<section class="iu-show">
+	<component type="typeof(MainComponent)"
+			   param-ComponentTypeName="typeof(AlmacenCreateComponent).FullName"
+			   param-Parameters="@componentParameters"
+			   render-mode="ServerPrerendered" />
+</section>

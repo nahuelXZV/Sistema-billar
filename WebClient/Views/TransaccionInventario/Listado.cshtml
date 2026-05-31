@@ -7,6 +7,7 @@
 	ViewData["Title"] = "Movimientos";
 	ViewData["Module"] = "Movimientos";
 	ViewData["Action"] = "Listado";
+	ViewData["Url"] = Url.Action("Listado", "TransaccionInventario");
 
 	Model.ListaItemsMenu = new List<ItemMenu>
 	{
@@ -14,34 +15,25 @@
 }
 
 @section ActionBar {
-	<div class="card card-outline card-primary action-bar">
-		<div class="card-body py-2">
-			<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-				<!-- ZONA IZQUIERDA -->
-				<form id="FormCrear" asp-controller="TransaccionInventario" asp-action="Crear" method="post" style="display: none;">
-					@Html.AntiForgeryToken()
-				</form>
-				<div class="action-bar-left d-flex gap-2">
-					<button type="submit"
-							form="FormCrear"
-							class="btn btn-primary btn-sm">
-						<i class="bi bi-plus-lg"></i>
-						Crear
-					</button>
-				</div>
-				<!-- ZONA DERECHA -->
-				<div class="action-bar-right d-flex gap-2">
-				</div>
-			</div>
+	<form id="FormCrear" asp-controller="TransaccionInventario" asp-action="Crear" method="post" class="d-none">
+		@Html.AntiForgeryToken()
+	</form>
+
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="submit" form="FormCrear" class="iu-btn iu-btn-primary">
+				<i class="bi bi-plus-lg"></i>
+				Crear movimiento
+			</button>
 		</div>
 	</div>
 }
 
-<div class="card card-outline card-secondary">
-	<div class="card-body p-3">
+<section class="iu-show">
+	<section class="iu-sec">
 		<div id="table-wrapper"></div>
-	</div>
-</div>
+	</section>
+</section>
 @section Scripts {
 	<script>
 		new gridjs.Grid({
@@ -50,18 +42,12 @@
 					name: "Tipo",
 					formatter: (cell) => {
 					  const tipos = {
-						1: 'Ingreso',
-						2: 'Salida',
-						3: 'Merma',
+						1: { text: 'Ingreso', tone: 'tone-primary' },
+						2: { text: 'Salida', tone: 'tone-warning' },
+						3: { text: 'Merma', tone: 'tone-danger' }
 					  };
-					  const colores = {
-						  1: 'primary',
-						  2: 'warning',
-						  3: 'success',
-					  };
-					  return gridjs.html(
-						`<span class="badge bg-${colores[cell]}">${tipos[cell] ?? 'N/A'}</span>`
-					  );
+					  const tipo = tipos[cell] ?? { text: 'N/A', tone: 'tone-warning' };
+					  return gridjs.html(`<span class="iu-chip ${tipo.tone}">${tipo.text}</span>`);
 					}
 			},'Glosa','Transaccion inicial',
 			{

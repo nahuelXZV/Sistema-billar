@@ -1,7 +1,6 @@
 @using Domain.DTOs.Inventory
 @using Domain.DTOs.Sales
 @using Domain.DTOs.Security
-@using WebClient.Components
 @using WebClient.Components.Shared.Elements
 
 @inherits Components.MainBaseComponent;
@@ -9,88 +8,86 @@
 <EditForm EditContext="_editContext">
 	<DataAnnotationsValidator />
 
-	<div class="row">
-		<div class="col-12 col-xl-6">
-			<IUCard>
-				<Header>
-					<h4 class="">Datos del vendedor</h4>
-				</Header>
+	<div class="iu-grid iu-grid-2">
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<h2>@(IsEditing ? "Datos del vendedor" : "Nuevo vendedor")</h2>
+				</div>
+			</div>
 
-				<Body>
-					<div class="row">
-						<div class="col-12 col-md-6">
-							<IUInputText Label="Nombre"
-										 Placeholder="Escriba el nombre..."
-										 @bind-Value="Vendedor.Nombre"
-										 Required=true />
-							<ValidationMessage For=@(() => Vendedor.Nombre) />
-						</div>
+			<div class="iu-form">
+				<div>
+					<IUInputText Label="Nombre"
+								 Placeholder="Escriba el nombre..."
+								 @bind-Value="Vendedor.Nombre"
+								 Required="true" />
+					<ValidationMessage For="@(() => Vendedor.Nombre)" />
+				</div>
 
-						<div class="col-12 col-md-6">
-							<IUInputText Label="Documento"
-										 Placeholder="Escriba el documento..."
-										 @bind-Value="Vendedor.Documento"
-										 Required=true />
-							<ValidationMessage For=@(() => Vendedor.Documento) />
-						</div>
+				<div>
+					<IUInputText Label="Documento"
+								 Placeholder="Escriba el documento..."
+								 @bind-Value="Vendedor.Documento"
+								 Required="true" />
+					<ValidationMessage For="@(() => Vendedor.Documento)" />
+				</div>
 
-						<div class="col-12 col-md-8">
-							<IUSelectFilterComponent TItem="UsuarioDTO"
-													 TValue="long?"
-													 Label="Usuario asociado"
-													 Placeholder="Selecciona un usuario"
-													 Options="@ListaUsuarios"
-													 GetText="GetUsuarioText"
-													 GetValue="GetUsuarioValue"
-													 @bind-Value="Vendedor.IdUsuario" />
-							<ValidationMessage For=@(() => Vendedor.IdUsuario) />
-						</div>
-						<div class="col-12 col-md-8">
-							<IUSelectFilterComponent TItem="ListaPrecioDTO"
-													 TValue="long?"
-													 Label="Lista de precios"
-													 Placeholder="Selecciona una lista"
-													 Options="@ListaPreciosDisponibles"
-													 GetText="GetListaPrecioText"
-													 GetValue="GetListaPrecioValue"
-													 @bind-Value="Vendedor.IdListaPrecio" />
-							<ValidationMessage For=@(() => Vendedor.IdListaPrecio) />
-						</div>
-						<div class="col-12 col-md-4">
-							<label class="d-none d-md-block invisible mb-2">Activo</label>
-							<IUInputCheckbox Label="Activo" @bind-Value="Vendedor.Activo" />
-						</div>
-					</div>
-				</Body>
-			</IUCard>
-		</div>
-		<div class="col-12 col-xl-6">
-			<IUCard>
-				<Header>
-					<h4 class="">Almacenes asociados</h4>
-				</Header>
+				<div>
+					<IUSelectFilterComponent TItem="UsuarioDTO"
+											 TValue="long?"
+											 Label="Usuario asociado"
+											 Placeholder="Selecciona un usuario"
+											 Options="@ListaUsuarios"
+											 GetText="GetUsuarioText"
+											 GetValue="GetUsuarioValue"
+											 @bind-Value="Vendedor.IdUsuario" />
+					<ValidationMessage For="@(() => Vendedor.IdUsuario)" />
+				</div>
 
-				<Body>
-					@if (ListaAlmacenesDisponibles.Count == 0)
+				<div>
+					<IUSelectFilterComponent TItem="ListaPrecioDTO"
+											 TValue="long?"
+											 Label="Lista de precios"
+											 Placeholder="Selecciona una lista"
+											 Options="@ListaPreciosDisponibles"
+											 GetText="GetListaPrecioText"
+											 GetValue="GetListaPrecioValue"
+											 @bind-Value="Vendedor.IdListaPrecio" />
+					<ValidationMessage For="@(() => Vendedor.IdListaPrecio)" />
+				</div>
+
+				<div class="iu-span-2">
+					<IUInputCheckbox Label="Activo" @bind-Value="Vendedor.Activo" />
+				</div>
+			</div>
+		</section>
+
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<h2>Almacenes asociados</h2>
+				</div>
+			</div>
+
+			@if (ListaAlmacenesDisponibles.Count == 0)
+			{
+				<p class="iu-note mb-0">Sin almacenes disponibles.</p>
+			}
+			else
+			{
+				<div class="iu-list">
+					@foreach (var almacen in ListaAlmacenesDisponibles)
 					{
-						<p class="text-muted mb-0">No hay almacenes disponibles para asociar.</p>
-					}
-					else
-					{
-						<div class="row">
-							@foreach (var almacen in ListaAlmacenesDisponibles)
-							{
-								var isChecked = ListaAlmacenesSeleccionados.Contains(almacen.Id);
-								<div class="col-12 mb-2">
-									<IUInputCheckbox Label="@almacen.Nombre"
-													 Value="@isChecked"
-													 ValueChanged="@(value => OnAlmacenSeleccionChanged(almacen.Id, value))" />
-								</div>
-							}
+						var isChecked = ListaAlmacenesSeleccionados.Contains(almacen.Id);
+						<div class="iu-item">
+							<IUInputCheckbox Label="@almacen.Nombre"
+											 Value="@isChecked"
+											 ValueChanged="@(value => OnAlmacenSeleccionChanged(almacen.Id, value))" />
 						</div>
 					}
-				</Body>
-			</IUCard>
-		</div>
+				</div>
+			}
+		</section>
 	</div>
 </EditForm>

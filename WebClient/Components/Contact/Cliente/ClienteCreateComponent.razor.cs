@@ -12,12 +12,14 @@ public partial class ClienteCreateComponent
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public IValidator<ClienteDTO> Validator { get; set; }
     [Parameter] public ClienteDTO Cliente { get; set; }
+    public bool IsEditing => Cliente?.Id > 0;
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<ClienteCreateComponent>? _objectHelper;
     private FluentValidationValidator<ClienteDTO> _fvValidator;
 
     protected override void OnInitialized()
     {
+        Cliente ??= new ClienteDTO();
         _editContext = new EditContext(Cliente);
         _fvValidator = new FluentValidationValidator<ClienteDTO>(_editContext, Validator);
     }

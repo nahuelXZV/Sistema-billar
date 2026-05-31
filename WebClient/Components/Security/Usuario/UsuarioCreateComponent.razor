@@ -4,82 +4,84 @@
 
 @inherits Components.MainBaseComponent;
 
-<IUCard>
-	<Header>
-		<h4 class="">Datos del usuario</h4>
-	</Header>
-
-	<Body>
-		<EditForm EditContext="_editContext">
-			<DataAnnotationsValidator />
-
-			<div class="row">
-				<div class="col-12 col-md-4">
+<EditForm EditContext="_editContext">
+	<DataAnnotationsValidator />
+	<div class="iu-show">
+		<section class="iu-sec">
+			<div class="iu-grid-2">
+				<div>
 					<IUInputText Label="Nombre"
 								 Placeholder="Escriba el nombre..."
 								 @bind-Value="Usuario.Nombre"
 								 Required=true />
-					<ValidationMessage For=@(() => Usuario.Nombre) />
+					<ValidationMessage For="@(() => Usuario.Nombre)" />
 				</div>
-				<div class="col-12 col-md-4">
+
+				<div>
 					<IUInputText Label="Apellido"
 								 Placeholder="Escriba el apellido..."
 								 @bind-Value="Usuario.Apellido"
 								 Required=true />
-					<ValidationMessage For="() => Usuario.Apellido" />
+					<ValidationMessage For="@(() => Usuario.Apellido)" />
 				</div>
-				<div class="col-12 col-md-4">
+
+				<div>
 					<IUInputText Label="Username"
 								 Placeholder="Escriba el username..."
 								 @bind-Value="Usuario.Username"
 								 Required=true />
-					<ValidationMessage For="() => Usuario.Username" />
+					<ValidationMessage For="@(() => Usuario.Username)" />
 				</div>
 
-				<div class="col-12 col-md-4">
+				<div>
 					<IUInputText Label="Correo"
 								 Placeholder="Escriba el correo..."
 								 @bind-Value="Usuario.Email"
 								 Required=true />
-					<ValidationMessage For="() => Usuario.Email" />
+					<ValidationMessage For="@(() => Usuario.Email)" />
 				</div>
 
-				<div class="col-12 col-md-4">
+				<div>
 					<IUSelect TItem="PerfilDTO"
 							  TValue="long"
-							  Label="Selecciona un perfil"
+							  Label="Perfil"
 							  Placeholder="Escoge un perfil"
 							  Options="@ListaPerfiles"
 							  GetText="@(c => c.Nombre)"
 							  GetValue="@(c => c.Id)"
 							  @bind-Value="Usuario.PerfilId"
 							  Required="true" />
-					<ValidationMessage For="() => Usuario.PerfilId" />
+					<ValidationMessage For="@(() => Usuario.PerfilId)" />
 				</div>
 
-				@if (Usuario.Id != 0)
+				@if (ShowPasswordField)
 				{
-					<div class="col-12 col-md-1">
-						<label class="d-none d-md-block invisible mb-2">Activo</label>
-						<IUInputCheckbox Label="Activo" @bind-Value="Usuario.Activo" />
-					</div>
-
-					<div class="col-12 col-md-2">
-						<label class="d-none d-md-block invisible mb-2">Check</label>
-						<IUInputCheckbox Label="Modificar Contraseña" @bind-Value="ModificarContraseña" />
-					</div>
-				}
-				@if (ModificarContraseña || Usuario.Id == 0)
-				{
-					<div class="col-12 col-md-4">
-						<IUInputPassword Label="Contraseña"
-										 Placeholder="Escriba la contraseña..."
+					<div>
+						<IUInputPassword Label="Contrasena"
+										 Placeholder="Escriba la contrasena..."
 										 @bind-Value="Usuario.Password"
 										 Required=true />
-						<ValidationMessage For="() => Usuario.Password" />
+						<ValidationMessage For="@(() => Usuario.Password)" />
+					</div>
+				}
+
+				@if (IsEditing)
+				{
+					<div class="iu-span-2">
+						<div class="iu-checks">
+							<div class="iu-check">
+								<IUInputCheckbox Label="Usuario activo" @bind-Value="Usuario.Activo" />
+								<p>Permite el acceso normal al sistema y mantiene visible la cuenta para operaciones diarias.</p>
+							</div>
+
+							<div class="iu-check">
+								<IUInputCheckbox Label="Modificar contrasena" @bind-Value="ModificarContrasena" />
+								<p>Activa el campo de clave solo cuando sea necesario cambiar las credenciales del usuario.</p>
+							</div>
+						</div>
 					</div>
 				}
 			</div>
-		</EditForm>
-	</Body>
-</IUCard>
+		</section>
+	</div>
+</EditForm>

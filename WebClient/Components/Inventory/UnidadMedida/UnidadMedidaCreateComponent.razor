@@ -1,47 +1,47 @@
-﻿@using Domain.DTOs.Security;
-@using WebClient.Components
-@using WebClient.Components.Shared.Elements
 @using Domain.DTOs.Shared;
+@using WebClient.Components.Shared.Elements
 
 @inherits Components.MainBaseComponent;
 
-<IUCard>
-	<Header>
-		<h4 class="">Datos de la unidad</h4>
-	</Header>
+<section class="iu-sec">
+	<div class="iu-head">
+		<div>
+			<h2>@(IsEditing ? "Datos de la unidad" : "Nueva unidad")</h2>
+		</div>
+	</div>
 
-	<Body>
-		<EditForm EditContext="_editContext">
-			<DataAnnotationsValidator />
+	<EditForm EditContext="_editContext">
+		<DataAnnotationsValidator />
 
-			<div class="row">
-				<div class="col-12 col-md-4">
-					<IUInputText Label="Nombre"
-								 Placeholder="Escriba el nombre..."
-								 @bind-Value="Unidad.Nombre"
-								 Required=true />
-					<ValidationMessage For=@(() => Unidad.Nombre) />
-				</div>
-				<div class="col-12 col-md-4">
-					<IUInputText Label="Abreviatura"
-								 Placeholder="Escribe una abreviatura"
-								 @bind-Value="Unidad.Abreviatura"
-								 Required=true />
-					<ValidationMessage For="() => Unidad.Abreviatura" />
-				</div>
-				<div class="col-12 col-md-4">
-					<IUSelect TItem="SelectOptionDTO<int>"
-							  TValue="int"
-							  Label="Seleccionar Tipo"
-							  Placeholder="Seleccionar un tipo"
-							  Options="@ListaUnidades"
-							  GetText="@(c => c.Label)"
-							  GetValue="@(c => c.Value)"
-							  @bind-Value="Unidad.Tipo"
-							  Required="true" />
-					<ValidationMessage For="() => Unidad.Tipo" />
-				</div>
+		<div class="iu-form">
+			<div>
+				<IUInputText Label="Nombre"
+							 Placeholder="Escriba el nombre..."
+							 @bind-Value="Unidad.Nombre"
+							 Required="true" />
+				<ValidationMessage For="@(() => Unidad.Nombre)" />
 			</div>
-		</EditForm>
-	</Body>
-</IUCard>
+
+			<div>
+				<IUInputText Label="Abreviatura"
+							 Placeholder="Escribe una abreviatura"
+							 @bind-Value="Unidad.Abreviatura"
+							 Required="true" />
+				<ValidationMessage For="@(() => Unidad.Abreviatura)" />
+			</div>
+
+			<div>
+				<IUSelect TItem="SelectOptionDTO<int>"
+						  TValue="int"
+						  Label="Tipo"
+						  Placeholder="Seleccionar un tipo"
+						  Options="@ListaUnidades"
+						  GetText="@(c => c.Label)"
+						  GetValue="@(c => c.Value)"
+						  @bind-Value="Unidad.Tipo"
+						  Required="true" />
+				<ValidationMessage For="@(() => Unidad.Tipo)" />
+			</div>
+		</div>
+	</EditForm>
+</section>

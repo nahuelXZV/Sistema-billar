@@ -15,6 +15,7 @@ public partial class UnidadMedidaCreateComponent
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public IValidator<UnidadMedidaDTO> Validator { get; set; }
     [Parameter] public UnidadMedidaDTO Unidad { get; set; }
+    public bool IsEditing => Unidad?.Id > 0;
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<UnidadMedidaCreateComponent>? _objectHelper;
     private List<SelectOptionDTO<int>> ListaUnidades { get; set; }
@@ -22,6 +23,7 @@ public partial class UnidadMedidaCreateComponent
 
     protected override void OnInitialized()
     {
+        Unidad ??= new UnidadMedidaDTO();
         _editContext = new EditContext(Unidad);
         _fvValidator = new FluentValidationValidator<UnidadMedidaDTO>(_editContext, Validator);
         ListaUnidades = new List<SelectOptionDTO<int>>()

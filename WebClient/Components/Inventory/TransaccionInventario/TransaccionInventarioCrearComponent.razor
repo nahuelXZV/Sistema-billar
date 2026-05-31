@@ -1,166 +1,172 @@
-﻿@using Domain.DTOs.Security;
-@using WebClient.Components
-@using WebClient.Components.Inventory.Lote
-@using WebClient.Components.Shared.Elements
 @using Domain.DTOs.Inventory;
 @using Domain.DTOs.Shared;
+@using WebClient.Components.Inventory.Lote
+@using WebClient.Components.Shared.Elements
 
 @inherits Components.MainBaseComponent;
 
-<div class="d-flex flex-column flex-md-row gap-1">
-	<IUCard CustomClass="col-12 col-md-5">
-		<Header>
-			<h4 class="">Datos del movimiento</h4>
-		</Header>
+<EditForm EditContext="_editContext">
+	<DataAnnotationsValidator />
 
-		<Body>
-			<EditForm EditContext="_editContext">
-				<DataAnnotationsValidator />
-				<div class="row">
-					<div class="col-12 col-md-12">
-						<div class="row">
-							<div class="col-12 col-md-6">
-								<IUInputDatetime Label="Fecha"
-												 @bind-Value="TransaccionInventario.Fecha"
-												 Required="true" />
-								<ValidationMessage For="@(() => TransaccionInventario.Fecha)" />
-							</div>
-							<div class="col-12 col-md-6">
-								<IUSelect TItem="SelectOptionDTO<short>"
-										  TValue="short"
-										  Label="Tipo movimiento"
-										  Placeholder="Selecciona un movimiento"
-										  Options="@ListadoTipos"
-										  GetText="@(c => c.Label)"
-										  GetValue="@(c => c.Value)"
-										  @bind-Value="TransaccionInventario.Tipo" />
-								<ValidationMessage For="@(() => TransaccionInventario.Tipo)" />
-							</div>
-							<div class="col-12">
-								<IUTextArea Label="Glosa"
-											Placeholder="Escribe una descripción..."
-											@bind-Value="TransaccionInventario.Glosa" />
-								<ValidationMessage For="@(() => TransaccionInventario.Glosa)" />
-							</div>
-						</div>
-					</div>
+	<div class="iu-grid iu-grid-2">
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<h2>@(IsEditing ? "Datos del movimiento" : "Nuevo movimiento")</h2>
 				</div>
-			</EditForm>
-		</Body>
-	</IUCard>
-	<IUCard CustomClass="col-12 col-md-7">
-		<Header>
-			<h4 class="">Detalle productos</h4>
-		</Header>
-
-		<Body>
-			<div class="row">
-				<div class="row">
-					<div class="col-12 col-md-6">
-						<IUSelectFilterComponent TItem="ProductoDTO"
-												 TValue="long"
-												 Label="Producto"
-												 Placeholder="Selecciona un producto"
-												 Options="@ListadoProductos"
-												 GetText="@(c => c.Nombre)"
-												 GetValue="@(c => c.Id)"
-												 @bind-Value="DetalleDTO.IdProducto" />
-					</div>
-					<div class="col-12 col-md-4">
-						@{
-							ListadoLotes = ListadoProductos.FirstOrDefault(p => p.Id == DetalleDTO.IdProducto)?.ListadoLotes ?? new List<LoteDTO>();
-						}
-						<IUSelectFilterComponent TItem="LoteDTO"
-												 TValue="long?"
-												 Label="Lote"
-												 Placeholder="Selecciona un lote"
-												 Options="@ListadoLotes"
-												 GetText="@(c => c.Codigo)"
-												 GetValue="@(c => c.Id)"
-												 @bind-Value="DetalleDTO.IdLote" />
-					</div>
-					<div class="col-10 col-md-2">
-						<label class="d-none d-md-block invisible mb-2">Nuevo Lote</label>
-						<IUButton IconCss="bi bi-plus-lg"
-								  Text="Lote"
-								  OnClick="AbrirModalCrearLote" />
-					</div>
-					<div class="col-12 col-md-7">
-						<IUSelectFilterComponent TItem="AlmacenDTO"
-												 TValue="long"
-												 Label="Almacen"
-												 Placeholder="Selecciona un almacen"
-												 Options="@ListadoAlmacenes"
-												 GetText="@(c => c.Nombre)"
-												 GetValue="@(c => c.Id)"
-												 @bind-Value="DetalleDTO.IdAlmacen" />
-					</div>
-					<div class="col-12 col-md-3">
-						<div class="mb-3">
-							<label class="form-label">Cantidad</label>
-							<input type="number"
-								   class="form-control"
-								   placeholder="0"
-								   @bind-value="DetalleDTO.Cantidad" />
-						</div>
-					</div>
-
-					<div class="col-12 col-md-2">
-						<label class="d-none d-md-block invisible mb-2">Agregar</label>
-						<IUButton IconCss="bi bi-plus-lg"
-								  Text="Agregar"
-								  OnClick="AgregarProducto" />
-					</div>
-				</div>
-				@if (ListadoDetalles.Count > 0)
-				{
-					<table class="table table-bordered mt-4">
-						<thead>
-							<tr>
-								<th>Producto</th>
-								<th>Almacen</th>
-								<th>Lote</th>
-								<th>Cantidad</th>
-								<th>Acciones</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var item in ListadoDetalles)
-							{
-								<tr>
-									<td>@item.NombreProducto</td>
-									<td>@item.NombreAlmacen</td>
-									<td>@item.CodigoLote</td>
-									<td>@item.Cantidad</td>
-									<td>
-										<button class="btn btn-primary btn-sm" @onclick="() => Editar(item.IdProducto, item.IdLote, item.IdAlmacen)">
-											<i class="bi bi-pencil"></i> Editar
-										</button>
-										<button class="btn btn-danger btn-sm" @onclick="() => EliminarDetalle(item.IdProducto, item.IdLote, item.IdAlmacen)">
-											<i class="bi bi-trash"></i> Eliminar
-										</button>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				}
-				else
-				{
-					<p class="mt-3">No hay productos asociados.</p>
-				}
 			</div>
-		</Body>
-	</IUCard>
-</div>
 
+			<div class="iu-form">
+				<div>
+					<IUInputDatetime Label="Fecha"
+									 @bind-Value="TransaccionInventario.Fecha"
+									 Required="true" />
+					<ValidationMessage For="@(() => TransaccionInventario.Fecha)" />
+				</div>
 
-<IUModal Title="Editar Producto" @bind-Visible="MostrarModalLote">
+				<div>
+					<IUSelect TItem="SelectOptionDTO<short>"
+							  TValue="short"
+							  Label="Tipo movimiento"
+							  Placeholder="Selecciona un movimiento"
+							  Options="@ListadoTipos"
+							  GetText="@(c => c.Label)"
+							  GetValue="@(c => c.Value)"
+							  @bind-Value="TransaccionInventario.Tipo" />
+					<ValidationMessage For="@(() => TransaccionInventario.Tipo)" />
+				</div>
+
+				<div class="iu-span-2">
+					<IUTextArea Label="Glosa"
+								Placeholder="Escribe una descripcion..."
+								@bind-Value="TransaccionInventario.Glosa" />
+					<ValidationMessage For="@(() => TransaccionInventario.Glosa)" />
+				</div>
+			</div>
+		</section>
+
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<h2>Detalle productos</h2>
+				</div>
+			</div>
+
+			<div class="iu-form">
+				<div>
+					<IUSelectFilterComponent TItem="ProductoDTO"
+											 TValue="long"
+											 Label="Producto"
+											 Placeholder="Selecciona un producto"
+											 Options="@ListadoProductos"
+											 GetText="@(c => c.Nombre)"
+											 GetValue="@(c => c.Id)"
+											 @bind-Value="DetalleDTO.IdProducto" />
+				</div>
+
+				<div>
+					<IUSelectFilterComponent TItem="LoteDTO"
+											 TValue="long?"
+											 Label="Lote"
+											 Placeholder="Selecciona un lote"
+											 Options="@ListadoLotesDisponibles"
+											 GetText="@(c => c.Codigo)"
+											 GetValue="@(c => c.Id)"
+											 @bind-Value="DetalleDTO.IdLote" />
+				</div>
+
+				<div>
+					<IUSelectFilterComponent TItem="AlmacenDTO"
+											 TValue="long"
+											 Label="Almacen"
+											 Placeholder="Selecciona un almacen"
+											 Options="@ListadoAlmacenes"
+											 GetText="@(c => c.Nombre)"
+											 GetValue="@(c => c.Id)"
+											 @bind-Value="DetalleDTO.IdAlmacen" />
+				</div>
+
+				<div>
+					<IUInputNumeric TValue="double"
+									Label="Cantidad"
+									Placeholder="0"
+									@bind-Value="DetalleDTO.Cantidad" />
+				</div>
+
+				<div class="iu-span-2 d-flex flex-wrap gap-2">
+					<button type="button" class="iu-btn iu-btn-secondary" @onclick="AbrirModalCrearLote">
+						<i class="bi bi-box-seam"></i>
+						Nuevo lote
+					</button>
+
+					<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarProducto">
+						<i class="bi bi-plus-lg"></i>
+						Agregar
+					</button>
+				</div>
+
+				<div class="iu-span-2">
+					@if (ListadoDetalles.Count > 0)
+					{
+						<div class="iu-table">
+							<table class="inv-table">
+								<thead>
+									<tr>
+										<th>Producto</th>
+										<th>Almacen</th>
+										<th>Lote</th>
+										<th>Cantidad</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var item in ListadoDetalles)
+									{
+										<tr>
+											<td>@item.NombreProducto</td>
+											<td>@item.NombreAlmacen</td>
+											<td>@item.CodigoLote</td>
+											<td>@item.Cantidad</td>
+											<td>
+												<div class="d-flex flex-wrap gap-2">
+													<button type="button" class="iu-btn iu-btn-secondary" @onclick="() => Editar(item.IdProducto, item.IdLote, item.IdAlmacen)">
+														<i class="bi bi-pencil"></i>
+														Editar
+													</button>
+													<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarDetalle(item.IdProducto, item.IdLote, item.IdAlmacen)">
+														<i class="bi bi-trash"></i>
+														Eliminar
+													</button>
+												</div>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+					else
+					{
+						<p class="iu-note mb-0">Sin productos agregados.</p>
+					}
+				</div>
+			</div>
+		</section>
+	</div>
+</EditForm>
+
+<IUModal Title="Nuevo lote" @bind-Visible="MostrarModalLote">
 	<Body>
 		<LoteCreateComponent @ref="ModalCrearLoteComponent" OnLoteCreated="prop => LoteCreado(prop)" IdProducto="DetalleDTO.IdProducto" />
 	</Body>
 	<Footer>
-		<IUButton Text="Cancelar" OnClick="CerrarModalCrearLote" CssClass="btn btn-danger btn-sm px-3 py-1" IconCss="bi bi-x-circle-fill" />
-		<IUButton Text="Guardar" OnClick="GuardarLote" />
+		<button type="button" class="iu-btn iu-btn-secondary" @onclick="CerrarModalCrearLote">
+			<i class="bi bi-x-circle"></i>
+			Cancelar
+		</button>
+		<button type="button" class="iu-btn iu-btn-primary" @onclick="GuardarLote">
+			<i class="bi bi-floppy"></i>
+			Guardar
+		</button>
 	</Footer>
 </IUModal>

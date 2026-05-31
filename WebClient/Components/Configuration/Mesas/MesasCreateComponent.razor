@@ -1,42 +1,41 @@
-﻿@using Domain.DTOs.Security;
-@using WebClient.Components
-@using WebClient.Components.Shared.Elements
 @using Domain.DTOs.Configuration;
+@using WebClient.Components.Shared.Elements
 
 @inherits Components.MainBaseComponent;
 
-<IUCard>
-	<Header>
-		<h4 class="">Datos de la mesa</h4>
-	</Header>
+<section class="iu-sec">
+	<div class="iu-head">
+		<div>
+			<h2>@(IsEditing ? "Datos de la mesa" : "Nueva mesa")</h2>
+		</div>
+	</div>
 
-	<Body>
-		<EditForm EditContext="_editContext">
-			<DataAnnotationsValidator />
+	<EditForm EditContext="_editContext">
+		<DataAnnotationsValidator />
 
-			<div class="row">
-				<div class="col-12 col-md-4">
-					<IUInputText Label="Nombre"
-								 Placeholder="Escriba el nombre..."
-								 @bind-Value="Mesa.Nombre"
-								 Required=true />
-					<ValidationMessage For=@(() => Mesa.Nombre) />
-				</div>
-				<div class="col-12 col-md-4">
-					<IUSelectFilterComponent TItem="TipoMesaDTO"
-											 TValue="long"
-											 Label="Tipo de mesa"
-											 Placeholder="Selecciona un tipo de mesa"
-											 Options="@ListaTipoMesas"
-											 GetText="@(c => c.Nombre)"
-											 GetValue="@(c => c.Id)"
-											 @bind-Value="Mesa.IdTipoMesa" />
-				</div>
-				<div class="col-12 col-md-4">
-					<label class="d-none d-md-block invisible mb-2">Activo</label>
-					<IUInputCheckbox Label="Activo" @bind-Value="Mesa.Activo" />
-				</div>
+		<div class="iu-form">
+			<div>
+				<IUInputText Label="Nombre"
+							 Placeholder="Escriba el nombre..."
+							 @bind-Value="Mesa.Nombre"
+							 Required="true" />
+				<ValidationMessage For="@(() => Mesa.Nombre)" />
 			</div>
-		</EditForm>
-	</Body>
-</IUCard>
+
+			<div>
+				<IUSelectFilterComponent TItem="TipoMesaDTO"
+										 TValue="long"
+										 Label="Tipo de mesa"
+										 Placeholder="Selecciona un tipo de mesa"
+										 Options="@ListaTipoMesas"
+										 GetText="@(c => c.Nombre)"
+										 GetValue="@(c => c.Id)"
+										 @bind-Value="Mesa.IdTipoMesa" />
+			</div>
+
+			<div>
+				<IUInputCheckbox Label="Activo" @bind-Value="Mesa.Activo" />
+			</div>
+		</div>
+	</EditForm>
+</section>

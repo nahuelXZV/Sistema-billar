@@ -14,6 +14,7 @@ public partial class CategoriaCreateComponent
     [Parameter] public EventCallback OnCategoriaCreated { get; set; }
     private EditContext? _editContext { get; set; }
     private FluentValidationValidator<CategoriaDTO> _fvValidator;
+    private bool IsEditing => Categoria?.Id > 0;
 
     protected override void OnInitialized()
     {

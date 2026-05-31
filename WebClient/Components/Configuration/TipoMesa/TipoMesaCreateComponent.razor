@@ -1,42 +1,41 @@
-﻿@using Domain.DTOs.Security;
-@using WebClient.Components
-@using WebClient.Components.Shared.Elements
 @using Domain.DTOs.Inventory;
+@using WebClient.Components.Shared.Elements
 
 @inherits Components.MainBaseComponent;
 
-<IUCard>
-	<Header>
-		<h4 class="">Datos del tipo de mesa</h4>
-	</Header>
+<section class="iu-sec">
+	<div class="iu-head">
+		<div>
+			<h2>@(IsEditing ? "Datos del tipo de mesa" : "Nuevo tipo de mesa")</h2>
+		</div>
+	</div>
 
-	<Body>
-		<EditForm EditContext="_editContext">
-			<DataAnnotationsValidator />
+	<EditForm EditContext="_editContext">
+		<DataAnnotationsValidator />
 
-			<div class="row">
-				<div class="col-12 col-md-4">
-					<IUInputText Label="Nombre"
-								 Placeholder="Escriba el nombre..."
-								 @bind-Value="TipoMesa.Nombre"
-								 Required=true />
-					<ValidationMessage For=@(() => TipoMesa.Nombre) />
-				</div>
-				<div class="col-12 col-md-4">
-					<IUSelectFilterComponent TItem="ProductoDTO"
-											 TValue="long?"
-											 Label="Producto"
-											 Placeholder="Selecciona un producto"
-											 Options="@ListaProductos"
-											 GetText="@(c => c.Nombre)"
-											 GetValue="@(c => c.Id)"
-											 @bind-Value="TipoMesa.IdProducto" />
-				</div>
-				<div class="col-12 col-md-4">
-					<label class="d-none d-md-block invisible mb-2">Cobra por tiempo</label>
-					<IUInputCheckbox Label="Cobra por tiempo" @bind-Value="TipoMesa.CobroPorTiempo" />
-				</div>
+		<div class="iu-form">
+			<div>
+				<IUInputText Label="Nombre"
+							 Placeholder="Escriba el nombre..."
+							 @bind-Value="TipoMesa.Nombre"
+							 Required="true" />
+				<ValidationMessage For="@(() => TipoMesa.Nombre)" />
 			</div>
-		</EditForm>
-	</Body>
-</IUCard>
+
+			<div>
+				<IUSelectFilterComponent TItem="ProductoDTO"
+										 TValue="long?"
+										 Label="Producto"
+										 Placeholder="Selecciona un producto"
+										 Options="@ListaProductos"
+										 GetText="@(c => c.Nombre)"
+										 GetValue="@(c => c.Id)"
+										 @bind-Value="TipoMesa.IdProducto" />
+			</div>
+
+			<div>
+				<IUInputCheckbox Label="Cobra por tiempo" @bind-Value="TipoMesa.CobroPorTiempo" />
+			</div>
+		</div>
+	</EditForm>
+</section>

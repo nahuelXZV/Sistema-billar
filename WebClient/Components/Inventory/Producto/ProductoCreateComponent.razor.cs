@@ -19,19 +19,24 @@ public partial class ProductoCreateComponent
     [Parameter] public List<SelectOptionDTO<short>> ListaTiposProductos { get; set; } = new();
     public ProductoCompuestoDTO ProdCompuesto { get; set; } = new();
     public List<ProductoCompuestoDTO> ListadoProdCompuesto { get; set; } = new();
+    public bool IsEditing => Producto?.Id > 0;
+    public List<ProductoDTO> ListadoProductosDisponibles =>
+        ListadoProductos.Where(p => p.Id != Producto?.Id).ToList();
     private FluentValidationValidator<ProductoDTO> _fvValidator;
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<ProductoCreateComponent>? _objectHelper;
 
     protected override void OnInitialized()
     {
+        Producto ??= new ProductoDTO();
         _editContext = new EditContext(Producto);
         _fvValidator = new FluentValidationValidator<ProductoDTO>(_editContext, Validator);
     }
 
     protected override void OnParametersSet()
     {
-        ListadoProdCompuesto = Producto?.ProductosCompuestos ?? new();
+        Producto ??= new ProductoDTO();
+        ListadoProdCompuesto = Producto.ProductosCompuestos?.ToList() ?? new();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

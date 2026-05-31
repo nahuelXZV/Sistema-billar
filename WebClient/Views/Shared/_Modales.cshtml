@@ -23,34 +23,45 @@
 
 <!-- Modal Confirmación -->
 <div class="modal fade" id="modal-confirm" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-md">
-		<div class="modal-content">
+	<div class="modal-dialog modal-dialog-centered modal-md iu-confirm-dialog">
+		<div class="modal-content iu-confirm-modal">
 
-			<div class="modal-header">
-				<h5 class="modal-title">
-					<i class="bi bi-exclamation-triangle text-warning me-2"></i>
-					Confirmar acción
-				</h5>
+			<div class="modal-header iu-confirm-head">
+				<div class="iu-confirm-title">
+					<span class="iu-confirm-icon">
+						<i class="bi bi-exclamation-triangle"></i>
+					</span>
+					<div class="iu-confirm-copy">
+						<strong>Confirmar accion</strong>
+						<span>Revisa la operacion antes de continuar.</span>
+					</div>
+				</div>
 				<button type="button"
-						class="btn-close"
-						data-bs-dismiss="modal">
+						class="iu-btn-close iu-confirm-close"
+						data-bs-dismiss="modal"
+						aria-label="Cerrar">
+					<i class="bi bi-x-lg"></i>
 				</button>
 			</div>
 
-			<div class="modal-body" id="modalBody">
-				<!-- Mensaje dinámico -->
+			<div class="modal-body iu-confirm-body">
+				<div class="iu-confirm-note">
+					<div class="iu-confirm-message" id="modalBody">
+						<!-- Mensaje dinámico -->
+					</div>
+				</div>
 			</div>
 
-			<div class="modal-footer">
+			<div class="modal-footer iu-confirm-foot">
 				<button type="button"
-						class="btn btn-secondary btn-sm"
+						class="iu-btn iu-btn-secondary"
 						id="btn-modal-cancelar"
 						data-bs-dismiss="modal">
 					Cancelar
 				</button>
 
 				<button type="button"
-						class="btn btn-danger btn-sm"
+						class="iu-btn iu-btn-danger"
 						id="btn-modal-confirmar">
 					Confirmar
 				</button>

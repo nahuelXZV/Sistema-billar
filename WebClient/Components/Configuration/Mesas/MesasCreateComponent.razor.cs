@@ -13,12 +13,14 @@ public partial class MesasCreateComponent
     [Inject] public IValidator<MesaDTO> Validator { get; set; }
     [Parameter] public MesaDTO Mesa { get; set; }
     [Parameter] public List<TipoMesaDTO> ListaTipoMesas { get; set; }
+    public bool IsEditing => Mesa?.Id > 0;
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<MesasCreateComponent>? _objectHelper;
     private FluentValidationValidator<MesaDTO> _fvValidator;
 
     protected override void OnInitialized()
     {
+        Mesa ??= new MesaDTO();
         _editContext = new EditContext(Mesa);
         _fvValidator = new FluentValidationValidator<MesaDTO>(_editContext, Validator);
     }

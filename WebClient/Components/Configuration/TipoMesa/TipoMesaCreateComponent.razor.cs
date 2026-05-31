@@ -14,12 +14,14 @@ public partial class TipoMesaCreateComponent
     [Inject] public IValidator<TipoMesaDTO> Validator { get; set; }
     [Parameter] public TipoMesaDTO TipoMesa { get; set; }
     [Parameter] public List<ProductoDTO> ListaProductos { get; set; }
+    public bool IsEditing => TipoMesa?.Id > 0;
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<TipoMesaCreateComponent>? _objectHelper;
     private FluentValidationValidator<TipoMesaDTO> _fvValidator;
 
     protected override void OnInitialized()
     {
+        TipoMesa ??= new TipoMesaDTO();
         _editContext = new EditContext(TipoMesa);
         _fvValidator = new FluentValidationValidator<TipoMesaDTO>(_editContext, Validator);
     }

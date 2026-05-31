@@ -1,33 +1,33 @@
-﻿@using Domain.DTOs.Security;
 @using WebClient.Components
 @using WebClient.Components.Shared.Elements
 
 @inherits Components.MainBaseComponent;
 
-<IUCard>
-	<Header>
-		<h4 class="">Datos del almacen</h4>
-	</Header>
+<EditForm EditContext="_editContext">
+	<DataAnnotationsValidator />
 
-	<Body>
-		<EditForm EditContext="_editContext">
-			<DataAnnotationsValidator />
-
-			<div class="row">
-				<div class="col-12 col-md-4">
-					<IUInputText Label="Nombre"
-								 Placeholder="Escriba el nombre..."
-								 @bind-Value="Almacen.Nombre"
-								 Required=true />
-					<ValidationMessage For=@(() => Almacen.Nombre) />
-				</div>
-				<div class="col-12 col-md-4">
-					<IUTextArea Label="Descripcion"
-								Placeholder="Escribe una descripcion"
-								@bind-Value="Almacen.Descripcion" />
-					<ValidationMessage For="() => Almacen.Descripcion" />
-				</div>
+	<section class="iu-sec">
+		<div class="iu-head">
+			<div>
+				<h2>@(IsEditing ? "Datos del almacen" : "Nuevo almacen")</h2>
 			</div>
-		</EditForm>
-	</Body>
-</IUCard>
+		</div>
+
+		<div class="iu-form">
+			<div>
+				<IUInputText Label="Nombre"
+							 Placeholder="Escriba el nombre..."
+							 @bind-Value="Almacen.Nombre"
+							 Required=true />
+				<ValidationMessage For="@(() => Almacen.Nombre)" />
+			</div>
+
+			<div>
+				<IUTextArea Label="Descripcion"
+							Placeholder="Escriba una descripcion..."
+							@bind-Value="Almacen.Descripcion" />
+				<ValidationMessage For="@(() => Almacen.Descripcion)" />
+			</div>
+		</div>
+	</section>
+</EditForm>

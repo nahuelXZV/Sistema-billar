@@ -1,7 +1,7 @@
 ﻿@typeparam TItem
 @typeparam TValue
 
-<div class="mb-3 position-relative">
+<div class="mb-3 position-relative iu-filter-select">
 	<label class="form-label">
 		@Label
 		@if (Required)
@@ -10,7 +10,7 @@
 		}
 	</label>
 	<input type="text"
-		   class="form-control"
+		   class="@InputClass"
 		   placeholder="@Placeholder"
 		   value="@DisplayText"
 		   @oninput="OnInput"
@@ -19,10 +19,10 @@
 		   autocomplete="off" />
 	@if (IsOpen && FilteredOptions.Any())
 	{
-		<ul class="list-group position-absolute w-100 z-3 shadow-sm">
+		<ul class="list-group position-absolute w-100 z-3 shadow-sm iu-filter-select-menu">
 			@foreach (var item in FilteredOptions)
 			{
-				<li class="list-group-item list-group-item-action"
+				<li class="list-group-item list-group-item-action iu-filter-select-option"
 					@onclick="() => SelectItem(item)">
 					@GetText(item)
 				</li>
@@ -33,6 +33,7 @@
 @code {
 	[Parameter] public string Label { get; set; } = "Seleccione";
 	[Parameter] public string Placeholder { get; set; } = "Buscar...";
+	[Parameter] public string InputClass { get; set; } = "form-control";
 	[Parameter] public bool Required { get; set; }
 
 	[Parameter] public IEnumerable<TItem> Options { get; set; } = Enumerable.Empty<TItem>();

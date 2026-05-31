@@ -13,6 +13,7 @@ public partial class ListaPreciosCreateComponent
     [Inject] public IValidator<ListaPrecioDTO> Validator { get; set; }
     [Parameter] public ListaPrecioDTO ListaPrecio { get; set; }
     [Parameter] public List<ProductoDTO> ListadoProductos { get; set; } = new();
+    private bool IsEditing => ListaPrecio?.Id > 0;
     private FluentValidationValidator<ListaPrecioDTO> _fvValidator;
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<ListaPreciosCreateComponent>? _objectHelper;
@@ -27,12 +28,16 @@ public partial class ListaPreciosCreateComponent
 
     protected override void OnInitialized()
     {
+        ListaPrecio ??= new ListaPrecioDTO();
         _editContext = new EditContext(ListaPrecio);
         _fvValidator = new FluentValidationValidator<ListaPrecioDTO>(_editContext, Validator);
     }
 
     protected override void OnParametersSet()
     {
+        ListaPrecio ??= new ListaPrecioDTO();
+        ListadoDetalles = new();
+
         foreach (var item in ListaPrecio?.ListaDetalles ?? new())
         {
             var producto = ListadoProductos.Where(p => p.Id == item.IdProducto).FirstOrDefault();
@@ -101,7 +106,7 @@ public partial class ListaPreciosCreateComponent
 
     private async Task AgregarDetalle()
     {
-        if (DetalleDTO.IdProducto == 0)
+        if (DetalleDTO.IdProducto == 0 || DetalleDTO.Precio <= 0)
         {
             await ShowErrorMessage("Debe seleccionar un producto y asignar un precio mayor a cero.");
             return;
@@ -147,6 +152,7 @@ public partial class ListaPreciosCreateComponent
     {
         var detalle = ListadoDetalles.FirstOrDefault(d => d.IdProducto == id);
         if (detalle != null) ListadoDetalles.Remove(detalle);
+        if (PaginaActual > TotalPaginas && TotalPaginas > 0) PaginaActual = TotalPaginas;
         StateHasChanged();
     }
 

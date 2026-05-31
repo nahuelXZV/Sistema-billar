@@ -15,6 +15,7 @@ public partial class AlmacenCreateComponent
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<AlmacenCreateComponent>? _objectHelper;
     private FluentValidationValidator<AlmacenDTO> _fvValidator;
+    private bool IsEditing => Almacen?.Id > 0;
 
     protected override void OnInitialized()
     {

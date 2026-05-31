@@ -21,9 +21,11 @@ public partial class VendedorCreateComponent
     private DotNetObjectReference<VendedorCreateComponent>? _objectHelper;
     private FluentValidationValidator<VendedorDTO>? _fvValidator;
     private List<long> ListaAlmacenesSeleccionados { get; set; } = new();
+    private bool IsEditing => Vendedor?.Id > 0;
 
     protected override void OnInitialized()
     {
+        Vendedor ??= new VendedorDTO();
         Vendedor.ListaAlmacenes ??= new();
         ListaAlmacenesSeleccionados = Vendedor.ListaAlmacenes
             .Where(p => p.IdAlmacen > 0)

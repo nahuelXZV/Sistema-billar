@@ -1,61 +1,67 @@
-﻿@using WebClient.Models
+@using WebClient.Models
 @model MainViewModel;
 
-<nav class="app-header navbar navbar-expand bg-body">
-	<div class="container-fluid">
-		<ul class="navbar-nav">
+@{
+	var navModule = ViewData["Module"]?.ToString() ?? "Panel";
+	var navAction = ViewData["Action"]?.ToString() ?? "Resumen";
+	var navTitle = ViewData["Title"]?.ToString() ?? "Dashboard";
+	var navUser = string.IsNullOrWhiteSpace(Model.NombreUsuarioLoggedIn) ? "Usuario" : Model.NombreUsuarioLoggedIn;
+	var navFullName = string.IsNullOrWhiteSpace(Model.NombreCompletoUsuarioLoggedIn) ? navUser : Model.NombreCompletoUsuarioLoggedIn;
+	var navMail = string.IsNullOrWhiteSpace(Model.CorreoLoggedIn) ? "Sin correo registrado" : Model.CorreoLoggedIn;
+}
+
+<nav class="app-header navbar navbar-expand bg-body iu-nav-wrap">
+	<div class="container-fluid iu-nav">
+		<div class="iu-nav-main">
+			<a class="nav-link iu-nav-btn" data-lte-toggle="sidebar" href="#" role="button" aria-label="Abrir menu lateral">
+				<i class="bi bi-list"></i>
+			</a>
+
+			<div class="iu-nav-copy">
+				@* <span class="iu-nav-tag">@navModule</span> *@
+				<div class="iu-nav-line">
+					<strong>@navTitle</strong>
+					<span class="iu-nav-sep"></span>
+					<span>@navAction</span>
+				</div>
+			</div>
+		</div>
+
+		<ul class="navbar-nav iu-nav-tools">
 			<li class="nav-item">
-				<a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-					<i class="bi bi-list"></i>
-				</a>
-			</li>
-		</ul>
-		<ul class="navbar-nav ms-auto">
-			<li class="nav-item dropdown">
-			</li>
-			<!--end::Messages Dropdown Menu-->
-			<!--begin::Notifications Dropdown Menu-->
-			<li class="nav-item dropdown">
-			</li>
-			<!--end::Notifications Dropdown Menu-->
-			<!--begin::Fullscreen Toggle-->
-			<li class="nav-item">
-				<a class="nav-link" href="#" data-lte-toggle="fullscreen">
+				<a class="nav-link iu-nav-ico" href="#" data-lte-toggle="fullscreen" aria-label="Pantalla completa">
 					<i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
 					<i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
 				</a>
 			</li>
-			<!--end::Fullscreen Toggle-->
-			<!--begin::User Menu Dropdown-->
+
 			<li class="nav-item dropdown user-menu">
-				<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-					<img src="./imgs/user.png"
-						 class="user-image rounded-circle "
-						 alt="User Image" />
-					<span class="d-none d-md-inline">@Model.NombreUsuarioLoggedIn</span>
+				<a href="#" class="nav-link dropdown-toggle iu-nav-user" data-bs-toggle="dropdown" aria-expanded="false">
+					<span class="iu-nav-avatar">
+						<i class="bi bi-person-fill iu-nav-avatar-icon" aria-hidden="true"></i>
+					</span>
+					<span class="iu-nav-user-copy">
+						<strong>@navUser</strong>
+						@* <small>@navModule</small> *@
+					</span>
 				</a>
-				<ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-					<!--begin::User Image-->
-					<li class="user-header text-bg-primary">
-						<img src="./imgs/user.png"
-							 class="rounded-circle "
-							 alt="User Image" />
+
+				<ul class="dropdown-menu dropdown-menu-end iu-nav-menu">
+					<li class="user-header iu-nav-menu-head">
+						<span class="iu-nav-menu-avatar" aria-hidden="true">
+							<i class="bi bi-person-fill"></i>
+						</span>
 						<p>
-							@Model.NombreCompletoUsuarioLoggedIn
-							<small>	@Model.CorreoLoggedIn</small>
+							@navFullName
+							<small>@navMail</small>
 						</p>
 					</li>
-					<li class="user-footer">
-						<a href="#" class="btn btn-default btn-flat">Perfil</a>
-						<a href="@Url.Action("Cerrar", "Sesion")" class="btn btn-default btn-flat float-end">Cerrar Sesion</a>
+					<li class="user-footer iu-nav-menu-foot">
+						<a href="#" class="btn btn-default btn-flat iu-nav-menu-link">Perfil</a>
+						<a href="@Url.Action("Cerrar", "Sesion")" class="btn btn-default btn-flat iu-nav-menu-link iu-nav-menu-link--out">Cerrar sesion</a>
 					</li>
-					<!--end::Menu Footer-->
 				</ul>
 			</li>
-			<!--end::User Menu Dropdown-->
 		</ul>
-		<!--end::End Navbar Links-->
 	</div>
-	<!--end::Container-->
 </nav>
-<!--end::Header-->

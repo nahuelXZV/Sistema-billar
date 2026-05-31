@@ -17,6 +17,9 @@ public partial class PerfilCreateComponent
     private FluentValidationValidator<PerfilDTO> _fvValidator;
     private DotNetObjectReference<PerfilCreateComponent> _objectHelper;
     private List<long> ListaAccesosSeleccionados { get; set; } = new();
+    private bool IsEditing => Perfil?.Id > 0;
+    private List<ModuloDTO> ModulesWithAccess => ListaModulos?.Where(m => m.ListaAccesos?.Count > 0).ToList() ?? new();
+    private string SelectedAccessesLabel => $"{ListaAccesosSeleccionados.Count} acceso(s) seleccionados";
 
     protected override void OnInitialized()
     {

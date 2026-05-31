@@ -1,4 +1,4 @@
-using Domain.DTOs.Security;
+ï»¿using Domain.DTOs.Security;
 using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -15,7 +15,10 @@ public partial class UsuarioCreateComponent
     [Inject] public IValidator<UsuarioDTO> Validator { get; set; }
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<UsuarioCreateComponent>? _objectHelper;
-    public bool ModificarContraseña { get; set; } = false;
+    public bool ModificarContrasena { get; set; } = false;
+    private bool IsEditing => Usuario?.Id > 0;
+    private bool ShowPasswordField => ModificarContrasena || !IsEditing;
+
     protected override void OnInitialized()
     {
         _editContext = new EditContext(Usuario);
@@ -50,15 +53,15 @@ public partial class UsuarioCreateComponent
     {
         try
         {
-            if (!ModificarContraseña && Usuario.Id != 0) Usuario.Password = string.Empty;
+            if (!ModificarContrasena && IsEditing) Usuario.Password = string.Empty;
 
-            if (Usuario.Id != 0)
+            if (IsEditing)
             {
-                var respuesta = await AppServices.UsuarioService.Update(Usuario);
+                await AppServices.UsuarioService.Update(Usuario);
             }
             else
             {
-                var respuesta = await AppServices.UsuarioService.Create(Usuario);
+                await AppServices.UsuarioService.Create(Usuario);
             }
 
             await ShowSuccessMessage("Usuario guardado correctamente");

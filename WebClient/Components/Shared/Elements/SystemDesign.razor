@@ -1,127 +1,545 @@
-﻿@using WebClient.Components.Shared.Elements
-<p>FORMS</p>
-<div class="row">
+@using Microsoft.AspNetCore.Components.Forms
 
-	<div class="col-4">
-		<IUButton Text="Entrar" />
+<section class="iu-show">
+	<div class="iu-hero">
+		<div class="iu-hero-copy">
+			<span class="iu-kicker">
+				<i class="bi bi-palette2"></i>
+				System Design
+			</span>
+
+			<h1>Una libreria visual unificada para dashboard, ventas y formularios operativos.</h1>
+			<p>
+				Esta pantalla toma la energia visual del <strong>Home</strong> y la precision compacta de <strong>Venta</strong>
+				para consolidar una IU compartida: superficies, botones, inputs, tablas, modales y estados.
+			</p>
+
+			<div class="iu-actions">
+				<IUButton Text="Abrir modal"
+						  CssClass="iu-btn iu-btn-primary"
+						  IconCss="bi bi-window-stack"
+						  OnClick="OpenPreviewModal" />
+				<IUButton Text="Guardar patron"
+						  CssClass="iu-btn iu-btn-secondary"
+						  IconCss="bi bi-floppy-fill" />
+				<IUButton Text="Modo ligero"
+						  CssClass="iu-btn iu-btn-ghost"
+						  IconCss="bi bi-sun" />
+			</div>
+
+			<div class="iu-notes">
+				<span class="iu-chip"><i class="bi bi-grid"></i> Componentes reutilizables</span>
+				<span class="iu-chip"><i class="bi bi-brush"></i> Tokens visuales compartidos</span>
+				<span class="iu-chip"><i class="bi bi-lightning-charge"></i> Pensado para flujos rapidos</span>
+			</div>
+		</div>
+
+		<div class="iu-hero-side">
+			<div class="iu-stat">
+				<div class="iu-icon-frame tone-success">
+					<i class="bi bi-layout-wtf"></i>
+				</div>
+				<div>
+					<strong>UI compartida</strong>
+					<span>Cards, formularios, tablas, modales y chips en un solo lenguaje.</span>
+				</div>
+			</div>
+
+			<div class="iu-stat">
+				<div class="iu-icon-frame tone-primary">
+					<i class="bi bi-window-sidebar"></i>
+				</div>
+				<div>
+					<strong>Shell separado</strong>
+					<span>El layout conserva sidebar, navbar y reglas propias de navegación.</span>
+				</div>
+			</div>
+
+			<div class="iu-stat">
+				<div class="iu-icon-frame tone-warning">
+					<i class="bi bi-bag-check"></i>
+				</div>
+				<div>
+					<strong>Venta enfocada</strong>
+					<span>El POS mantiene su composición, pero reaprovecha la base tonal compartida.</span>
+				</div>
+			</div>
+		</div>
 	</div>
 
-	<div class="col-4">
-		<IUInputText Label="Company Name"
-					 Placeholder="Enter your company"
-					 @bind-Value="companyName"
-					 Required="true" />
-		<p class="mt-2 text-sm text-gray-600">Valor: @companyName</p>
+	<div class="iu-grid">
+		<div class="iu-stack">
+			<section class="iu-sec">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Actions</span>
+						<h2>Botones y estados</h2>
+						<p>La base compartida cubre CTAs principales, acciones secundarias y feedback visual.</p>
+					</div>
+				</div>
+
+				<div class="iu-btns">
+					<div class="iu-box">
+						<h4>Botones principales</h4>
+						<div class="iu-row mt-3">
+							<IUButton Text="Guardar"
+									  CssClass="iu-btn iu-btn-primary"
+									  IconCss="bi bi-check2-circle" />
+							<IUButton Text="Editar"
+									  CssClass="iu-btn iu-btn-secondary"
+									  IconCss="bi bi-pencil-square" />
+						</div>
+					</div>
+
+					<div class="iu-box">
+						<h4>Botones utilitarios</h4>
+						<div class="iu-row mt-3">
+							<button type="button" class="iu-btn iu-btn-ghost">
+								<i class="bi bi-arrow-repeat"></i>
+								Sincronizar
+							</button>
+							<button type="button" class="iu-btn iu-btn-danger">
+								<i class="bi bi-trash3"></i>
+								Descartar
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="iu-row mt-3">
+					<span class="iu-chip tone-primary"><i class="bi bi-activity"></i> Turno activo</span>
+					<span class="iu-chip tone-success"><i class="bi bi-check2-circle"></i> Listo para publicar</span>
+					<span class="iu-chip tone-warning"><i class="bi bi-hourglass-split"></i> Requiere revision</span>
+					<span class="iu-chip tone-danger"><i class="bi bi-exclamation-triangle"></i> Riesgo operativo</span>
+				</div>
+			</section>
+
+			<section class="iu-sec">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Forms</span>
+						<h2>Formulario base de IU</h2>
+						<p>Todos los campos viven sobre la misma capa visual, lista para alta, edicion y filtros.</p>
+					</div>
+				</div>
+
+				<div class="iu-form">
+					<IUInputText Label="Nombre comercial"
+								 Placeholder="Club de Billar Central"
+								 @bind-Value="companyName" />
+
+					<IUInputPassword Label="Clave de acceso"
+									 Placeholder="Ingresa una clave segura"
+									 @bind-Value="password" />
+
+					<IUInputNumeric TValue="long"
+									Label="Precio base"
+									Placeholder="0"
+									@bind-Value="price" />
+
+					<IUInputDatetime Label="Fecha y hora de apertura"
+									 @bind-Value="selectedDateTime" />
+
+					<IUSelect TItem="CountryModel"
+							  TValue="string"
+							  Label="Sucursal"
+							  Placeholder="Selecciona una sede"
+							  Options="@countryList"
+							  GetText="@(c => c.Name)"
+							  GetValue="@(c => c.Code)"
+							  @bind-Value="selectedCountryCode" />
+
+					<IUSelectFilterComponent TItem="CountryModel"
+											 TValue="string"
+											 Label="Busqueda rapida de sede"
+											 Placeholder="Escribe para filtrar"
+											 Options="@countryList"
+											 GetText="@(c => c.Name)"
+											 GetValue="@(c => c.Code)"
+											 @bind-Value="selectedFilterCountryCode" />
+
+					<IUInputDate Label="Fecha de corte"
+								 @bind-Value="selectedDate" />
+
+					<IUInputTime Label="Hora de corte"
+								 @bind-Value="selectedTime" />
+
+					<div class="iu-span-2">
+						<IUTextArea Label="Observaciones"
+									Placeholder="Anota indicaciones para caja, barra o sala..."
+									Rows="4"
+									@bind-Value="message" />
+					</div>
+
+					<div>
+						<IUInputFile Label="Adjuntar referencia"
+									 HelpText="@selectedFileName"
+									 OnChange="HandleFileChange" />
+					</div>
+
+					<div class="iu-box">
+						<h4>Controles de seleccion</h4>
+						<div class="iu-inline-options mt-3">
+							<IUInputCheckbox Label="Aplicar validacion operativa"
+											 @bind-Value="isChecked" />
+							<IUInputRadio Label="Cobro en caja"
+										  Name="payment-method"
+										  Value="@PaymentCash"
+										  IsSelected="@IsCashPayment"
+										  IsSelectedChanged="SelectCashPayment" />
+							<IUInputRadio Label="Cobro QR"
+										  Name="payment-method"
+										  Value="@PaymentQr"
+										  IsSelected="@IsQrPayment"
+										  IsSelectedChanged="SelectQrPayment" />
+						</div>
+					</div>
+				</div>
+
+				<div class="iu-out">
+					<strong>Preview actual:</strong>
+					<code>@companyName</code>,
+					sede <code>@(selectedCountryCode == string.Empty ? "-" : selectedCountryCode)</code>,
+					filtro <code>@(selectedFilterCountryCode ?? "-")</code>,
+					precio <code>Bs @price</code>,
+					pago <code>@paymentChoice</code>.
+				</div>
+			</section>
+
+			<section class="iu-sec">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Tables</span>
+						<h2>Listados y acciones</h2>
+						<p>Tablas compactas con jerarquia visual suficiente para inventario, reservas o ventas.</p>
+					</div>
+				</div>
+
+				<div class="inv-table-container">
+					<div class="inv-table-header d-flex justify-content-between align-items-center gap-3 flex-wrap">
+						<input class="inv-search" type="text" value="Buscar por producto o estado" readonly />
+						<div class="iu-row">
+							<button type="button" class="iu-btn iu-btn-ghost">
+								<i class="bi bi-funnel"></i>
+								Filtrar
+							</button>
+							<button type="button" class="iu-btn iu-btn-secondary">
+								<i class="bi bi-download"></i>
+								Exportar
+							</button>
+						</div>
+					</div>
+
+					<IUTable>
+						<HeaderContent>
+							<tr>
+								<th>Producto</th>
+								<th>Categoria</th>
+								<th>Stock</th>
+								<th>Estado</th>
+								<th class="text-end">Accion</th>
+							</tr>
+						</HeaderContent>
+						<BodyContent>
+							@foreach (var row in inventoryRows)
+							{
+								<tr>
+									<td>@row.Product</td>
+									<td>@row.Category</td>
+									<td>@row.Stock</td>
+									<td>
+										<span class="badge @row.BadgeClass">@row.Status</span>
+									</td>
+									<td class="text-end">
+										<button type="button" class="inv-btn-action" aria-label="Ver detalle">
+											<i class="bi bi-arrow-up-right"></i>
+										</button>
+									</td>
+								</tr>
+							}
+						</BodyContent>
+					</IUTable>
+				</div>
+			</section>
+		</div>
+
+		<div class="iu-stack">
+			<section class="iu-sec">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Cards</span>
+						<h3>Tarjetas reutilizables</h3>
+						<p>Una card puede vivir como resumen ejecutivo o como modulo operativo.</p>
+					</div>
+				</div>
+
+				<div class="iu-cards">
+					<IUCard CustomClass="h-100">
+						<Header>
+							<div class="d-flex justify-content-between align-items-start gap-3">
+								<div>
+									<span class="iu-chip tone-primary"><i class="bi bi-stars"></i> Dashboard</span>
+									<h4 class="mt-3 mb-1">Resumen del turno</h4>
+									<p class="iu-note">Inspirado en la lectura del Home.</p>
+								</div>
+								<div class="iu-icon-frame tone-success">
+									<i class="bi bi-cash-coin"></i>
+								</div>
+							</div>
+						</Header>
+						<Body>
+							<div class="iu-demo">
+								<div class="iu-item">
+									<div class="iu-icon-frame tone-success">
+										<i class="bi bi-graph-up-arrow"></i>
+									</div>
+									<div>
+										<strong>Bs 4.850 vendidos</strong>
+										<span>18% por encima del cierre anterior.</span>
+									</div>
+								</div>
+								<div class="iu-item">
+									<div class="iu-icon-frame tone-warning">
+										<i class="bi bi-exclamation-diamond"></i>
+									</div>
+									<div>
+										<strong>3 alertas activas</strong>
+										<span>Barra e inventario requieren seguimiento.</span>
+									</div>
+								</div>
+							</div>
+						</Body>
+						<Footer>
+							<div class="iu-row">
+								<IUButton Text="Abrir detalle"
+										  CssClass="iu-btn iu-btn-secondary"
+										  IconCss="bi bi-arrow-right-circle" />
+							</div>
+						</Footer>
+					</IUCard>
+
+					<IUCard CustomClass="h-100">
+						<Header>
+							<div class="d-flex justify-content-between align-items-start gap-3">
+								<div>
+									<span class="iu-chip tone-warning"><i class="bi bi-bag"></i> POS</span>
+									<h4 class="mt-3 mb-1">Venta compacta</h4>
+									<p class="iu-note">Toma la densidad visual del flujo de caja.</p>
+								</div>
+								<div class="iu-icon-frame tone-warning">
+									<i class="bi bi-cart3"></i>
+								</div>
+							</div>
+						</Header>
+						<Body>
+							<div class="iu-list">
+								<div class="iu-item">
+									<div class="iu-icon-frame tone-primary">
+										<i class="bi bi-stopwatch-fill"></i>
+									</div>
+									<div>
+										<strong>1 Hora de Juego</strong>
+										<span>Bs 40.00 · Servicio principal.</span>
+									</div>
+								</div>
+								<div class="iu-item">
+									<div class="iu-icon-frame tone-danger">
+										<i class="bi bi-bottle-soda"></i>
+									</div>
+									<div>
+										<strong>Coca Cola 500 ml</strong>
+										<span>2 unidades agregadas a la venta.</span>
+									</div>
+								</div>
+							</div>
+						</Body>
+						<Footer>
+							<div class="iu-row">
+								<button type="button" class="iu-btn iu-btn-primary">
+									<i class="bi bi-cash-stack"></i>
+									Cobrar ahora
+								</button>
+							</div>
+						</Footer>
+					</IUCard>
+				</div>
+			</section>
+
+			<section class="iu-sec">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Patterns</span>
+						<h3>Bloques visuales</h3>
+						<p>Estados operativos, accesos rapidos y mini resúmenes pensados para admin y POS.</p>
+					</div>
+				</div>
+
+				<div class="iu-list">
+					<div class="iu-item">
+						<div class="iu-icon-frame tone-primary">
+							<i class="bi bi-calendar3"></i>
+						</div>
+						<div>
+							<strong>Reservas del dia</strong>
+							<span>6 confirmadas, 2 pendientes por validar.</span>
+						</div>
+					</div>
+
+					<div class="iu-item">
+						<div class="iu-icon-frame tone-success">
+							<i class="bi bi-box-seam"></i>
+						</div>
+						<div>
+							<strong>Reposicion programada</strong>
+							<span>Ingreso de bebidas y snacks a las 18:30.</span>
+						</div>
+					</div>
+
+					<div class="iu-item">
+						<div class="iu-icon-frame tone-danger">
+							<i class="bi bi-tools"></i>
+						</div>
+						<div>
+							<strong>Mesa VIP en mantenimiento</strong>
+							<span>Bloqueada hasta completar cambio de paño.</span>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="iu-sec">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Modal</span>
+						<h3>Confirmaciones y overlays</h3>
+						<p>La misma base sirve para modales de aprobacion, alta rapida o mensajes del sistema.</p>
+					</div>
+				</div>
+
+				<div class="iu-box">
+					<h4>Modal de confirmacion</h4>
+					<p>Overlay centrado, jerarquia clara y acciones agrupadas en el footer.</p>
+					<div class="iu-row mt-3">
+						<IUButton Text="Previsualizar"
+								  CssClass="iu-btn iu-btn-primary"
+								  IconCss="bi bi-eye"
+								  OnClick="OpenPreviewModal" />
+					</div>
+				</div>
+			</section>
+		</div>
 	</div>
-	<div class="col-4">
-		<IUInputNumeric Label="Value Price"
-						Placeholder="Enter your company"
-						@bind-Value="price"
-						Required="true" />
-		<p class="mt-2 text-sm text-gray-600">Valor: @price</p>
-	</div>
-	<div class="col-4">
-		<IUSelect TItem="CountryModel"
-				  TValue="string"
-				  Label="Select a country"
-				  Placeholder="Choose a country"
-				  Options="@countryList"
-				  GetText="@(c => c.Name)"
-				  GetValue="@(c => c.Name)"
-				  @bind-Value="selectedCountryCode"
-				  Required="true" />
 
-		<p class="mt-2 text-sm text-gray-600">Seleccionado: @selectedCountryCode</p>
-	</div>
-	<div class="col-4">
-		<IUSelectFilterComponent TItem="CountryModel"
-								 TValue="string"
-								 Label="Select a country"
-								 Placeholder="Choose a country"
-								 Options="@countryList"
-								 GetText="@(c => c.Name)"
-								 GetValue="@(c => c.Name)"
-								 @bind-Value="selectedFilterCountryCode"
-								 Required="true" />
-
-		<p class="mt-2 text-sm text-gray-600">Seleccionado: @selectedFilterCountryCode</p>
-	</div>
-
-	<div class="col-4">
-		<IUTextArea Label="Your message"
-					Placeholder="Write your thoughts here..."
-					@bind-Value="message"
-					Required="true" />
-
-		<p class="mt-2 text-sm text-gray-600">Mensaje: @message</p>
-	</div>
-
-	<div class="col-4">
-		<IUInputDate Label="Select a date"
-					 @bind-Value="selectedDate"
-					 Required="true" />
-
-		<p class="mt-2 text-sm text-gray-600">Fecha seleccionada: @selectedDate?.ToString("yyyy-MM-dd")</p>
-
-	</div>
-
-	<div class="col-4">
-		<IUInputTime Label="Select a time"
-					 @bind-Value="selectedTime"
-					 Required="true" />
-
-		<p class="mt-2 text-sm text-gray-600">Hora seleccionada: @selectedTime?.ToString("HH:mm")</p>
-
-	</div>
-
-	<div class="col-4">
-		<IUInputCheckbox Label="Accept terms and conditions"
-						 @bind-Value="isChecked"
-						 Required="true" />
-
-		<p class="mt-2 text-sm text-gray-600">Checkbox está marcado: @isChecked</p>
-	</div>
-
-	<div class="col-4">
-		<IUInputRadio Label="Option 1"
-					  Name="group1"
-					  Value="1"
-					  @bind-IsSelected="isSelected1" />
-
-		<IUInputRadio Label="Option 2"
-					  Name="group1"
-					  Value="2"
-					  @bind-IsSelected="isSelected2" />
-
-		<p class="mt-2 text-sm text-gray-600">Option 1 seleccionado: @isSelected1</p>
-		<p class="mt-2 text-sm text-gray-600">Option 2 seleccionado: @isSelected2</p>
-	</div>
-</div>
+	<IUModal Title="Aplicar configuracion de IU"
+			 @bind-Visible="isPreviewModalOpen">
+		<Body>
+			<div class="iu-list">
+				<div class="iu-item">
+					<div class="iu-icon-frame tone-success">
+						<i class="bi bi-check2-circle"></i>
+					</div>
+					<div>
+						<strong>Capas separadas correctamente</strong>
+						<span>`iu.css` centraliza componentes reutilizables; `layout.css` y `venta.css` quedan con su composición propia.</span>
+					</div>
+				</div>
+				<div class="iu-item">
+					<div class="iu-icon-frame tone-primary">
+						<i class="bi bi-layout-text-window"></i>
+					</div>
+					<div>
+						<strong>Vitrina lista para extender</strong>
+						<span>Puedes seguir sumando patrones como tabs, steps, drawers o variantes de card.</span>
+					</div>
+				</div>
+			</div>
+		</Body>
+		<Footer>
+			<button type="button" class="iu-btn iu-btn-ghost" @onclick="ClosePreviewModal">
+				Cerrar
+			</button>
+			<button type="button" class="iu-btn iu-btn-primary" @onclick="ClosePreviewModal">
+				Entendido
+			</button>
+		</Footer>
+	</IUModal>
+</section>
 
 @code {
-	private string companyName = "";
-	private long price;
-	private string selectedCountryCode = "";
-	private string? selectedFilterCountryCode = "";
-	private string message = "";
-	private DateTime? selectedDate;
-	private TimeSpan? selectedTime;
-	private bool isChecked = false;  // Valor inicial del checkbox
-	private bool isSelected1 = false;
-	private bool isSelected2 = false;
+	private string companyName = "Club de Billar Central";
+	private string password = "demo-123";
+	private long price = 40;
+	private string selectedCountryCode = "CBBA";
+	private string? selectedFilterCountryCode = "LP";
+	private string message = "Mantener visible el estado de mesas y accesos directos para caja.";
+	private DateTime? selectedDate = DateTime.Today;
+	private DateTime? selectedDateTime = DateTime.Today.AddHours(18);
+	private TimeSpan? selectedTime = new(22, 0, 0);
+	private bool isChecked = true;
+	private string paymentChoice = "cash";
+	private bool isPreviewModalOpen;
+	private string selectedFileName = "Sin archivo seleccionado.";
+	private const string PaymentCash = "cash";
+	private const string PaymentQr = "qr";
+	private bool IsCashPayment => paymentChoice == PaymentCash;
+	private bool IsQrPayment => paymentChoice == PaymentQr;
 
+	private readonly List<CountryModel> countryList =
+	[
+		new() { Code = "CBBA", Name = "Cochabamba" },
+		new() { Code = "LP", Name = "La Paz" },
+		new() { Code = "SC", Name = "Santa Cruz" },
+		new() { Code = "OR", Name = "Oruro" }
+	];
 
-	private List<CountryModel> countryList = new()
+	private readonly List<InventoryRow> inventoryRows =
+	[
+		new("Coca Cola 500 ml", "Bebidas", 18, "Disponible", "bg-success"),
+		new("Nachos con queso", "Snacks", 4, "Stock minimo", "bg-warning"),
+		new("Paño verde premium", "Mantenimiento", 1, "Critico", "bg-danger"),
+		new("1 Hora de Juego", "Servicios", 999, "Activo", "bg-primary")
+	];
+
+	private Task OpenPreviewModal()
 	{
-		new CountryModel { Code = "US", Name = "United States" },
-		new CountryModel { Code = "CA", Name = "Canada" },
-		new CountryModel { Code = "FR", Name = "France" },
-		new CountryModel { Code = "DE", Name = "Germany" }
-	};
+		isPreviewModalOpen = true;
+		return Task.CompletedTask;
+	}
+
+	private Task ClosePreviewModal()
+	{
+		isPreviewModalOpen = false;
+		return Task.CompletedTask;
+	}
+
+	private Task SelectPayment(string value, bool isSelected)
+	{
+		if (isSelected)
+		{
+			paymentChoice = value;
+		}
+
+		return Task.CompletedTask;
+	}
+
+	private Task SelectCashPayment(bool isSelected) => SelectPayment(PaymentCash, isSelected);
+
+	private Task SelectQrPayment(bool isSelected) => SelectPayment(PaymentQr, isSelected);
+
+	private Task HandleFileChange(InputFileChangeEventArgs args)
+	{
+		selectedFileName = args.FileCount > 0
+			? args.File.Name
+			: "Sin archivo seleccionado.";
+
+		return Task.CompletedTask;
+	}
 
 	public class CountryModel
 	{
 		public string Code { get; set; } = string.Empty;
 		public string Name { get; set; } = string.Empty;
 	}
+
+	private sealed record InventoryRow(string Product, string Category, int Stock, string Status, string BadgeClass);
 }

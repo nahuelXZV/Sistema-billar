@@ -1,28 +1,29 @@
-﻿@using WebClient.Components
+@using WebClient.Components
 @using WebClient.Components.Shared.Elements
 
 @inherits Components.MainBaseComponent;
 
-<div class="d-flex flex-column flex-md-row gap-1">
-	<IUCard CustomClass="col-12 col-md-5">
-		<Header>
-			<h4 class="">Categorias</h4>
-		</Header>
-
-		<Body>
-			<div class="row">
-				<ul class="tree">
-					@if (ListaCategorias != null)
-					{
-						@foreach (var categoria in ListaCategorias)
-						{
-							<CategoriaTreeComponent Categoria="categoria" OnCategoriaEdit="CategoriaSeleccionado" />
-						}
-					}
-				</ul>
-
+<div class="iu-grid">
+	<section class="iu-sec">
+		<div class="iu-head">
+			<div>
+				<h2>Categorias</h2>
 			</div>
-		</Body>
-	</IUCard>
-	<CategoriaCreateComponent @ref="categoriaCreateComponent" ListaCategorias="ListaCategoriasSinNivel" Categoria="CategoriaSelected" OnCategoriaCreated="Refresh" />
+		</div>
+
+		<ul class="tree iu-tree">
+			@if (ListaCategorias != null)
+			{
+				@foreach (var categoria in ListaCategorias)
+				{
+					<CategoriaTreeComponent Categoria="categoria" OnCategoriaEdit="CategoriaSeleccionado" />
+				}
+			}
+		</ul>
+	</section>
+
+	<CategoriaCreateComponent @ref="categoriaCreateComponent"
+							  ListaCategorias="ListaCategoriasSinNivel"
+							  Categoria="CategoriaSelected"
+							  OnCategoriaCreated="Refresh" />
 </div>

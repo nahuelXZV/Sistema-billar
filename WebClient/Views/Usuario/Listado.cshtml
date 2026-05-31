@@ -1,4 +1,4 @@
-﻿@using WebClient.Common
+@using WebClient.Common
 @using WebClient.Models
 @using WebClient.Models.Security
 @model UsuarioViewModel
@@ -17,54 +17,70 @@
 }
 
 @section ActionBar {
-	<div class="card card-outline card-primary action-bar">
-		<div class="card-body py-2">
-			<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-				<!-- ZONA IZQUIERDA -->
-				<form id="FormCrear" asp-controller="Usuario" asp-action="Crear" method="post" style="display: none;">
-					@Html.AntiForgeryToken()
-				</form>
-				<div class="action-bar-left d-flex gap-2">
-					<button type="submit"
-							form="FormCrear"
-							class="btn btn-primary btn-sm">
-						<i class="bi bi-plus-lg"></i>
-						Crear
-					</button>
-				</div>
-				<!-- ZONA DERECHA -->
-				<div class="action-bar-right d-flex gap-2">
-				</div>
-			</div>
+	<form id="FormCrear" asp-controller="Usuario" asp-action="Crear" method="post" class="d-none">
+		@Html.AntiForgeryToken()
+	</form>
+
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="submit" form="FormCrear" class="iu-btn iu-btn-primary">
+				<i class="bi bi-plus-lg"></i>
+				Crear usuario
+			</button>
 		</div>
 	</div>
 }
 
-<div class="card card-outline card-secondary">
-	<div class="card-body p-3">
+<section class="iu-show">
+	<section class="iu-sec">
 		<div id="table-wrapper"></div>
-	</div>
-</div>
+	</section>
+</section>
+
 @section Scripts {
 	<script>
+		const renderUserActions = (id) => gridjs.html(`
+			<button type="button"
+					class="inv-btn-action"
+					aria-label="Abrir acciones"
+					onclick="togglePortalDropdown(event, '${id}')">
+				<i class="bi bi-three-dots"></i>
+			</button>
+		`);
+
 		new gridjs.Grid({
-			columns: ['Id', 'Nombre', "Apellido", "Correo",
+			columns: [
+				'Id',
+				'Usuario',
+				'Nombre',
+				'Apellido',
+				'Correo',
+				{
+					name: 'Perfil',
+					formatter: (cell) => cell ?? '-'
+				},
 				{
 					name: "Estado",
 					formatter: (cell) => gridjs.html(
-					cell
-						? `<span class="badge bg-success">Activo</span>`
-						: `<span class="badge bg-secondary">Inactivo</span>`)
+						cell
+							? `<span class="iu-chip tone-success"><i class="bi bi-check2-circle"></i> Activo</span>`
+							: `<span class="iu-chip tone-warning"><i class="bi bi-pause-circle"></i> Inactivo</span>`)
 				},
 				{
 					name: 'Acciones',
-					formatter: (cell, row) => gridjs.html(this.menuTableHandler(row._cells[0].data))
+					formatter: (cell, row) => renderUserActions(row._cells[0].data)
 				}
 			],
 			server: {
 			  url: urlWeb + "Usuario/GetAll",
 			  then: data => data.data.map(usuario => [
-				usuario.id, usuario.nombre, usuario.apellido, usuario.email, usuario.activo
+				usuario.id,
+				usuario.username,
+				usuario.nombre,
+				usuario.apellido,
+				usuario.email,
+				usuario.perfil?.nombre ?? null,
+				usuario.activo
 			  ]),
 			  total: data => data.total
 			},

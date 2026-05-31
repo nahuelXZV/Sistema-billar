@@ -1,6 +1,5 @@
-﻿@using WebClient.Common
+@using WebClient.Common
 @using WebClient.Components
-@using WebClient.Components.Inventory.Almacen
 @using WebClient.Components.Inventory.Categoria
 @using WebClient.Models.Inventory
 @model CategoriaViewModel
@@ -41,26 +40,19 @@
 </script>
 
 @section ActionBar {
-	<div class="card card-outline card-primary action-bar">
-		<div class="card-body py-2">
-			<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-				<!-- ZONA IZQUIERDA -->
-				<div class="action-bar-left d-flex gap-2">
-					<button id="btn-create" type="button" class="btn btn-primary btn-sm px-3 py-1">
-						<i class="bi bi-plus-lg"></i>
-						Nueva Categoria
-					</button>
-				</div>
-				<!-- ZONA DERECHA -->
-				<div class="action-bar-right d-flex gap-2">
-				</div>
-			</div>
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button id="btn-create" type="button" class="iu-btn iu-btn-primary">
+				<i class="bi bi-plus-lg"></i>
+				Nueva categoria
+			</button>
 		</div>
 	</div>
 }
 
-<component type="typeof(MainComponent)"
-		   param-ComponentTypeName="typeof(CategoriaListadoComponent).FullName"
-		   param-Parameters="@componentParameters"
-		   render-mode="ServerPrerendered" />
-
+<section class="iu-show">
+	<component type="typeof(MainComponent)"
+			   param-ComponentTypeName="typeof(CategoriaListadoComponent).FullName"
+			   param-Parameters="@componentParameters"
+			   render-mode="ServerPrerendered" />
+</section>

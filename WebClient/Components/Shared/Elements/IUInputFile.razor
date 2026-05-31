@@ -1,1 +1,34 @@
-﻿
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="mb-3">
+	<label for="@Id" class="form-label">
+		@Label
+		@if (Required)
+		{
+			<span class="text-danger">*</span>
+		}
+	</label>
+	<InputFile id="@Id"
+			   class="@InputClass"
+			   OnChange="HandleChange"
+			   multiple="@Multiple" />
+	@if (!string.IsNullOrWhiteSpace(HelpText))
+	{
+		<div class="form-text">@HelpText</div>
+	}
+</div>
+
+@code {
+	[Parameter] public string Label { get; set; } = "Archivo";
+	[Parameter] public string Id { get; set; } = Guid.NewGuid().ToString();
+	[Parameter] public string InputClass { get; set; } = "form-control";
+	[Parameter] public string? HelpText { get; set; }
+	[Parameter] public bool Required { get; set; }
+	[Parameter] public bool Multiple { get; set; }
+	[Parameter] public EventCallback<InputFileChangeEventArgs> OnChange { get; set; }
+
+	private async Task HandleChange(InputFileChangeEventArgs args)
+	{
+		await OnChange.InvokeAsync(args);
+	}
+}
