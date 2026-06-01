@@ -1,6 +1,8 @@
 using Domain.DTOs.Security;
 using Domain.DTOs.Shared;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using WebClient.Common;
 using WebClient.Extensions;
 using WebClient.Models;
 using WebClient.Models.Security;
@@ -60,6 +62,33 @@ public class UsuarioController : MainController
             model.Usuario = new();
 
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Perfil()
+    {
+        var model = _viewModelFactory.Create<UsuarioViewModel>();
+        model.IncluirBlazorComponents = true;
+        model.Usuario = await _appServices.UsuarioService.GetById(model.IdUsuarioLoggedIn);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> RefrescarPerfil()
+    {
+        var model = _viewModelFactory.Create<UsuarioViewModel>();
+        var usuario = await _appServices.UsuarioService.GetById(model.IdUsuarioLoggedIn);
+
+        await HttpContext.IniciarSesion(new List<Claim>
+        {
+            new(Constantes.ClaimTypes.NombreUsuario, usuario.Nombre),
+            new(Constantes.ClaimTypes.ApellidoUsuario, usuario.Apellido),
+            new(Constantes.ClaimTypes.NombreCompleto, $"{usuario.Nombre} {usuario.Apellido}"),
+            new(Constantes.ClaimTypes.Correo, usuario.Email)
+        });
+
+        return RedirectToAction("Perfil");
     }
 
     [HttpPost]

@@ -1,0 +1,88 @@
+@using Domain.DTOs.Security
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent;
+
+<EditForm EditContext="_editContext">
+	<DataAnnotationsValidator />
+	<section class="iu-sec">
+		<div class="iu-head">
+			<div>
+				<h2>Datos personales</h2>
+			</div>
+		</div>
+
+		<div class="iu-form">
+			<div>
+				<IUInputText Label="Nombre"
+							 Placeholder="Escriba el nombre..."
+							 @bind-Value="Usuario.Nombre"
+							 Required="true" />
+				<ValidationMessage For="@(() => Usuario.Nombre)" />
+			</div>
+
+			<div>
+				<IUInputText Label="Apellido"
+							 Placeholder="Escriba el apellido..."
+							 @bind-Value="Usuario.Apellido"
+							 Required="true" />
+				<ValidationMessage For="@(() => Usuario.Apellido)" />
+			</div>
+
+			<div>
+				<IUInputText Label="Username"
+							 Placeholder="Escriba el usuario..."
+							 @bind-Value="Usuario.Username"
+							 Required="true" />
+				<ValidationMessage For="@(() => Usuario.Username)" />
+			</div>
+
+			<div>
+				<IUInputText Label="Correo"
+							 Placeholder="Escriba el correo..."
+							 @bind-Value="Usuario.Email"
+							 Required="true" />
+				<ValidationMessage For="@(() => Usuario.Email)" />
+			</div>
+
+			<div class="iu-span-2">
+				<div class="iu-checks">
+					<div class="iu-check">
+						<IUInputCheckbox Label="Modificar contrasena" @bind-Value="ModificarContrasena" />
+						<p>Actualiza la clave de acceso de tu usuario.</p>
+					</div>
+				</div>
+			</div>
+
+			@if (RequierePasswordActual)
+			{
+				<div>
+					<IUInputPassword Label="Contrasena actual"
+									 Placeholder="Escriba la contrasena actual..."
+									 @bind-Value="Usuario.PasswordActual"
+									 Required="true" />
+					<ValidationMessage For="@(() => Usuario.PasswordActual)" />
+				</div>
+			}
+
+			@if (ModificarContrasena)
+			{
+				<div>
+					<IUInputPassword Label="Nueva contrasena"
+									 Placeholder="Escriba la nueva contrasena..."
+									 @bind-Value="Usuario.NuevaPassword"
+									 Required="true" />
+					<ValidationMessage For="@(() => Usuario.NuevaPassword)" />
+				</div>
+
+				<div>
+					<IUInputPassword Label="Confirmar contrasena"
+									 Placeholder="Confirme la nueva contrasena..."
+									 @bind-Value="Usuario.ConfirmarPassword"
+									 Required="true" />
+					<ValidationMessage For="@(() => Usuario.ConfirmarPassword)" />
+				</div>
+			}
+		</div>
+	</section>
+</EditForm>

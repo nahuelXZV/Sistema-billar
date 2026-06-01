@@ -41,4 +41,10 @@ public class UsuarioService : AppBaseServices, IUsuarioService
         var uri = $"";
         return await PutAsync<bool>(uri, usuario);
     }
+
+    public async Task<bool> UpdatePerfil(UsuarioPerfilDTO usuario)
+    {
+        var uri = $"Perfil";
+        return await PutAsync<bool>(uri, usuario);
+    }
 }
