@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Domain.DTOs.Sales;
 using WebClient.Models.Sales;
 
 namespace WebClient.Components.Sales.Venta;
@@ -12,20 +13,29 @@ public partial class ModalPagoComponent
 
     private bool _wasVisible;
     private List<ModalPagoItemViewModel> PaymentItems { get; set; } = [];
+    private List<MetodoPagoDTO> MetodosPago { get; set; } = [];
+    private List<ModalMetodoPagoViewModel> PaymentMethods { get; set; } = [];
     private string PaymentNote { get; set; } = string.Empty;
     private decimal DiscountAmount { get; set; }
     private decimal ServiceCharge { get; set; }
-    private decimal AmountReceived { get; set; }
+    private long SelectedMetodoPagoId { get; set; }
+    private decimal PaymentMethodAmount { get; set; }
     private bool IsNoteOpen { get; set; }
     private decimal SelectedSubtotal => PaymentItems.Where(item => item.IsSelected).Sum(item => item.Total);
     private decimal PaymentTotal => Math.Max(0, SelectedSubtotal - DiscountAmount + ServiceCharge);
-    private decimal ChangeAmount => Math.Max(0, AmountReceived - PaymentTotal);
+    private decimal TotalPaid => PaymentMethods.Sum(payment => payment.Amount);
+    private decimal RemainingAmount => Math.Max(0, PaymentTotal - TotalPaid);
+    private decimal ChangeAmount => Math.Max(0, TotalPaid - PaymentTotal);
+    private bool HasSelectedItems => PaymentItems.Any(item => item.IsSelected && item.QuantityToPay > 0);
+    private bool CanAddPaymentMethod => HasSelectedItems && PaymentTotal > 0 && SelectedMetodoPagoId > 0 && PaymentMethodAmount > 0;
+    private bool CanConfirmPayment => HasSelectedItems && PaymentTotal > 0 && TotalPaid >= PaymentTotal;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (Visible && !_wasVisible)
         {
             LoadPaymentItems();
+            await LoadMetodosPagoAsync();
         }
 
         _wasVisible = Visible;
@@ -36,7 +46,8 @@ public partial class ModalPagoComponent
         PaymentNote = string.Empty;
         DiscountAmount = 0;
         ServiceCharge = 0;
-        AmountReceived = 0;
+        SelectedMetodoPagoId = MetodosPago.FirstOrDefault()?.Id ?? 0;
+        PaymentMethods.Clear();
         IsNoteOpen = false;
 
         PaymentItems = PuntoVenta.OrderItems
@@ -50,6 +61,19 @@ public partial class ModalPagoComponent
                 IsSelected = true
             })
             .ToList();
+
+        PaymentMethodAmount = PaymentTotal;
+    }
+
+    private async Task LoadMetodosPagoAsync()
+    {
+        MetodosPago = await AppServices.MetodoPagoService.GetAll();
+        SelectedMetodoPagoId = MetodosPago.FirstOrDefault()?.Id ?? 0;
+
+        if (PaymentMethodAmount <= 0)
+        {
+            PaymentMethodAmount = PaymentTotal;
+        }
     }
 
     private void ToggleNote()
@@ -65,6 +89,7 @@ public partial class ModalPagoComponent
         }
 
         item.QuantityToPay += 1;
+        ResetSuggestedPaymentAmountIfEmpty();
     }
 
     private void DecreasePayQuantity(ModalPagoItemViewModel item)
@@ -75,6 +100,50 @@ public partial class ModalPagoComponent
         }
 
         item.QuantityToPay -= 1;
+        ResetSuggestedPaymentAmountIfEmpty();
+    }
+
+    private void AddPaymentMethod()
+    {
+        var metodoPago = MetodosPago.FirstOrDefault(metodo => metodo.Id == SelectedMetodoPagoId);
+        if (metodoPago is null || PaymentMethodAmount <= 0)
+        {
+            return;
+        }
+
+        var existingPayment = PaymentMethods.FirstOrDefault(payment => payment.IdMetodoPago == metodoPago.Id);
+        if (existingPayment is not null)
+        {
+            existingPayment.Amount += PaymentMethodAmount;
+        }
+        else
+        {
+            PaymentMethods.Add(new ModalMetodoPagoViewModel
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                IdMetodoPago = metodoPago.Id,
+                Name = metodoPago.Nombre,
+                Abbreviation = metodoPago.Abreviatura,
+                Icono = metodoPago.Icono,
+                Amount = PaymentMethodAmount
+            });
+        }
+
+        PaymentMethodAmount = RemainingAmount > 0 ? RemainingAmount : 0;
+    }
+
+    private void RemovePaymentMethod(string id)
+    {
+        PaymentMethods.RemoveAll(payment => payment.Id == id);
+        ResetSuggestedPaymentAmountIfEmpty();
+    }
+
+    private void ResetSuggestedPaymentAmountIfEmpty()
+    {
+        if (PaymentMethods.Count == 0)
+        {
+            PaymentMethodAmount = PaymentTotal;
+        }
     }
 
     private async Task ConfirmPaymentAsync()
@@ -90,7 +159,7 @@ public partial class ModalPagoComponent
             })
             .ToList();
 
-        if (paidItems.Count == 0)
+        if (paidItems.Count == 0 || !CanConfirmPayment)
         {
             return;
         }
@@ -132,5 +201,15 @@ public partial class ModalPagoComponent
         public decimal UnitPrice { get; set; }
         public bool IsSelected { get; set; }
         public decimal Total => QuantityToPay * UnitPrice;
+    }
+
+    private sealed class ModalMetodoPagoViewModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public long IdMetodoPago { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Abbreviation { get; set; } = string.Empty;
+        public string Icono { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
     }
 }

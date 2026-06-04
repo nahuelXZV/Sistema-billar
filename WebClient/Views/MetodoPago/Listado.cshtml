@@ -1,0 +1,76 @@
+@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Sales
+@model MetodoPagoViewModel
+
+@{
+	ViewData["Title"] = "Metodo Pago";
+	ViewData["Module"] = "Metodo Pago";
+	ViewData["Action"] = "Listado";
+	ViewData["Url"] = Url.Action("Listado", "MetodoPago");
+
+	Model.ListaItemsMenu = new List<ItemMenu>
+	{
+		new ItemMenu { Id = MenuItemId.Editar, Text = "Editar", IconCss = "fa fa-pencil", Url = Url.Action("Crear", "MetodoPago"), ActionType = MenuItemActionType.POST },
+		new ItemMenu { Id = MenuItemId.Eliminar, Text = "Eliminar", IconCss = "fa fa-trash", Url = Url.Action("Eliminar", "MetodoPago"), ActionType = MenuItemActionType.POST, Confirm = true, ConfirmMessage = "Esta seguro de eliminar este metodo de pago?" },
+	};
+}
+
+@section ActionBar {
+	<form id="FormCrear" asp-controller="MetodoPago" asp-action="Crear" method="post" class="d-none">
+		@Html.AntiForgeryToken()
+	</form>
+
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="submit" form="FormCrear" class="iu-btn iu-btn-primary">
+				<i class="bi bi-plus-lg"></i>
+				Crear metodo de pago
+			</button>
+		</div>
+	</div>
+}
+
+<section class="iu-show">
+	<section class="iu-sec">
+		<div id="table-wrapper"></div>
+	</section>
+</section>
+
+@section Scripts {
+	<script>
+		const renderMetodoPagoActions = (id) => gridjs.html(`
+			<button type="button"
+					class="inv-btn-action"
+					aria-label="Abrir acciones"
+					onclick="togglePortalDropdown(event, '${id}')">
+				<i class="bi bi-three-dots"></i>
+			</button>
+		`);
+
+		new gridjs.Grid({
+			columns: ['Id', 'Nombre', 'Abreviatura', 'Clave moneda', 'Icono',
+				{
+					name: 'Activo',
+					formatter: (cell) => {
+						const tone = cell ? 'tone-success' : 'tone-danger';
+						const text = cell ? 'Activo' : 'Inactivo';
+						return gridjs.html(`<span class="iu-chip ${tone}">${text}</span>`);
+					}
+				},
+				{
+					name: 'Acciones',
+					formatter: (cell, row) => renderMetodoPagoActions(row._cells[0].data)
+				}
+			],
+			server: {
+			  url: urlWeb + "MetodoPago/GetAll",
+			  then: data => data.data.map(metodo => [
+				metodo.id, metodo.nombre, metodo.abreviatura, metodo.claveMoneda, metodo.icono, metodo.activo
+			  ]),
+			  total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById("table-wrapper"));
+	</script>
+}

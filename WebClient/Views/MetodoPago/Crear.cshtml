@@ -1,0 +1,62 @@
+@using WebClient.Common
+@using WebClient.Components
+@using WebClient.Components.Sales.MetodoPago
+@using WebClient.Models.Sales
+@model MetodoPagoViewModel
+
+@{
+	ViewData["Title"] = "Metodo Pago";
+	ViewData["Module"] = "Metodo Pago";
+	ViewData["Action"] = "Crear";
+	ViewData["Url"] = Url.Action("Listado", "MetodoPago");
+
+	var componentName = nameof(MetodoPagoCreateComponent);
+	var componentParameters = new Dictionary<string, object>
+	{
+		{ nameof(MetodoPagoCreateComponent.MetodoPago), Model.MetodoPago }
+	};
+}
+<script>
+	class @componentName {
+		componentInstance;
+		guardarButton;
+
+		constructor(componentInstance) {
+			this.componentInstance = componentInstance;
+			this.guardarButton = document.getElementById('btn-save');
+			this.guardarButton.addEventListener('click', ev => this.Validar());
+		}
+
+		async Validar() {
+			await this.componentInstance.invokeMethodAsync('Validar');
+		}
+
+		static init(componentInstance) {
+			window.@componentName = new @(componentName)(componentInstance);
+		}
+	}
+
+	window.@componentName = @componentName;
+</script>
+
+@section ActionBar {
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="button" class="iu-btn iu-btn-secondary" onclick="history.back()">
+				<i class="bi bi-arrow-left"></i>
+				Volver
+			</button>
+			<button id="btn-save" type="button" class="iu-btn iu-btn-primary">
+				<i class="bi bi-floppy"></i>
+				Guardar
+			</button>
+		</div>
+	</div>
+}
+
+<section class="iu-show">
+	<component type="typeof(MainComponent)"
+			   param-ComponentTypeName="typeof(MetodoPagoCreateComponent).FullName"
+			   param-Parameters="@componentParameters"
+			   render-mode="ServerPrerendered" />
+</section>

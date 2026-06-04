@@ -15,5 +15,9 @@ public class PagoVentaConfiguration : IEntityTypeConfiguration<PagoVenta>
         builder.HasOne(a => a.Venta)
             .WithMany()
             .HasForeignKey(a => a.IdVenta);
+
+        builder.HasOne(a => a.MetodoPago)
+            .WithMany()
+            .HasForeignKey(a => a.IdMetodoPago);
     }
 }

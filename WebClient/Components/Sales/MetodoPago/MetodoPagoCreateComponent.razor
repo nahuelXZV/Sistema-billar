@@ -1,0 +1,53 @@
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent;
+
+<section class="iu-sec">
+	<div class="iu-head">
+		<div>
+			<h2>@(IsEditing ? "Datos del metodo de pago" : "Nuevo metodo de pago")</h2>
+		</div>
+	</div>
+
+	<EditForm EditContext="_editContext">
+		<DataAnnotationsValidator />
+
+		<div class="iu-form">
+			<div>
+				<IUInputText Label="Nombre"
+							 Placeholder="Escriba el nombre..."
+							 @bind-Value="MetodoPago.Nombre"
+							 Required="true" />
+				<ValidationMessage For="@(() => MetodoPago.Nombre)" />
+			</div>
+
+			<div>
+				<IUInputText Label="Abreviatura"
+							 Placeholder="Escriba una abreviatura..."
+							 @bind-Value="MetodoPago.Abreviatura"
+							 Required="true" />
+				<ValidationMessage For="@(() => MetodoPago.Abreviatura)" />
+			</div>
+
+			<div>
+				<IUInputText Label="Clave moneda"
+							 Placeholder="Ej. BOB, USD..."
+							 @bind-Value="MetodoPago.ClaveMoneda"
+							 Required="true" />
+				<ValidationMessage For="@(() => MetodoPago.ClaveMoneda)" />
+			</div>
+
+			<div>
+				<IUInputText Label="Icono"
+							 Placeholder="Ej. bi bi-cash, fa fa-money..."
+							 @bind-Value="MetodoPago.Icono" />
+				<ValidationMessage For="@(() => MetodoPago.Icono)" />
+			</div>
+
+			<div>
+				<IUInputCheckbox Label="Activo" @bind-Value="MetodoPago.Activo" />
+				<ValidationMessage For="@(() => MetodoPago.Activo)" />
+			</div>
+		</div>
+	</EditForm>
+</section>

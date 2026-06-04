@@ -1,5 +1,6 @@
 @using WebClient.Components.Shared.Elements
 @using WebClient.Models.Sales
+@inherits Components.MainBaseComponent;
 
 <IUModal Title="Pagar venta" Visible="Visible" VisibleChanged="HandleVisibleChangedAsync">
 	<Body>
@@ -82,25 +83,95 @@
 								   @bind-value:event="oninput" />
 						</div>
 					</label>
+				</div>
+			</div>
+
+			<div class="venta-pos-payment-methods">
+				<div class="venta-pos-payment-method-entry">
+					<label>
+						<span>Metodo de pago</span>
+						<select class="venta-pos-payment-method-select"
+								@bind="SelectedMetodoPagoId"
+								disabled="@(MetodosPago.Count == 0)">
+							<option value="0">Seleccione...</option>
+							@foreach (var metodo in MetodosPago)
+							{
+								<option value="@metodo.Id">@metodo.Nombre</option>
+							}
+						</select>
+					</label>
 
 					<label>
-						<span>Pagó con</span>
+						<span>Monto</span>
 						<div class="venta-pos-money-input">
 							<span>Bs</span>
 							<input type="number"
 								   min="0"
 								   step="0.01"
-								   @bind-value="AmountReceived"
+								   @bind-value="PaymentMethodAmount"
 								   @bind-value:event="oninput" />
 						</div>
 					</label>
+
+					<button type="button"
+							class="venta-pos-payment-method-add"
+							disabled="@(!CanAddPaymentMethod)"
+							@onclick="AddPaymentMethod">
+						<i class="bi bi-plus-lg"></i>
+						Agregar
+					</button>
 				</div>
+
+				@if (MetodosPago.Count == 0)
+				{
+					<div class="venta-pos-payment-empty">No hay metodos de pago activos.</div>
+				}
+				else if (PaymentMethods.Count == 0)
+				{
+					<div class="venta-pos-payment-empty">Agrega al menos un metodo de pago.</div>
+				}
+				else
+				{
+					<div class="venta-pos-payment-method-summary">
+						<div class="venta-pos-payment-method-summary-head">
+							<span>Resumen de pagos</span>
+							<strong>@FormatMoney(TotalPaid)</strong>
+						</div>
+
+						@foreach (var payment in PaymentMethods)
+						{
+							<div class="venta-pos-payment-method-row">
+								<span>
+									@if (!string.IsNullOrWhiteSpace(payment.Icono))
+									{
+										<i class="@payment.Icono"></i>
+									}
+									@payment.Name
+								</span>
+								<strong>@FormatMoney(payment.Amount)</strong>
+								<button type="button"
+										aria-label="Quitar metodo de pago"
+										@onclick="@(() => RemovePaymentMethod(payment.Id))">
+									<i class="bi bi-x-lg"></i>
+								</button>
+							</div>
+						}
+					</div>
+				}
 			</div>
 
 			<div class="venta-pos-payment-modal-total">
 				<span>Total a pagar</span>
 				<strong>@FormatMoney(PaymentTotal)</strong>
 			</div>
+
+			@if (RemainingAmount > 0)
+			{
+				<div class="venta-pos-payment-modal-pending">
+					<span>Faltante</span>
+					<strong>@FormatMoney(RemainingAmount)</strong>
+				</div>
+			}
 
 			<div class="venta-pos-payment-modal-change">
 				<span>Cambio</span>
@@ -114,7 +185,7 @@
 		</button>
 		<button type="button"
 				class="venta-pos-client-modal-button is-primary"
-				disabled="@(PaymentItems.All(item => !item.IsSelected || item.QuantityToPay <= 0))"
+				disabled="@(!CanConfirmPayment)"
 				@onclick="ConfirmPaymentAsync">
 			<i class="bi bi-check2-circle"></i>
 			<span>Confirmar pago</span>

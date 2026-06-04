@@ -900,7 +900,7 @@
 
 .venta-pos-payment-fields {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.55rem;
 }
 
@@ -922,19 +922,142 @@
 
 .venta-pos-payment-modal-total span,
 .venta-pos-payment-modal-change span,
+.venta-pos-payment-modal-pending span,
 .venta-pos-payment-empty {
     color: #9bb1a7;
     font-size: 0.82rem;
 }
 
 .venta-pos-payment-modal-total strong,
-.venta-pos-payment-modal-change strong {
+.venta-pos-payment-modal-change strong,
+.venta-pos-payment-modal-pending strong {
     color: #55d18f;
     font-size: 1.3rem;
     line-height: 1;
 }
 
-.venta-pos-payment-modal-change {
+.venta-pos-payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(113, 132, 123, 0.14);
+}
+
+.venta-pos-payment-method-entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr) auto;
+    gap: 0.55rem;
+    align-items: end;
+}
+
+.venta-pos-payment-method-entry label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+    margin: 0;
+}
+
+.venta-pos-payment-method-entry label > span {
+    color: #9bb1a7;
+    font-size: 0.76rem;
+}
+
+.venta-pos-payment-method-select {
+    width: 100%;
+    min-height: 2rem;
+    border: 1px solid rgba(113, 132, 123, 0.14);
+    border-radius: 0.7rem;
+    padding: 0.24rem 0.55rem;
+    background: rgba(11, 16, 15, 0.72);
+    color: #f4f8f5;
+    font-size: 0.84rem;
+    font-weight: 700;
+    outline: 0;
+}
+
+.venta-pos-payment-method-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(38, 192, 124, 0.24);
+    border-radius: 0.7rem;
+    background: rgba(31, 122, 90, 0.2);
+    color: #8de3bd;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.venta-pos-payment-method-add:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.venta-pos-payment-method-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.65rem;
+    border: 1px solid rgba(113, 132, 123, 0.14);
+    border-radius: 0.85rem;
+    background: rgba(11, 16, 15, 0.58);
+}
+
+.venta-pos-payment-method-summary-head,
+.venta-pos-payment-method-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.venta-pos-payment-method-summary-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid rgba(113, 132, 123, 0.12);
+}
+
+.venta-pos-payment-method-summary-head span,
+.venta-pos-payment-method-row span {
+    min-width: 0;
+    color: #dbe8e1;
+    font-size: 0.82rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.venta-pos-payment-method-row span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.venta-pos-payment-method-summary-head strong,
+.venta-pos-payment-method-row strong {
+    color: #f4f8f5;
+    font-size: 0.86rem;
+    white-space: nowrap;
+}
+
+.venta-pos-payment-method-row button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border: 1px solid rgba(255, 130, 130, 0.16);
+    border-radius: 999px;
+    background: rgba(92, 28, 28, 0.16);
+    color: #ffb0a8;
+}
+
+.venta-pos-payment-modal-change,
+.venta-pos-payment-modal-pending {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -943,6 +1066,15 @@
     border: 1px solid rgba(38, 192, 124, 0.18);
     border-radius: 0.85rem;
     background: rgba(31, 122, 90, 0.1);
+}
+
+.venta-pos-payment-modal-pending {
+    border-color: rgba(245, 189, 92, 0.22);
+    background: rgba(96, 67, 24, 0.16);
+}
+
+.venta-pos-payment-modal-pending strong {
+    color: #f3c677;
 }
 
 .venta-pos-payment-empty {
@@ -1011,6 +1143,15 @@
 
     .venta-pos-order-item {
         grid-template-columns: 1fr;
+    }
+
+    .venta-pos-payment-fields,
+    .venta-pos-payment-method-entry {
+        grid-template-columns: 1fr;
+    }
+
+    .venta-pos-payment-method-add {
+        width: 100%;
     }
 
     .venta-pos-remove-button {

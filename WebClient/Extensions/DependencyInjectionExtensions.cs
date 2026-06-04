@@ -48,6 +48,7 @@ public static class DependencyInjectionExtensions
         services.AddValidatorsFromAssemblyContaining<CreateLoteDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateTipoMesaDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateVendedorDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateMetodoPagoDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateClienteDTOValidator>();
         //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());CreateTransaccionInventarioDTOValidator
         #endregion
@@ -72,6 +73,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITipoMesaService, TipoMesaService>();
         services.AddScoped<IMesasService, MesasService>();
         services.AddScoped<IVendedorService, VendedorService>();
+        services.AddScoped<IMetodoPagoService, MetodoPagoService>();
         services.AddScoped<IUsoMesaService, UsoMesaService>();
         services.AddScoped<IOrdenVentaService, OrdenVentaService>();
         services.AddScoped<IVentaService, VentaService>();

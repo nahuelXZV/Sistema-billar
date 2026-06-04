@@ -51,6 +51,7 @@ public class GeneralProfile : Profile
         CreateMap<Venta, VentaDTO>();
         CreateMap<VentaDetalle, VentaDetalleDTO>();
         CreateMap<UsoMesa, UsoMesaDTO>();
+        CreateMap<MetodoPago, MetodoPagoDTO>();
 
 
         #endregion
@@ -87,6 +88,7 @@ public class GeneralProfile : Profile
         CreateMap<VentaDTO, Venta>();
         CreateMap<VentaDetalleDTO, VentaDetalle>();
         CreateMap<UsoMesaDTO, UsoMesa>();
+        CreateMap<MetodoPagoDTO, MetodoPago>();
         #endregion
 
     }
