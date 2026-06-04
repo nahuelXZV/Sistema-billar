@@ -36,6 +36,12 @@ public class ProductoService : AppBaseServices, IProductoService
         return await GetAsync<List<ProductoDTO>>(uri);
     }
 
+    public async Task<List<ProductoDTO>> GetByCategoria(long idCategoria, long idVendedor)
+    {
+        var uri = $"PorCategoria/{idCategoria}/Vendedor/{idVendedor}";
+        return await GetAsync<List<ProductoDTO>>(uri);
+    }
+
     public async Task<ProductoDTO> GetById(long id)
     {
         var uri = $"{id}";

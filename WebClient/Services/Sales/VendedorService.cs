@@ -42,6 +42,12 @@ public class VendedorService : AppBaseServices, IVendedorService
         return await GetAsync<VendedorDTO>(uri);
     }
 
+    public async Task<VendedorDTO> GetByUsuario(long idUsuario)
+    {
+        var uri = $"PorUsuario/{idUsuario}";
+        return await GetAsync<VendedorDTO>(uri);
+    }
+
     public async Task<bool> Update(VendedorDTO vendedor)
     {
         var uri = $@"";

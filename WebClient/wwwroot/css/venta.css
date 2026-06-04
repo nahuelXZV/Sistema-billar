@@ -299,9 +299,46 @@
     cursor: pointer;
 }
 
+.venta-pos-click-card {
+    width: 100%;
+    color: inherit;
+    font: inherit;
+    appearance: none;
+    cursor: pointer;
+}
+
+.venta-pos-click-card:focus-visible {
+    outline: 2px solid rgba(85, 209, 143, 0.72);
+    outline-offset: 3px;
+}
+
 .venta-pos-card:hover {
     transform: translateY(-1px);
     border-color: rgba(31, 122, 90, 0.24);
+}
+
+.venta-pos-card-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.35;
+    object-fit: cover;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(113, 132, 123, 0.12);
+    background: rgba(11, 16, 15, 0.66);
+}
+
+.venta-pos-card-image-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.08), transparent 36%),
+        rgba(11, 16, 15, 0.66);
+}
+
+.venta-pos-card-image-fallback i {
+    font-size: 2.65rem;
+    line-height: 1;
 }
 
 .venta-pos-media-frame {
@@ -338,6 +375,16 @@
 .venta-pos-card-copy span {
     font-size: 0.74rem;
     line-height: 1.25;
+}
+
+.venta-pos-card-copy-compact {
+    gap: 0.3rem;
+}
+
+.venta-pos-card-copy-compact span {
+    color: #55d18f;
+    font-size: 0.92rem;
+    font-weight: 800;
 }
 
 .venta-pos-product-tags span,

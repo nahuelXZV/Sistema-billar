@@ -1,0 +1,94 @@
+@using WebClient.Models.Sales
+
+<aside class="venta-pos-summary-panel">
+	<div class="venta-pos-summary-header d-flex justify-content-between align-items-center gap-2">
+		<div class="venta-pos-summary-title d-flex align-items-center gap-2">
+			<div class="venta-pos-summary-icon">
+				<i class="bi bi-cart3"></i>
+			</div>
+			<div class="d-flex flex-column">
+				<strong>Venta actual</strong>
+				<span>@($"{PuntoVenta.OrderItems.Count} items cargados")</span>
+			</div>
+		</div>
+
+		<span class="venta-pos-summary-count">@PuntoVenta.OrderItems.Count</span>
+	</div>
+
+	<div class="venta-pos-customer-block d-flex flex-column mb-2">
+		<label>Cliente (opcional)</label>
+		<div class="venta-pos-customer-search d-flex align-items-center gap-2">
+			<div class="venta-pos-customer-input d-flex align-items-center flex-grow-1">
+				<i class="bi bi-search"></i>
+				<input type="text" value="@PuntoVenta.CustomerSearchPlaceholder" readonly />
+			</div>
+			<button type="button" aria-label="Nuevo cliente">
+				<i class="bi bi-person-plus"></i>
+			</button>
+		</div>
+	</div>
+
+	<div class="venta-pos-order-list d-flex flex-column m-0 mb-2">
+		@foreach (var item in PuntoVenta.OrderItems)
+		{
+			<article class="venta-pos-order-item">
+				<div class="venta-pos-order-content d-flex flex-column">
+					<div class="venta-pos-order-head d-flex justify-content-between align-items-center gap-2">
+						<strong>@item.Name</strong>
+						<button type="button" class="venta-pos-remove-button" @onclick="@(() => RemoveItemAsync(item.ProductId))">
+							<i class="bi bi-x-lg"></i>
+						</button>
+					</div>
+
+					<div class="venta-pos-order-row d-flex justify-content-between align-items-center gap-2">
+						<div class="venta-pos-stepper d-flex align-items-center">
+							<button type="button" @onclick="@(() => DecreaseQuantityAsync(item.ProductId))">
+								<i class="bi bi-dash"></i>
+							</button>
+							<span>@item.Quantity</span>
+							<button type="button" @onclick="@(() => IncreaseQuantityAsync(item.ProductId))">
+								<i class="bi bi-plus"></i>
+							</button>
+						</div>
+
+						<strong class="venta-pos-order-price">@FormatMoney(item.Total)</strong>
+					</div>
+				</div>
+			</article>
+		}
+	</div>
+
+	<button type="button" class="venta-pos-note-link">
+		<i class="bi bi-pencil-square"></i>
+		Agregar nota a la venta
+	</button>
+
+	<div class="venta-pos-totals d-flex flex-column">
+		<div>
+			<span>Subtotal</span>
+			<strong>@FormatMoney(PuntoVenta.Subtotal)</strong>
+		</div>
+		<div>
+			<span>Descuento</span>
+			<strong>@FormatMoney(PuntoVenta.DiscountAmount)</strong>
+		</div>
+		<div>
+			<span>Recargo</span>
+			<strong>@FormatMoney(PuntoVenta.ServiceCharge)</strong>
+		</div>
+		<div class="is-total">
+			<span>Total</span>
+			<strong>@FormatMoney(PuntoVenta.GrandTotal)</strong>
+		</div>
+	</div>
+
+	<div class="venta-pos-payment-grid d-flex gap-2">
+		@foreach (var method in PuntoVenta.PaymentMethods)
+		{
+			<button type="button" class="venta-pos-payment-button @(method.IsPrimary ? "is-primary" : string.Empty)">
+				<i class="@method.IconCss"></i>
+				<span>@method.Name</span>
+			</button>
+		}
+	</div>
+</aside>

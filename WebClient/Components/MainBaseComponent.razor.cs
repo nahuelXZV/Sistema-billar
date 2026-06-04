@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
 using Microsoft.JSInterop;
-using WebClient.Services;
 using WebClient.Configs;
+using WebClient.Services;
 
 namespace WebClient.Components;
 

@@ -1,0 +1,16 @@
+@using WebClient.Models.Sales
+
+@if (!string.IsNullOrWhiteSpace(Product.ImageUrl))
+{
+	<img class="venta-pos-card-image" src="@Product.ImageUrl" alt="@Product.Name" loading="lazy" />
+}
+else
+{
+	<div class="venta-pos-card-image venta-pos-card-image-fallback @Product.ToneClass" aria-hidden="true">
+		<i class="@Product.IconCss"></i>
+	</div>
+}
+
+@code {
+	[Parameter] public PuntoVentaProductoViewModel Product { get; set; } = new();
+}

@@ -27,6 +27,12 @@ public class VendedorController : MainController
         return Ok(await Mediator.Send(new GetVendedoresQuery()));
     }
 
+    [HttpGet("PorUsuario/{idUsuario}")]
+    public async Task<IActionResult> GetByUsuario(long idUsuario)
+    {
+        return Ok(await Mediator.Send(new GetVendedorByUsuarioQuery { IdUsuario = idUsuario }));
+    }
+
     [HttpGet("{idVend}")]
     public async Task<IActionResult> GetById(long idVend)
     {

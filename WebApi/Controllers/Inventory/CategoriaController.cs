@@ -26,6 +26,18 @@ public class CategoriaController : MainController
         return Ok(await Mediator.Send(new GetCategoriasSinNivelQuery() { }));
     }
 
+    [HttpGet("Base")]
+    public async Task<IActionResult> GetBase()
+    {
+        return Ok(await Mediator.Send(new GetCategoriasByPadreQuery() { IdCategoriaPadre = null }));
+    }
+
+    [HttpGet("PorPadre/{idCategoriaPadre}")]
+    public async Task<IActionResult> GetByCategoriaPadre(long idCategoriaPadre)
+    {
+        return Ok(await Mediator.Send(new GetCategoriasByPadreQuery() { IdCategoriaPadre = idCategoriaPadre }));
+    }
+
     [HttpGet("{idCat}")]
     public async Task<IActionResult> GetById(long idCat)
     {

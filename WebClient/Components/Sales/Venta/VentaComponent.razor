@@ -1,7 +1,7 @@
 @using WebClient.Models.Sales
 @inherits Components.MainBaseComponent;
 
-@if (Preview is null)
+@if (Model.PuntoVenta is null)
 {
 	<div class="venta-pos-app venta-pos-loading">
 		<div class="venta-pos-skeleton venta-pos-skeleton-topbar"></div>
@@ -18,196 +18,17 @@
 else
 {
 	<section class="venta-pos-app">
-		
 		<div class="row g-3 align-items-start">
 			<div class="col-xl-9">
-				<section class="venta-pos-catalog-panel">
-					
-
-					<div class="venta-pos-pathbar d-flex align-items-center gap-2 flex-wrap">
-						<button type="button"
-								class="venta-pos-path-button @(CurrentNode is null ? "is-active" : string.Empty)"
-								@onclick="GoToRoot">
-							Inicio
-						</button>
-
-						@for (var index = 0; index < SelectedPath.Count; index++)
-						{
-							var step = SelectedPath[index];
-							var stepIndex = index;
-
-							<i class="bi bi-chevron-right"></i>
-							<button type="button"
-									class="venta-pos-path-button @(stepIndex == SelectedPath.Count - 1 ? "is-active" : string.Empty)"
-									@onclick="@(() => GoToPath(stepIndex))">
-								@step.Name
-							</button>
-						}
-					</div>
-
-					@if (ShowingProducts)
-					{
-						<div class="row row-cols-2 row-cols-lg-4 row-cols-xxl-5 g-3">
-							@foreach (var product in VisibleProducts)
-							{
-								<div class="col">
-									<article class="venta-pos-card venta-pos-product-card h-100">
-										<div class="venta-pos-media-frame @product.ToneClass">
-											<i class="@product.IconCss"></i>
-											<span>@product.MediaLabel</span>
-										</div>
-
-										<div class="venta-pos-card-copy d-flex flex-column">
-											<strong>@product.Name</strong>
-											<span>@product.Description</span>
-										</div>
-
-										<div class="venta-pos-product-tags d-flex flex-wrap">
-											@foreach (var tag in product.Tags)
-											{
-												<span>@tag</span>
-											}
-										</div>
-
-										<div class="venta-pos-card-footer d-flex align-items-center justify-content-between mt-auto">
-											<div class="venta-pos-price-block d-flex flex-column">
-												<small>@product.CategoryLabel</small>
-												<strong>@FormatMoney(product.Price)</strong>
-											</div>
-
-											<button type="button" class="venta-pos-add-button" @onclick="@(() => AddProduct(product))">
-												<i class="bi bi-plus-lg"></i>
-											</button>
-										</div>
-									</article>
-								</div>
-							}
-						</div>
-					}
-					else
-					{
-						<div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-3">
-							@foreach (var category in VisibleCategories)
-							{
-								<div class="col">
-									<button type="button" class="venta-pos-card venta-pos-category-card h-100 w-100" @onclick="@(() => EnterCategory(category))">
-										<div class="venta-pos-card-chip">@GetNodeCountLabel(category)</div>
-
-										<div class="venta-pos-media-frame @category.ToneClass">
-											<i class="@category.IconCss"></i>
-											<span>@category.CardCaption</span>
-										</div>
-
-										<div class="venta-pos-card-copy d-flex flex-column">
-											<strong>@category.Name</strong>
-											<span>@category.Description</span>
-										</div>
-
-										<div class="venta-pos-card-footer d-flex align-items-center justify-content-between mt-auto">
-											<small>@GetNodeActionLabel(category)</small>
-											<i class="bi bi-arrow-right-circle"></i>
-										</div>
-									</button>
-								</div>
-							}
-						</div>
-					}
-				</section>
+				<SeleccionarProductoComponent PuntoVenta="Model.PuntoVenta"
+											  OnProductSelected="AddProduct" />
 			</div>
 
 			<div class="col-xl-3">
-				<aside class="venta-pos-summary-panel">
-					<div class="venta-pos-summary-header d-flex justify-content-between align-items-center gap-2">
-						<div class="venta-pos-summary-title d-flex align-items-center gap-2">
-							<div class="venta-pos-summary-icon">
-								<i class="bi bi-cart3"></i>
-							</div>
-							<div class="d-flex flex-column">
-								<strong>Venta actual</strong>
-								<span>@($"{OrderItems.Count} items cargados")</span>
-							</div>
-						</div>
-
-						<span class="venta-pos-summary-count">@OrderItems.Count</span>
-					</div>
-
-					<div class="venta-pos-customer-block d-flex flex-column mb-2">
-						<label>Cliente (opcional)</label>
-						<div class="venta-pos-customer-search d-flex align-items-center gap-2">
-							<div class="venta-pos-customer-input d-flex align-items-center flex-grow-1">
-								<i class="bi bi-search"></i>
-								<input type="text" value="@Preview.CustomerSearchPlaceholder" readonly />
-							</div>
-							<button type="button" aria-label="Nuevo cliente">
-								<i class="bi bi-person-plus"></i>
-							</button>
-						</div>
-					</div>
-
-					<div class="venta-pos-order-list d-flex flex-column m-0 mb-2">
-						@foreach (var item in OrderItems)
-						{
-							<article class="venta-pos-order-item">
-								<div class="venta-pos-order-content d-flex flex-column">
-									<div class="venta-pos-order-head d-flex justify-content-between align-items-center gap-2">
-										<strong>@item.Name</strong>
-										<button type="button" class="venta-pos-remove-button" @onclick="@(() => RemoveItem(item.ProductId))">
-											<i class="bi bi-x-lg"></i>
-										</button>
-									</div>
-
-									<div class="venta-pos-order-row d-flex justify-content-between align-items-center gap-2">
-										<div class="venta-pos-stepper d-flex align-items-center">
-											<button type="button" @onclick="@(() => ChangeQuantity(item.ProductId, -1))">
-												<i class="bi bi-dash"></i>
-											</button>
-											<span>@item.Quantity</span>
-											<button type="button" @onclick="@(() => ChangeQuantity(item.ProductId, 1))">
-												<i class="bi bi-plus"></i>
-											</button>
-										</div>
-
-										<strong class="venta-pos-order-price">@FormatMoney(item.Total)</strong>
-									</div>
-								</div>
-							</article>
-						}
-					</div>
-
-					<button type="button" class="venta-pos-note-link">
-						<i class="bi bi-pencil-square"></i>
-						Agregar nota a la venta
-					</button>
-
-					<div class="venta-pos-totals d-flex flex-column">
-						<div>
-							<span>Subtotal</span>
-							<strong>@FormatMoney(Subtotal)</strong>
-						</div>
-						<div>
-							<span>Descuento</span>
-							<strong>@FormatMoney(DiscountAmount)</strong>
-						</div>
-						<div>
-							<span>Recargo</span>
-							<strong>@FormatMoney(ServiceCharge)</strong>
-						</div>
-						<div class="is-total">
-							<span>Total</span>
-							<strong>@FormatMoney(GrandTotal)</strong>
-						</div>
-					</div>
-
-					<div class="venta-pos-payment-grid d-flex gap-2">
-						@foreach (var method in Preview.PaymentMethods)
-						{
-							<button type="button" class="venta-pos-payment-button @(method.IsPrimary ? "is-primary" : string.Empty)">
-								<i class="@method.IconCss"></i>
-								<span>@method.Name</span>
-							</button>
-						}
-					</div>
-				</aside>
+				<ResumenVentaComponent PuntoVenta="Model.PuntoVenta"
+									   OnRemoveItem="RemoveItem"
+									   OnIncreaseQuantity="IncreaseQuantity"
+									   OnDecreaseQuantity="DecreaseQuantity" />
 			</div>
 		</div>
 	</section>

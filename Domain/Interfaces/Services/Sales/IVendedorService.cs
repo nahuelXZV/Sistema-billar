@@ -9,6 +9,7 @@ public interface IVendedorService
     Task<bool> Update(VendedorDTO vendedor);
     Task<bool> Delete(long id);
     Task<VendedorDTO> GetById(long id);
+    Task<VendedorDTO> GetByUsuario(long idUsuario);
     Task<ResponseFilterDTO<VendedorDTO>> GetAll(FilterDTO? filter);
     Task<List<VendedorDTO>> GetAll();
 }

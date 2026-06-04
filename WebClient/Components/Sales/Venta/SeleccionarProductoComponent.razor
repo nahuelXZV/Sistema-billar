@@ -1,0 +1,66 @@
+@using WebClient.Models.Sales
+
+<section class="venta-pos-catalog-panel">
+	<div class="venta-pos-pathbar d-flex align-items-center gap-2 flex-wrap">
+		<button type="button"
+				class="venta-pos-path-button @(PuntoVenta.CurrentNode is null ? "is-active" : string.Empty)"
+				@onclick="GoToRootAsync">
+			Inicio
+		</button>
+
+		@for (var index = 0; index < PuntoVenta.SelectedPath.Count; index++)
+		{
+			var step = PuntoVenta.SelectedPath[index];
+			var stepIndex = index;
+
+			<i class="bi bi-chevron-right"></i>
+			<button type="button"
+					class="venta-pos-path-button @(stepIndex == PuntoVenta.SelectedPath.Count - 1 ? "is-active" : string.Empty)"
+					@onclick="@(() => GoToPathAsync(stepIndex))">
+				@step.Name
+			</button>
+		}
+	</div>
+
+	@if (PuntoVenta.ShowingProducts)
+	{
+		<div class="row row-cols-2 row-cols-lg-4 row-cols-xxl-5 g-3">
+			@foreach (var product in PuntoVenta.VisibleProducts)
+			{
+				<div class="col">
+					<button type="button"
+							class="venta-pos-card venta-pos-product-card venta-pos-click-card h-100 w-100"
+							aria-label="@($"Agregar {product.Name}")"
+							@onclick="@(() => SelectProductAsync(product))">
+						<ProductImage Product="product" />
+
+						<div class="venta-pos-card-copy venta-pos-card-copy-compact d-flex flex-column">
+							<strong>@product.Name</strong>
+							<span>@FormatMoney(product.Price)</span>
+						</div>
+					</button>
+				</div>
+			}
+		</div>
+	}
+	else
+	{
+		<div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-3">
+			@foreach (var category in PuntoVenta.VisibleCategories)
+			{
+				<div class="col">
+					<button type="button"
+							class="venta-pos-card venta-pos-category-card venta-pos-click-card h-100 w-100"
+							aria-label="@($"Abrir categoria {category.Name}")"
+							@onclick="@(() => EnterCategoryAsync(category))">
+						<CategoryImage Category="category" />
+
+						<div class="venta-pos-card-copy venta-pos-card-copy-compact d-flex flex-column">
+							<strong>@category.Name</strong>
+						</div>
+					</button>
+				</div>
+			}
+		</div>
+	}
+</section>

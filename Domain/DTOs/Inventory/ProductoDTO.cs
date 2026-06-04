@@ -9,6 +9,7 @@ public class ProductoDTO
     public string Descripcion { get; set; } = string.Empty;
     public DateTime FechaCreacion { get; set; }
     public string UrlImagen { get; set; } = string.Empty;
+    public decimal Precio { get; set; }
     public string Marca { get; set; }
     public bool Activo { get; set; }
     public bool EsCompuesto { get; set; }

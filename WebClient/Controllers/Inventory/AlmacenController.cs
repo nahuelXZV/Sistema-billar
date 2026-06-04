@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using WebClient.Extensions;
 using WebClient.Models;
-using WebClient.Services;
 using WebClient.Models.Inventory;
 using Domain.DTOs.Inventory;
+using WebClient.Services;
 
 namespace WebClient.Controllers.Inventory;
 

@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebClient.Extensions;
 using WebClient.Models.Inventory;
 using WebClient.Models;
-using WebClient.Services;
 using System.Globalization;
+using WebClient.Services;
 
 namespace WebClient.Controllers.Inventory;
 

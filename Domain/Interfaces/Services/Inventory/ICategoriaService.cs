@@ -10,4 +10,6 @@ public interface ICategoriaService
     Task<CategoriaDTO> GetById(long id);
     Task<List<CategoriaDTO>> GetAll();
     Task<List<CategoriaDTO>> GetAllSinNivel();
+    Task<List<CategoriaDTO>> GetCategoriasBase();
+    Task<List<CategoriaDTO>> GetByCategoriaPadre(long idCategoriaPadre);
 }

@@ -1,0 +1,16 @@
+@using WebClient.Models.Sales
+
+@if (!string.IsNullOrWhiteSpace(Category.ImageUrl))
+{
+	<img class="venta-pos-card-image" src="@Category.ImageUrl" alt="@Category.Name" loading="lazy" />
+}
+else
+{
+	<div class="venta-pos-card-image venta-pos-card-image-fallback @Category.ToneClass" aria-hidden="true">
+		<i class="@Category.IconCss"></i>
+	</div>
+}
+
+@code {
+	[Parameter] public PuntoVentaCategoriaViewModel Category { get; set; } = new();
+}

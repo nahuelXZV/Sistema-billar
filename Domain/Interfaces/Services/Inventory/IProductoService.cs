@@ -11,4 +11,5 @@ public interface IProductoService
     Task<ProductoDTO> GetById(long id);
     Task<ResponseFilterDTO<ProductoDTO>> GetAll(FilterDTO? filter);
     Task<List<ProductoDTO>> GetAll();
+    Task<List<ProductoDTO>> GetByCategoria(long idCategoria, long idVendedor);
 }

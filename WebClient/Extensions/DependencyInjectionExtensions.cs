@@ -5,7 +5,6 @@ using FluentValidation;
 using WebClient.Configs;
 using WebClient.Common.Middlewares;
 using WebClient.Services.Implementacion;
-using WebClient.Services;
 using Domain.Interfaces.Services.Security;
 using Domain.Validators.Security;
 using Domain.Interfaces.Services.Inventory;
@@ -22,6 +21,7 @@ using WebClient.Services.Contact;
 using WebClient.Services.Sales;
 using WebClient.Services.Security;
 using WebClient.Services.Shared;
+using WebClient.Services;
 
 namespace WebClient.Extensions;
 

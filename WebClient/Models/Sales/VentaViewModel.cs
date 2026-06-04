@@ -1,12 +1,12 @@
-﻿using Domain.DTOs.Inventory;
+﻿
 using Domain.DTOs.Sales;
-using Domain.DTOs.Security;
 
 namespace WebClient.Models.Sales;
 
 public class VentaViewModel : MainViewModel
 {
- 
+    public VendedorDTO? Vendedor { get; set; }
+    public PuntoVentaViewModel? PuntoVenta { get; set; }
 
     public VentaViewModel() : base() { }
 }

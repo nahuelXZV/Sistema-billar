@@ -20,6 +20,9 @@ public class VentaController : MainController
     {
         var model = _viewModelFactory.Create<VentaViewModel>();
         model.IncluirBlazorComponents = true;
+        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
+        var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
+        model.PuntoVenta = PuntoVentaMapper.Create(categoriasBase, model.Vendedor);
         return View(model);
     }
 }

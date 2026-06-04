@@ -35,6 +35,18 @@ public class CategoriaService : AppBaseServices, ICategoriaService
         return await GetAsync<List<CategoriaDTO>>(uri);
     }
 
+    public async Task<List<CategoriaDTO>> GetCategoriasBase()
+    {
+        var uri = "Base";
+        return await GetAsync<List<CategoriaDTO>>(uri);
+    }
+
+    public async Task<List<CategoriaDTO>> GetByCategoriaPadre(long idCategoriaPadre)
+    {
+        var uri = $"PorPadre/{idCategoriaPadre}";
+        return await GetAsync<List<CategoriaDTO>>(uri);
+    }
+
     public async Task<CategoriaDTO> GetById(long id)
     {
         var uri = $"{id}";
