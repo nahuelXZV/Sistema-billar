@@ -6,6 +6,7 @@ namespace WebClient.Components.Sales.Venta;
 public partial class VentaComponent
 {
     [Parameter] public VentaViewModel Model { get; set; } = new();
+    private bool IsPaymentModalOpen { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -19,7 +20,7 @@ public partial class VentaComponent
         return PuntoVentaMapper.Create(categoriasBase);
     }
 
-    private void AddProduct(PuntoVentaProductoViewModel product)
+    private void AddProduct(ProductosViewModel product)
     {
         if (Model.PuntoVenta is null)
         {
@@ -60,6 +61,53 @@ public partial class VentaComponent
         ChangeQuantity(productId, -1);
     }
 
+    private void ClearSale()
+    {
+        if (Model.PuntoVenta is null)
+        {
+            return;
+        }
+
+        Model.PuntoVenta.OrderItems.Clear();
+        Model.PuntoVenta.SelectedPath.Clear();
+        Model.PuntoVenta.CurrentNode = null;
+        Model.PuntoVenta.ClienteSeleccionado = null;
+        Model.PuntoVenta.NotaVenta = string.Empty;
+        Model.PuntoVenta.DiscountAmount = 0;
+        Model.PuntoVenta.ServiceCharge = 0;
+    }
+
+    private void OpenPaymentModal()
+    {
+        if (Model.PuntoVenta?.OrderItems.Count > 0)
+        {
+            IsPaymentModalOpen = true;
+        }
+    }
+
+    private void ApplyPayment(IReadOnlyList<PagoItemViewModel> paidItems)
+    {
+        if (Model.PuntoVenta is null)
+        {
+            return;
+        }
+
+        foreach (var paidItem in paidItems)
+        {
+            var orderItem = Model.PuntoVenta.OrderItems.FirstOrDefault(item => item.ProductId == paidItem.ProductId);
+            if (orderItem is null)
+            {
+                continue;
+            }
+
+            orderItem.Quantity -= paidItem.Quantity;
+            if (orderItem.Quantity <= 0)
+            {
+                Model.PuntoVenta.OrderItems.Remove(orderItem);
+            }
+        }
+    }
+
     private void ChangeQuantity(string productId, int delta)
     {
         if (Model.PuntoVenta is null)
@@ -80,9 +128,9 @@ public partial class VentaComponent
         }
     }
 
-    private static PuntoVentaItemViewModel CreateOrderItem(PuntoVentaProductoViewModel product)
+    private static ItemsViewModel CreateOrderItem(ProductosViewModel product)
     {
-        return new PuntoVentaItemViewModel
+        return new ItemsViewModel
         {
             ProductId = product.Id,
             Name = product.Name,

@@ -1,0 +1,123 @@
+@using WebClient.Components.Shared.Elements
+@using WebClient.Models.Sales
+
+<IUModal Title="Pagar venta" Visible="Visible" VisibleChanged="HandleVisibleChangedAsync">
+	<Body>
+		<div class="venta-pos-payment-modal">
+			<BuscarClienteComponent PuntoVenta="PuntoVenta" />
+
+			<div class="venta-pos-payment-modal-list">
+				@if (PaymentItems.Count == 0)
+				{
+					<div class="venta-pos-payment-empty">No hay productos pendientes.</div>
+				}
+				else
+				{
+					@foreach (var item in PaymentItems)
+					{
+						<article class="venta-pos-payment-line @(item.IsSelected ? "is-selected" : string.Empty)">
+							<label class="venta-pos-payment-check">
+								<input type="checkbox" @bind="item.IsSelected" />
+								<span>@item.Name</span>
+							</label>
+
+							<div class="venta-pos-payment-line-meta">
+								<small>@($"{item.AvailableQuantity} disponibles")</small>
+								<strong>@FormatMoney(item.UnitPrice)</strong>
+							</div>
+
+							<div class="venta-pos-payment-line-actions">
+								<div class="venta-pos-stepper d-flex align-items-center">
+									<button type="button" @onclick="@(() => DecreasePayQuantity(item))" disabled="@(!item.IsSelected)">
+										<i class="bi bi-dash"></i>
+									</button>
+									<span>@item.QuantityToPay</span>
+									<button type="button" @onclick="@(() => IncreasePayQuantity(item))" disabled="@(!item.IsSelected)">
+										<i class="bi bi-plus"></i>
+									</button>
+								</div>
+
+								<strong>@FormatMoney(item.Total)</strong>
+							</div>
+						</article>
+					}
+				}
+			</div>
+
+			<div class="venta-pos-payment-adjustments">
+				<button type="button" class="venta-pos-note-link" @onclick="ToggleNote">
+					<i class="bi bi-pencil-square"></i>
+					@(IsNoteOpen ? "Ocultar nota" : "Agregar nota a la venta")
+				</button>
+
+				@if (IsNoteOpen)
+				{
+					<textarea class="venta-pos-note-textarea"
+							  placeholder="Escriba una nota para esta venta..."
+							  @bind="PaymentNote"
+							  @bind:event="oninput"></textarea>
+				}
+
+				<div class="venta-pos-payment-fields">
+					<label>
+						<span>Descuento</span>
+						<div class="venta-pos-money-input">
+							<span>Bs</span>
+							<input type="number"
+								   min="0"
+								   step="0.01"
+								   @bind-value="DiscountAmount"
+								   @bind-value:event="oninput" />
+						</div>
+					</label>
+
+					<label>
+						<span>Recargo</span>
+						<div class="venta-pos-money-input">
+							<span>Bs</span>
+							<input type="number"
+								   min="0"
+								   step="0.01"
+								   @bind-value="ServiceCharge"
+								   @bind-value:event="oninput" />
+						</div>
+					</label>
+
+					<label>
+						<span>Pagó con</span>
+						<div class="venta-pos-money-input">
+							<span>Bs</span>
+							<input type="number"
+								   min="0"
+								   step="0.01"
+								   @bind-value="AmountReceived"
+								   @bind-value:event="oninput" />
+						</div>
+					</label>
+				</div>
+			</div>
+
+			<div class="venta-pos-payment-modal-total">
+				<span>Total a pagar</span>
+				<strong>@FormatMoney(PaymentTotal)</strong>
+			</div>
+
+			<div class="venta-pos-payment-modal-change">
+				<span>Cambio</span>
+				<strong>@FormatMoney(ChangeAmount)</strong>
+			</div>
+		</div>
+	</Body>
+	<Footer>
+		<button type="button" class="venta-pos-client-modal-button is-secondary" @onclick="CloseAsync">
+			Cancelar
+		</button>
+		<button type="button"
+				class="venta-pos-client-modal-button is-primary"
+				disabled="@(PaymentItems.All(item => !item.IsSelected || item.QuantityToPay <= 0))"
+				@onclick="ConfirmPaymentAsync">
+			<i class="bi bi-check2-circle"></i>
+			<span>Confirmar pago</span>
+		</button>
+	</Footer>
+</IUModal>

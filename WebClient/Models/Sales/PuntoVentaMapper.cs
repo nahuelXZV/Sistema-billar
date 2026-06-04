@@ -12,18 +12,13 @@ public static class PuntoVentaMapper
             IdVendedor = vendedor?.Id ?? 0,
             IdListaPrecio = vendedor?.IdListaPrecio,
             NombreVendedor = vendedor?.Nombre ?? string.Empty,
-            CustomerSearchPlaceholder = "Buscar cliente...",
-            PaymentMethods =
-            [
-                new() { Name = "Pagar", IconCss = "bi bi-cash-stack", IsPrimary = true }
-            ],
             RootCategories = categoriasBase.Select(ToCategoria).ToList()
         };
     }
 
-    public static PuntoVentaCategoriaViewModel ToCategoria(CategoriaDTO categoria)
+    public static CategoriasViewModel ToCategoria(CategoriaDTO categoria)
     {
-        return new PuntoVentaCategoriaViewModel
+        return new CategoriasViewModel
         {
             Id = categoria.Id.ToString(),
             CategoriaId = categoria.Id,
@@ -36,9 +31,9 @@ public static class PuntoVentaMapper
         };
     }
 
-    public static PuntoVentaProductoViewModel ToProducto(ProductoDTO producto, string categoryLabel = "")
+    public static ProductosViewModel ToProducto(ProductoDTO producto, string categoryLabel = "")
     {
-        return new PuntoVentaProductoViewModel
+        return new ProductosViewModel
         {
             Id = producto.Id.ToString(),
             ProductoId = producto.Id,

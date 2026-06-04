@@ -8,7 +8,7 @@ public partial class SeleccionarProductoComponent
 {
     [CascadingParameter] public IAppServices AppServices { get; set; } = default!;
     [Parameter] public PuntoVentaViewModel PuntoVenta { get; set; } = new();
-    [Parameter] public EventCallback<PuntoVentaProductoViewModel> OnProductSelected { get; set; }
+    [Parameter] public EventCallback<ProductosViewModel> OnProductSelected { get; set; }
 
     private void GoToRootAsync()
     {
@@ -28,7 +28,7 @@ public partial class SeleccionarProductoComponent
         PuntoVenta.SelectedPath.RemoveRange(index + 1, PuntoVenta.SelectedPath.Count - (index + 1));
     }
 
-    private async Task EnterCategoryAsync(PuntoVentaCategoriaViewModel category)
+    private async Task EnterCategoryAsync(CategoriasViewModel category)
     {
         await LoadCategoryContentAsync(category);
 
@@ -50,12 +50,12 @@ public partial class SeleccionarProductoComponent
         PuntoVenta.SelectedPath.Add(category);
     }
 
-    private Task SelectProductAsync(PuntoVentaProductoViewModel product)
+    private Task SelectProductAsync(ProductosViewModel product)
     {
         return OnProductSelected.InvokeAsync(product);
     }
 
-    private async Task LoadCategoryContentAsync(PuntoVentaCategoriaViewModel category)
+    private async Task LoadCategoryContentAsync(CategoriasViewModel category)
     {
         if (category.ContentLoaded)
         {

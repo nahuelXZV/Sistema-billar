@@ -28,8 +28,14 @@ else
 				<ResumenVentaComponent PuntoVenta="Model.PuntoVenta"
 									   OnRemoveItem="RemoveItem"
 									   OnIncreaseQuantity="IncreaseQuantity"
-									   OnDecreaseQuantity="DecreaseQuantity" />
+									   OnDecreaseQuantity="DecreaseQuantity"
+									   OnClearSale="ClearSale"
+									   OnOpenPayment="OpenPaymentModal" />
 			</div>
 		</div>
+
+		<ModalPagoComponent PuntoVenta="Model.PuntoVenta"
+							@bind-Visible="IsPaymentModalOpen"
+							OnPaymentConfirmed="ApplyPayment" />
 	</section>
 }

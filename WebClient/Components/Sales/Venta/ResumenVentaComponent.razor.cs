@@ -9,6 +9,8 @@ public partial class ResumenVentaComponent
     [Parameter] public EventCallback<string> OnRemoveItem { get; set; }
     [Parameter] public EventCallback<string> OnIncreaseQuantity { get; set; }
     [Parameter] public EventCallback<string> OnDecreaseQuantity { get; set; }
+    [Parameter] public EventCallback OnClearSale { get; set; }
+    [Parameter] public EventCallback OnOpenPayment { get; set; }
 
     private Task RemoveItemAsync(string productId)
     {
@@ -23,6 +25,16 @@ public partial class ResumenVentaComponent
     private Task DecreaseQuantityAsync(string productId)
     {
         return OnDecreaseQuantity.InvokeAsync(productId);
+    }
+
+    private Task ClearSaleAsync()
+    {
+        return OnClearSale.InvokeAsync();
+    }
+
+    private Task OpenPaymentAsync()
+    {
+        return OnOpenPayment.InvokeAsync();
     }
 
     private static string FormatMoney(decimal amount)

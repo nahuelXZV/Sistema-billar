@@ -12,20 +12,10 @@
 			</div>
 		</div>
 
-		<span class="venta-pos-summary-count">@PuntoVenta.OrderItems.Count</span>
-	</div>
-
-	<div class="venta-pos-customer-block d-flex flex-column mb-2">
-		<label>Cliente (opcional)</label>
-		<div class="venta-pos-customer-search d-flex align-items-center gap-2">
-			<div class="venta-pos-customer-input d-flex align-items-center flex-grow-1">
-				<i class="bi bi-search"></i>
-				<input type="text" value="@PuntoVenta.CustomerSearchPlaceholder" readonly />
-			</div>
-			<button type="button" aria-label="Nuevo cliente">
-				<i class="bi bi-person-plus"></i>
-			</button>
-		</div>
+		<button type="button" class="venta-pos-clear-button" @onclick="ClearSaleAsync">
+			<i class="bi bi-arrow-counterclockwise"></i>
+			<span>Limpiar</span>
+		</button>
 	</div>
 
 	<div class="venta-pos-order-list d-flex flex-column m-0 mb-2">
@@ -58,37 +48,20 @@
 		}
 	</div>
 
-	<button type="button" class="venta-pos-note-link">
-		<i class="bi bi-pencil-square"></i>
-		Agregar nota a la venta
-	</button>
-
 	<div class="venta-pos-totals d-flex flex-column">
-		<div>
-			<span>Subtotal</span>
-			<strong>@FormatMoney(PuntoVenta.Subtotal)</strong>
-		</div>
-		<div>
-			<span>Descuento</span>
-			<strong>@FormatMoney(PuntoVenta.DiscountAmount)</strong>
-		</div>
-		<div>
-			<span>Recargo</span>
-			<strong>@FormatMoney(PuntoVenta.ServiceCharge)</strong>
-		</div>
 		<div class="is-total">
 			<span>Total</span>
-			<strong>@FormatMoney(PuntoVenta.GrandTotal)</strong>
+			<strong>@FormatMoney(PuntoVenta.Subtotal)</strong>
 		</div>
 	</div>
 
-	<div class="venta-pos-payment-grid d-flex gap-2">
-		@foreach (var method in PuntoVenta.PaymentMethods)
-		{
-			<button type="button" class="venta-pos-payment-button @(method.IsPrimary ? "is-primary" : string.Empty)">
-				<i class="@method.IconCss"></i>
-				<span>@method.Name</span>
-			</button>
-		}
+	<div class="venta-pos-payment-grid d-flex gap-2 mt-2">
+		<button type="button"
+				class="venta-pos-payment-button is-primary"
+				disabled="@(PuntoVenta.OrderItems.Count == 0)"
+				@onclick="OpenPaymentAsync">
+			<i class="bi bi-cash"></i>
+			<span>Pagar</span>
+		</button>
 	</div>
 </aside>

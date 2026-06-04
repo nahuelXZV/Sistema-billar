@@ -1,0 +1,100 @@
+@using Domain.DTOs.Contact
+@using Microsoft.AspNetCore.Components.Forms
+@using WebClient.Components.Shared.Elements
+@using WebClient.Models.Sales
+@inherits Components.MainBaseComponent
+
+<div class="venta-pos-customer-block venta-pos-client-selector d-flex flex-column mb-2"
+	 @onfocusout="CloseResultsOnFocusOutAsync">
+	<label>Cliente</label>
+	<div class="venta-pos-customer-search d-flex align-items-center gap-2">
+		<div class="venta-pos-customer-input venta-pos-client-input d-flex align-items-center flex-grow-1">
+			<i class="bi bi-search"></i>
+			<input type="text"
+				   value="@SearchText"
+				   placeholder="Buscar cliente..."
+				   autocomplete="off"
+				   @onfocus="OpenResultsAsync"
+				   @oninput="SearchClientesAsync" />
+			@if (PuntoVenta.ClienteSeleccionado is not null)
+			{
+				<button type="button"
+						class="venta-pos-client-clear"
+						aria-label="Quitar cliente"
+						@onclick="ClearSelectedClientAsync">
+					<i class="bi bi-x-lg"></i>
+				</button>
+			}
+		</div>
+		<button type="button" aria-label="Nuevo cliente" @onclick="OpenCreateModal">
+			<i class="bi bi-person-plus"></i>
+		</button>
+	</div>
+
+	@if (IsResultsOpen)
+	{
+		<div class="venta-pos-client-results">
+			@if (IsSearching)
+			{
+				<div class="venta-pos-client-empty">Buscando...</div>
+			}
+			else if (Clientes.Count == 0)
+			{
+				<div class="venta-pos-client-empty">Sin resultados</div>
+			}
+			else
+			{
+				@foreach (var cliente in Clientes)
+				{
+					<button type="button"
+							class="venta-pos-client-result"
+							@onclick="@(() => SelectClienteAsync(cliente))">
+						<span>@cliente.Nombre</span>
+						<small>@GetClienteDetail(cliente)</small>
+					</button>
+				}
+			}
+		</div>
+	}
+</div>
+
+<IUModal Title="Nuevo cliente" @bind-Visible="IsCreateModalOpen">
+	<Body>
+		<EditForm EditContext="_createEditContext">
+			<div class="venta-pos-client-form">
+				<div>
+					<label>Nombre <span>*</span></label>
+					<InputText class="venta-pos-client-form-control"
+							   placeholder="Nombre del cliente"
+							   @bind-Value="NuevoCliente.Nombre" />
+					<ValidationMessage For="@(() => NuevoCliente.Nombre)" />
+				</div>
+
+				<div>
+					<label>Documento <span>*</span></label>
+					<InputText class="venta-pos-client-form-control"
+							   placeholder="Documento"
+							   @bind-Value="NuevoCliente.Documento" />
+					<ValidationMessage For="@(() => NuevoCliente.Documento)" />
+				</div>
+
+				<div>
+					<label>Telefono</label>
+					<InputText class="venta-pos-client-form-control"
+							   placeholder="Telefono"
+							   @bind-Value="NuevoCliente.Telefono" />
+					<ValidationMessage For="@(() => NuevoCliente.Telefono)" />
+				</div>
+			</div>
+		</EditForm>
+	</Body>
+	<Footer>
+		<button type="button" class="venta-pos-client-modal-button is-secondary" @onclick="CloseCreateModal">
+			Cancelar
+		</button>
+		<button type="button" class="venta-pos-client-modal-button is-primary" @onclick="CreateClienteAsync" disabled="@IsSaving">
+			<i class="bi bi-check2"></i>
+			<span>@(IsSaving ? "Guardando..." : "Guardar")</span>
+		</button>
+	</Footer>
+</IUModal>
