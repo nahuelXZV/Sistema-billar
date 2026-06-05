@@ -12,6 +12,15 @@ public class PagoVentaConfiguration : IEntityTypeConfiguration<PagoVenta>
 
         builder.HasKey(a => a.Id);
 
+        builder.Property(a => a.MontoTotal)
+            .HasPrecision(18, 2);
+
+        builder.Property(a => a.MontoRecibido)
+            .HasPrecision(18, 2);
+
+        builder.Property(a => a.MontoCambio)
+            .HasPrecision(18, 2);
+
         builder.HasOne(a => a.Venta)
             .WithMany()
             .HasForeignKey(a => a.IdVenta);

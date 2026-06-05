@@ -35,7 +35,10 @@
 							<button type="button" @onclick="@(() => DecreaseQuantityAsync(item.ProductId))">
 								<i class="bi bi-dash"></i>
 							</button>
-							<span>@item.Quantity</span>
+							<input type="text"
+								   inputmode="decimal"
+								   value="@FormatQuantity(item.Quantity)"
+								   @onchange="@((args) => SetQuantityAsync(item, ParseQuantity(args.Value)))" />
 							<button type="button" @onclick="@(() => IncreaseQuantityAsync(item.ProductId))">
 								<i class="bi bi-plus"></i>
 							</button>

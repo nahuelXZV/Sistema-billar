@@ -23,7 +23,7 @@
 							</label>
 
 							<div class="venta-pos-payment-line-meta">
-								<small>@($"{item.AvailableQuantity} disponibles")</small>
+								<small>@($"{FormatQuantity(item.AvailableQuantity)} disponibles")</small>
 								<strong>@FormatMoney(item.UnitPrice)</strong>
 							</div>
 
@@ -32,7 +32,11 @@
 									<button type="button" @onclick="@(() => DecreasePayQuantity(item))" disabled="@(!item.IsSelected)">
 										<i class="bi bi-dash"></i>
 									</button>
-									<span>@item.QuantityToPay</span>
+									<input type="text"
+										   inputmode="decimal"
+										   value="@FormatQuantity(item.QuantityToPay)"
+										   disabled="@(!item.IsSelected)"
+										   @onchange="@((args) => SetPayQuantity(item, ParseQuantity(args.Value)))" />
 									<button type="button" @onclick="@(() => IncreasePayQuantity(item))" disabled="@(!item.IsSelected)">
 										<i class="bi bi-plus"></i>
 									</button>

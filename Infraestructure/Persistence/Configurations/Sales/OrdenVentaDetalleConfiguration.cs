@@ -12,6 +12,21 @@ public class OrdenVentaDetalleConfiguration : IEntityTypeConfiguration<OrdenVent
 
         builder.HasKey(a => a.Id);
 
+        builder.Property(a => a.Cantidad)
+            .HasPrecision(18, 2);
+
+        builder.Property(a => a.PrecioUnitario)
+            .HasPrecision(18, 2);
+
+        builder.Property(a => a.Descuento)
+            .HasPrecision(18, 2);
+
+        builder.Property(a => a.SubTotal)
+            .HasPrecision(18, 2);
+
+        builder.Property(a => a.Total)
+            .HasPrecision(18, 2);
+
         builder.HasOne(a => a.OrdenVenta)
             .WithMany()
             .HasForeignKey(a => a.IdOrdenVenta);

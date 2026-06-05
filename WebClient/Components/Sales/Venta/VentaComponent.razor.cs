@@ -17,7 +17,7 @@ public partial class VentaComponent
     private async Task<PuntoVentaViewModel> LoadPuntoVentaAsync()
     {
         var categoriasBase = await AppServices.CategoriaService.GetCategoriasBase();
-        return PuntoVentaMapper.Create(categoriasBase);
+        return PuntoVentaMapper.Create(categoriasBase, Model.Vendedor);
     }
 
     private void AddProduct(ProductosViewModel product)
@@ -30,7 +30,7 @@ public partial class VentaComponent
         var existingItem = Model.PuntoVenta.OrderItems.FirstOrDefault(item => item.ProductId == product.Id);
         if (existingItem is not null)
         {
-            existingItem.Quantity += 1;
+            existingItem.Quantity = NormalizeQuantity(existingItem.Quantity + 1);
             return;
         }
 
@@ -59,6 +59,26 @@ public partial class VentaComponent
     private void DecreaseQuantity(string productId)
     {
         ChangeQuantity(productId, -1);
+    }
+
+    private void SetQuantity(QuantityChangeViewModel quantityChange)
+    {
+        if (Model.PuntoVenta is null)
+        {
+            return;
+        }
+
+        var item = Model.PuntoVenta.OrderItems.FirstOrDefault(orderItem => orderItem.ProductId == quantityChange.ProductId);
+        if (item is null)
+        {
+            return;
+        }
+
+        item.Quantity = NormalizeQuantity(quantityChange.Quantity);
+        if (item.Quantity <= 0)
+        {
+            Model.PuntoVenta.OrderItems.Remove(item);
+        }
     }
 
     private void ClearSale()
@@ -100,7 +120,7 @@ public partial class VentaComponent
                 continue;
             }
 
-            orderItem.Quantity -= paidItem.Quantity;
+            orderItem.Quantity = NormalizeQuantity(orderItem.Quantity - paidItem.Quantity);
             if (orderItem.Quantity <= 0)
             {
                 Model.PuntoVenta.OrderItems.Remove(orderItem);
@@ -108,7 +128,7 @@ public partial class VentaComponent
         }
     }
 
-    private void ChangeQuantity(string productId, int delta)
+    private void ChangeQuantity(string productId, decimal delta)
     {
         if (Model.PuntoVenta is null)
         {
@@ -121,7 +141,7 @@ public partial class VentaComponent
             return;
         }
 
-        item.Quantity += delta;
+        item.Quantity = NormalizeQuantity(item.Quantity + delta);
         if (item.Quantity <= 0)
         {
             Model.PuntoVenta.OrderItems.Remove(item);
@@ -140,5 +160,10 @@ public partial class VentaComponent
             IconCss = product.IconCss,
             ToneClass = product.ToneClass
         };
+    }
+
+    private static decimal NormalizeQuantity(decimal quantity)
+    {
+        return Math.Round(quantity, 2, MidpointRounding.AwayFromZero);
     }
 }

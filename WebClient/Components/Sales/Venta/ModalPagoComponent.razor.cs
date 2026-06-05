@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Domain.DTOs.Sales;
+using System.Globalization;
 using WebClient.Models.Sales;
 
 namespace WebClient.Components.Sales.Venta;
@@ -88,18 +89,29 @@ public partial class ModalPagoComponent
             return;
         }
 
-        item.QuantityToPay += 1;
+        item.QuantityToPay = NormalizeQuantity(Math.Min(item.AvailableQuantity, item.QuantityToPay + 1));
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
     private void DecreasePayQuantity(ModalPagoItemViewModel item)
     {
-        if (!item.IsSelected || item.QuantityToPay <= 1)
+        if (!item.IsSelected || item.QuantityToPay <= 0.01m)
         {
             return;
         }
 
-        item.QuantityToPay -= 1;
+        item.QuantityToPay = NormalizeQuantity(Math.Max(0.01m, item.QuantityToPay - 1));
+        ResetSuggestedPaymentAmountIfEmpty();
+    }
+
+    private void SetPayQuantity(ModalPagoItemViewModel item, decimal quantity)
+    {
+        if (!item.IsSelected)
+        {
+            return;
+        }
+
+        item.QuantityToPay = NormalizeQuantity(Math.Clamp(quantity, 0.01m, item.AvailableQuantity));
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
@@ -192,12 +204,41 @@ public partial class ModalPagoComponent
         return $"Bs {amount:N2}";
     }
 
+    private static string FormatQuantity(decimal quantity)
+    {
+        return quantity.ToString("0.##", CultureInfo.InvariantCulture);
+    }
+
+    private static decimal ParseQuantity(object? value)
+    {
+        var text = Convert.ToString(value, CultureInfo.CurrentCulture)?.Trim();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return 0;
+        }
+
+        var normalizedText = text.Replace(',', '.');
+        if (decimal.TryParse(normalizedText, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var normalizedQuantity))
+        {
+            return normalizedQuantity;
+        }
+
+        return decimal.TryParse(text, NumberStyles.Number, CultureInfo.CurrentCulture, out var currentCultureQuantity)
+            ? currentCultureQuantity
+            : 0;
+    }
+
+    private static decimal NormalizeQuantity(decimal quantity)
+    {
+        return Math.Round(quantity, 2, MidpointRounding.AwayFromZero);
+    }
+
     private sealed class ModalPagoItemViewModel
     {
         public string ProductId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public int AvailableQuantity { get; set; }
-        public int QuantityToPay { get; set; }
+        public decimal AvailableQuantity { get; set; }
+        public decimal QuantityToPay { get; set; }
         public decimal UnitPrice { get; set; }
         public bool IsSelected { get; set; }
         public decimal Total => QuantityToPay * UnitPrice;

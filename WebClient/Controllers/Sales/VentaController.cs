@@ -25,4 +25,14 @@ public class VentaController : MainController
         model.PuntoVenta = PuntoVentaMapper.Create(categoriasBase, model.Vendedor);
         return View(model);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> VentaMesas()
+    {
+        var model = _viewModelFactory.Create<VentaViewModel>();
+        model.IncluirBlazorComponents = true;
+        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
+        model.Mesas = await _appServices.MesasService.GetAll();
+        return View(model);
+    }
 }

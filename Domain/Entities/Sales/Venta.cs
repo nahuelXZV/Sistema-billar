@@ -10,9 +10,9 @@ public class Venta : Entity
     public long IdVendedor { get; set; }
     public DateTime Fecha { get; set; }
     public short Estado { get; set; }
-    public double SubTotal { get; set; }
-    public double Descuento { get; set; }
-    public double Total { get; set; }
+    public decimal SubTotal { get; set; }
+    public decimal Descuento { get; set; }
+    public decimal Total { get; set; }
     public string Observacion { get; set; } = string.Empty;
 
     public OrdenVenta? OrdenVenta { get; set; }

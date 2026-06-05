@@ -10,11 +10,11 @@ public class OrdenVentaDetalleDTO
     public long? IdUsoMesa { get; set; }
     public long IdVendedor { get; set; }
     public string NombreProducto { get; set; } = string.Empty;
-    public double Cantidad { get; set; }
-    public double PrecioUnitario { get; set; }
-    public double Descuento { get; set; }
-    public double SubTotal { get; set; }
-    public double Total { get; set; }
+    public decimal Cantidad { get; set; }
+    public decimal PrecioUnitario { get; set; }
+    public decimal Descuento { get; set; }
+    public decimal SubTotal { get; set; }
+    public decimal Total { get; set; }
     public short Estado { get; set; }
     public string Observacion { get; set; } = string.Empty;
 

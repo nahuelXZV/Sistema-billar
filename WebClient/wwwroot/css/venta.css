@@ -23,9 +23,7 @@
 }
 
 .venta-pos-skeleton {
-    background:
-        linear-gradient(120deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)),
-        linear-gradient(180deg, rgba(16, 22, 21, 0.98), rgba(20, 28, 26, 0.96));
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)), linear-gradient(180deg, rgba(16, 22, 21, 0.98), rgba(20, 28, 26, 0.96));
     background-size: 220% 100%;
     animation: venta-pos-skeleton 1.35s ease infinite;
 }
@@ -136,15 +134,15 @@
     color: #7f978b;
 }
 
-.venta-pos-global-search input,
-.venta-pos-customer-input input {
-    flex: 1;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: #eef4f0;
-    font-size: 0.94rem;
-}
+    .venta-pos-global-search input,
+    .venta-pos-customer-input input {
+        flex: 1;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: #eef4f0;
+        font-size: 0.94rem;
+    }
 
 .venta-pos-session-card {
     padding: 0.45rem 0.75rem;
@@ -242,10 +240,10 @@
     margin-bottom: 0.7rem;
 }
 
-.venta-pos-pathbar > .bi {
-    color: #6e8177;
-    font-size: 0.72rem;
-}
+    .venta-pos-pathbar > .bi {
+        color: #6e8177;
+        font-size: 0.72rem;
+    }
 
 .venta-pos-path-button {
     padding: 0.3rem 0.6rem;
@@ -255,10 +253,10 @@
     font-size: 0.78rem;
 }
 
-.venta-pos-path-button.is-active {
-    background: rgba(31, 122, 90, 0.16);
-    color: #eef4f0;
-}
+    .venta-pos-path-button.is-active {
+        background: rgba(31, 122, 90, 0.16);
+        color: #eef4f0;
+    }
 
 .venta-pos-stage-banner {
     margin-bottom: 0.8rem;
@@ -307,10 +305,10 @@
     cursor: pointer;
 }
 
-.venta-pos-click-card:focus-visible {
-    outline: 2px solid rgba(85, 209, 143, 0.72);
-    outline-offset: 3px;
-}
+    .venta-pos-click-card:focus-visible {
+        outline: 2px solid rgba(85, 209, 143, 0.72);
+        outline-offset: 3px;
+    }
 
 .venta-pos-card:hover {
     transform: translateY(-1px);
@@ -331,15 +329,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-        radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.08), transparent 36%),
-        rgba(11, 16, 15, 0.66);
+    background: radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.08), transparent 36%), rgba(11, 16, 15, 0.66);
 }
 
-.venta-pos-card-image-fallback i {
-    font-size: 2.65rem;
-    line-height: 1;
-}
+    .venta-pos-card-image-fallback i {
+        font-size: 2.65rem;
+        line-height: 1;
+    }
 
 .venta-pos-media-frame {
     display: flex;
@@ -350,22 +346,20 @@
     min-height: 6.25rem;
     border-radius: 0.85rem;
     border: 1px solid rgba(113, 132, 123, 0.12);
-    background:
-        radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.08), transparent 36%),
-        rgba(11, 16, 15, 0.66);
+    background: radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.08), transparent 36%), rgba(11, 16, 15, 0.66);
 }
 
-.venta-pos-media-frame i {
-    font-size: 2.4rem;
-    line-height: 1;
-}
+    .venta-pos-media-frame i {
+        font-size: 2.4rem;
+        line-height: 1;
+    }
 
-.venta-pos-media-frame span {
-    color: #d2ddd7;
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
+    .venta-pos-media-frame span {
+        color: #d2ddd7;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
 
 .venta-pos-card-copy strong {
     font-size: 0.93rem;
@@ -381,11 +375,11 @@
     gap: 0.3rem;
 }
 
-.venta-pos-card-copy-compact span {
-    color: #55d18f;
-    font-size: 0.92rem;
-    font-weight: 800;
-}
+    .venta-pos-card-copy-compact span {
+        color: #55d18f;
+        font-size: 0.92rem;
+        font-weight: 800;
+    }
 
 .venta-pos-product-tags span,
 .venta-pos-card-footer small,
@@ -457,10 +451,10 @@
     position: relative;
 }
 
-.venta-pos-client-input input::placeholder {
-    color: #eef4f0;
-    opacity: 1;
-}
+    .venta-pos-client-input input::placeholder {
+        color: #eef4f0;
+        opacity: 1;
+    }
 
 .venta-pos-client-clear {
     display: inline-flex;
@@ -475,9 +469,9 @@
     flex-shrink: 0;
 }
 
-.venta-pos-client-clear i {
-    font-size: 0.66rem;
-}
+    .venta-pos-client-clear i {
+        font-size: 0.66rem;
+    }
 
 .venta-pos-client-results {
     position: absolute;
@@ -511,23 +505,23 @@
     text-align: left;
 }
 
-.venta-pos-client-result:hover,
-.venta-pos-client-result:focus-visible {
-    background: rgba(31, 122, 90, 0.16);
-    outline: 0;
-}
+    .venta-pos-client-result:hover,
+    .venta-pos-client-result:focus-visible {
+        background: rgba(31, 122, 90, 0.16);
+        outline: 0;
+    }
 
-.venta-pos-client-result span {
-    font-size: 0.82rem;
-    font-weight: 700;
-    line-height: 1.15;
-}
+    .venta-pos-client-result span {
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.15;
+    }
 
-.venta-pos-client-result small,
-.venta-pos-client-empty {
-    color: #9bb1a7;
-    font-size: 0.72rem;
-}
+    .venta-pos-client-result small,
+    .venta-pos-client-empty {
+        color: #9bb1a7;
+        font-size: 0.72rem;
+    }
 
 .venta-pos-client-empty {
     padding: 0.58rem 0.65rem;
@@ -538,18 +532,18 @@
     gap: 0.75rem;
 }
 
-.venta-pos-client-form label {
-    display: block;
-    margin-bottom: 0.28rem;
-    color: #dbe7e1;
-    font-size: 0.82rem;
-    font-weight: 600;
-}
+    .venta-pos-client-form label {
+        display: block;
+        margin-bottom: 0.28rem;
+        color: #dbe7e1;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
 
-.venta-pos-client-form label span,
-.venta-pos-client-form .validation-message {
-    color: #ff8676;
-}
+        .venta-pos-client-form label span,
+        .venta-pos-client-form .validation-message {
+            color: #ff8676;
+        }
 
 .venta-pos-client-form-control {
     width: 100%;
@@ -562,9 +556,9 @@
     outline: 0;
 }
 
-.venta-pos-client-form-control:focus {
-    border-color: rgba(85, 209, 143, 0.45);
-}
+    .venta-pos-client-form-control:focus {
+        border-color: rgba(85, 209, 143, 0.45);
+    }
 
 .venta-pos-client-modal-button {
     display: inline-flex;
@@ -578,17 +572,17 @@
     font-weight: 700;
 }
 
-.venta-pos-client-modal-button.is-secondary {
-    border: 1px solid rgba(113, 132, 123, 0.18);
-    background: rgba(11, 16, 15, 0.72);
-    color: #dbe7e1;
-}
+    .venta-pos-client-modal-button.is-secondary {
+        border: 1px solid rgba(113, 132, 123, 0.18);
+        background: rgba(11, 16, 15, 0.72);
+        color: #dbe7e1;
+    }
 
-.venta-pos-client-modal-button.is-primary {
-    border: 1px solid rgba(31, 122, 90, 0.24);
-    background: linear-gradient(180deg, rgba(24, 88, 64, 0.9), rgba(18, 67, 49, 0.96));
-    color: #f4f8f5;
-}
+    .venta-pos-client-modal-button.is-primary {
+        border: 1px solid rgba(31, 122, 90, 0.24);
+        background: linear-gradient(180deg, rgba(24, 88, 64, 0.9), rgba(18, 67, 49, 0.96));
+        color: #f4f8f5;
+    }
 
 .venta-pos-order-list {
     gap: 0.55rem;
@@ -626,21 +620,39 @@
     background: rgba(11, 16, 15, 0.72);
 }
 
-.venta-pos-stepper button {
-    width: 1.55rem;
-    height: 1.55rem;
-    border-radius: 50%;
-    background: rgba(31, 122, 90, 0.12);
-    color: #8fe3be;
-    font-size: 0.8rem;
-}
+    .venta-pos-stepper button {
+        width: 1.55rem;
+        height: 1.55rem;
+        border-radius: 50%;
+        background: rgba(31, 122, 90, 0.12);
+        color: #8fe3be;
+        font-size: 0.8rem;
+    }
 
-.venta-pos-stepper span {
-    min-width: 0.85rem;
-    color: #f4f8f5;
-    font-size: 0.78rem;
-    text-align: center;
-}
+    .venta-pos-stepper span,
+    .venta-pos-stepper input {
+        min-width: 0.85rem;
+        color: #f4f8f5;
+        font-size: 0.78rem;
+        text-align: center;
+    }
+
+    .venta-pos-stepper input {
+        width: 3.1rem;
+        height: 1.55rem;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        outline: none;
+        padding: 0 0.15rem;
+        -moz-appearance: textfield;
+    }
+
+        .venta-pos-stepper input::-webkit-outer-spin-button,
+        .venta-pos-stepper input::-webkit-inner-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
 
 .venta-pos-order-price {
     color: #f4f8f5;
@@ -658,9 +670,9 @@
     flex-shrink: 0;
 }
 
-.venta-pos-remove-button i {
-    font-size: 0.72rem;
-}
+    .venta-pos-remove-button i {
+        font-size: 0.72rem;
+    }
 
 .venta-pos-note-link {
     display: inline-flex;
@@ -688,9 +700,9 @@
     outline: 0;
 }
 
-.venta-pos-note-textarea:focus {
-    border-color: rgba(85, 209, 143, 0.45);
-}
+    .venta-pos-note-textarea:focus {
+        border-color: rgba(85, 209, 143, 0.45);
+    }
 
 .venta-pos-totals {
     gap: 0.45rem;
@@ -698,17 +710,17 @@
     border-top: 1px solid rgba(113, 132, 123, 0.1);
 }
 
-.venta-pos-totals > div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
+    .venta-pos-totals > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
 
-.venta-pos-totals span,
-.venta-pos-totals strong {
-    font-size: 0.84rem;
-}
+    .venta-pos-totals span,
+    .venta-pos-totals strong {
+        font-size: 0.84rem;
+    }
 
 .venta-pos-money-input {
     display: inline-flex;
@@ -723,27 +735,27 @@
     background: rgba(11, 16, 15, 0.72);
 }
 
-.venta-pos-money-input span {
-    color: #9bb1a7;
-    font-size: 0.75rem;
-}
+    .venta-pos-money-input span {
+        color: #9bb1a7;
+        font-size: 0.75rem;
+    }
 
-.venta-pos-money-input input {
-    width: 100%;
-    min-width: 0;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: #f4f8f5;
-    font-size: 0.84rem;
-    font-weight: 700;
-    text-align: right;
-}
+    .venta-pos-money-input input {
+        width: 100%;
+        min-width: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: #f4f8f5;
+        font-size: 0.84rem;
+        font-weight: 700;
+        text-align: right;
+    }
 
-.venta-pos-money-input input::-webkit-inner-spin-button,
-.venta-pos-money-input input::-webkit-outer-spin-button {
-    margin: 0;
-}
+        .venta-pos-money-input input::-webkit-inner-spin-button,
+        .venta-pos-money-input input::-webkit-outer-spin-button {
+            margin: 0;
+        }
 
 .venta-pos-totals .is-total {
     margin-top: 0.2rem;
@@ -751,17 +763,17 @@
     border-top: 1px solid rgba(113, 132, 123, 0.1);
 }
 
-.venta-pos-totals .is-total span {
-    color: #f4f8f5;
-    font-size: 0.88rem;
-    text-transform: uppercase;
-}
+    .venta-pos-totals .is-total span {
+        color: #f4f8f5;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+    }
 
-.venta-pos-totals .is-total strong {
-    color: #55d18f;
-    font-size: 1.45rem;
-    line-height: 1;
-}
+    .venta-pos-totals .is-total strong {
+        color: #55d18f;
+        font-size: 1.45rem;
+        line-height: 1;
+    }
 
 .venta-pos-payment-grid {
     flex-wrap: nowrap;
@@ -780,19 +792,19 @@
     font-weight: 600;
 }
 
-.venta-pos-payment-button.is-primary {
-    border-color: rgba(31, 122, 90, 0.24);
-    background: linear-gradient(180deg, rgba(24, 88, 64, 0.9), rgba(18, 67, 49, 0.96));
-}
+    .venta-pos-payment-button.is-primary {
+        border-color: rgba(31, 122, 90, 0.24);
+        background: linear-gradient(180deg, rgba(24, 88, 64, 0.9), rgba(18, 67, 49, 0.96));
+    }
 
-.venta-pos-payment-button i {
-    color: #8de3bd;
-}
+    .venta-pos-payment-button i {
+        color: #8de3bd;
+    }
 
-.venta-pos-payment-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.56;
-}
+    .venta-pos-payment-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.56;
+    }
 
 .venta-pos-payment-modal {
     display: flex;
@@ -801,9 +813,9 @@
     min-width: min(34rem, 78vw);
 }
 
-.venta-pos-payment-modal .venta-pos-client-selector {
-    margin-bottom: 0;
-}
+    .venta-pos-payment-modal .venta-pos-client-selector {
+        margin-bottom: 0;
+    }
 
 .venta-pos-payment-modal-list {
     display: flex;
@@ -823,10 +835,10 @@
     background: rgba(11, 16, 15, 0.58);
 }
 
-.venta-pos-payment-line.is-selected {
-    border-color: rgba(38, 192, 124, 0.28);
-    background: rgba(31, 122, 90, 0.12);
-}
+    .venta-pos-payment-line.is-selected {
+        border-color: rgba(38, 192, 124, 0.28);
+        background: rgba(31, 122, 90, 0.12);
+    }
 
 .venta-pos-payment-check {
     display: inline-flex;
@@ -839,19 +851,19 @@
     font-weight: 700;
 }
 
-.venta-pos-payment-check input {
-    width: 1rem;
-    height: 1rem;
-    accent-color: #28bf7d;
-    flex-shrink: 0;
-}
+    .venta-pos-payment-check input {
+        width: 1rem;
+        height: 1rem;
+        accent-color: #28bf7d;
+        flex-shrink: 0;
+    }
 
-.venta-pos-payment-check span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    .venta-pos-payment-check span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
 .venta-pos-payment-line-meta,
 .venta-pos-payment-line-actions {
@@ -861,17 +873,17 @@
     gap: 0.7rem;
 }
 
-.venta-pos-payment-line-meta small {
-    color: #9bb1a7;
-    font-size: 0.72rem;
-}
+    .venta-pos-payment-line-meta small {
+        color: #9bb1a7;
+        font-size: 0.72rem;
+    }
 
-.venta-pos-payment-line-meta strong,
-.venta-pos-payment-line-actions strong {
-    color: #f4f8f5;
-    font-size: 0.84rem;
-    white-space: nowrap;
-}
+    .venta-pos-payment-line-meta strong,
+    .venta-pos-payment-line-actions strong {
+        color: #f4f8f5;
+        font-size: 0.84rem;
+        white-space: nowrap;
+    }
 
 .venta-pos-payment-line-actions {
     grid-column: 1 / -1;
@@ -894,9 +906,9 @@
     border-top: 1px solid rgba(113, 132, 123, 0.14);
 }
 
-.venta-pos-payment-adjustments .venta-pos-note-textarea {
-    margin: 0;
-}
+    .venta-pos-payment-adjustments .venta-pos-note-textarea {
+        margin: 0;
+    }
 
 .venta-pos-payment-fields {
     display: grid;
@@ -904,21 +916,21 @@
     gap: 0.55rem;
 }
 
-.venta-pos-payment-fields label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.32rem;
-    margin: 0;
-}
+    .venta-pos-payment-fields label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.32rem;
+        margin: 0;
+    }
 
-.venta-pos-payment-fields label > span {
-    color: #9bb1a7;
-    font-size: 0.76rem;
-}
+        .venta-pos-payment-fields label > span {
+            color: #9bb1a7;
+            font-size: 0.76rem;
+        }
 
-.venta-pos-payment-fields .venta-pos-money-input {
-    width: 100%;
-}
+    .venta-pos-payment-fields .venta-pos-money-input {
+        width: 100%;
+    }
 
 .venta-pos-payment-modal-total span,
 .venta-pos-payment-modal-change span,
@@ -951,17 +963,17 @@
     align-items: end;
 }
 
-.venta-pos-payment-method-entry label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.32rem;
-    margin: 0;
-}
+    .venta-pos-payment-method-entry label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.32rem;
+        margin: 0;
+    }
 
-.venta-pos-payment-method-entry label > span {
-    color: #9bb1a7;
-    font-size: 0.76rem;
-}
+        .venta-pos-payment-method-entry label > span {
+            color: #9bb1a7;
+            font-size: 0.76rem;
+        }
 
 .venta-pos-payment-method-select {
     width: 100%;
@@ -991,10 +1003,10 @@
     font-weight: 700;
 }
 
-.venta-pos-payment-method-add:disabled {
-    cursor: not-allowed;
-    opacity: 0.55;
-}
+    .venta-pos-payment-method-add:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
 
 .venta-pos-payment-method-summary {
     display: flex;
@@ -1020,16 +1032,16 @@
     border-bottom: 1px solid rgba(113, 132, 123, 0.12);
 }
 
-.venta-pos-payment-method-summary-head span,
-.venta-pos-payment-method-row span {
-    min-width: 0;
-    color: #dbe8e1;
-    font-size: 0.82rem;
-    font-weight: 700;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    .venta-pos-payment-method-summary-head span,
+    .venta-pos-payment-method-row span {
+        min-width: 0;
+        color: #dbe8e1;
+        font-size: 0.82rem;
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
 .venta-pos-payment-method-row span {
     display: inline-flex;
@@ -1073,9 +1085,9 @@
     background: rgba(96, 67, 24, 0.16);
 }
 
-.venta-pos-payment-modal-pending strong {
-    color: #f3c677;
-}
+    .venta-pos-payment-modal-pending strong {
+        color: #f3c677;
+    }
 
 .venta-pos-payment-empty {
     padding: 0.8rem;
@@ -1099,8 +1111,226 @@
     font-weight: 600;
 }
 
-.venta-pos-clear-button i {
-    font-size: 0.82rem;
+    .venta-pos-clear-button i {
+        font-size: 0.82rem;
+    }
+
+.venta-tables-app {
+    gap: 1rem;
+}
+
+.venta-tables-header,
+.venta-table-sale-nav,
+.venta-table-card,
+.venta-tables-empty {
+    border: 1px solid rgba(113, 132, 123, 0.16);
+    border-radius: 1rem;
+    background: linear-gradient(180deg, rgba(16, 22, 21, 0.98), rgba(20, 28, 26, 0.96));
+    box-shadow: 0 14px 30px rgba(4, 8, 7, 0.16);
+}
+
+.venta-tables-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.48rem 0.65rem;
+}
+
+    .venta-tables-header h2 {
+        margin: 0.22rem 0 0;
+        color: #f4f8f5;
+        font-size: 0.98rem;
+    }
+
+    .venta-tables-header p {
+        max-width: 44rem;
+        margin: 0;
+        color: #9bb1a7;
+        font-size: 0.86rem;
+    }
+
+.venta-tables-stats {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.venta-tables-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.venta-table-direct-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+    min-width: 7.8rem;
+    min-height: 2rem;
+    border: 1px solid rgba(38, 192, 124, 0.24);
+    border-radius: 0.65rem;
+    padding: 0.32rem 0.62rem;
+    background: linear-gradient(180deg, rgba(24, 88, 64, 0.9), rgba(18, 67, 49, 0.96));
+    color: #f4f8f5;
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.venta-table-direct-button i {
+    color: #8de3bd;
+}
+
+.venta-tables-stats div {
+    min-width: 4.4rem;
+    padding: 0.3rem 0.48rem;
+    border: 1px solid rgba(113, 132, 123, 0.12);
+        border-radius: 0.62rem;
+        background: rgba(11, 16, 15, 0.7);
+        text-align: right;
+    }
+
+    .venta-tables-stats strong {
+        display: block;
+        color: #55d18f;
+        font-size: 0.92rem;
+        line-height: 1;
+    }
+
+    .venta-tables-stats span {
+        color: #9bb1a7;
+        font-size: 0.66rem;
+    }
+
+.venta-tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+    gap: 0.8rem;
+}
+
+.venta-table-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 10.6rem;
+    padding: 0.9rem;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+    .venta-table-card:hover,
+    .venta-table-card:focus-visible {
+        transform: translateY(-1px);
+        border-color: rgba(38, 192, 124, 0.28);
+        outline: 0;
+    }
+
+    .venta-table-card.is-disabled {
+        opacity: 0.72;
+    }
+
+.venta-table-card-head,
+.venta-table-card-foot,
+.venta-table-sale-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.venta-table-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.55rem;
+    height: 2.55rem;
+    border: 1px solid rgba(38, 192, 124, 0.24);
+    border-radius: 0.9rem;
+    background: rgba(31, 122, 90, 0.14);
+    color: #7ee0b4;
+    font-size: 1.25rem;
+}
+
+.venta-table-status {
+    padding: 0.28rem 0.58rem;
+    border-radius: 999px;
+    background: rgba(31, 122, 90, 0.16);
+    color: #72ddb1;
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.venta-table-card.is-disabled .venta-table-status {
+    background: rgba(113, 132, 123, 0.14);
+    color: #aebeb6;
+}
+
+.venta-table-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+}
+
+    .venta-table-copy strong {
+        color: #f4f8f5;
+        font-size: 1rem;
+        line-height: 1.15;
+    }
+
+    .venta-table-copy span,
+    .venta-table-card-foot span,
+    .venta-table-sale-title span,
+    .venta-tables-empty span {
+        color: #9bb1a7;
+        font-size: 0.78rem;
+    }
+
+.venta-table-card-foot {
+    margin-top: auto;
+    padding-top: 0.7rem;
+    border-top: 1px solid rgba(113, 132, 123, 0.1);
+    color: #7ee0b4;
+}
+
+.venta-table-sale-nav {
+    padding: 0.42rem 0.62rem;
+}
+
+.venta-table-sale-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.12rem;
+}
+
+    .venta-table-sale-title strong {
+        color: #f4f8f5;
+        font-size: 0.95rem;
+    }
+
+.venta-tables-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+    .venta-tables-empty i {
+        color: #55d18f;
+        font-size: 2rem;
+    }
+
+    .venta-tables-empty strong {
+        color: #f4f8f5;
+        font-size: 1rem;
+    }
+
+.app-content-header {
+    padding: 10px !important;
 }
 
 @media (max-width: 1399.98px) {
@@ -1121,6 +1351,34 @@
 }
 
 @media (max-width: 767.98px) {
+    .venta-tables-header,
+    .venta-table-sale-nav {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .venta-tables-stats {
+        width: 100%;
+    }
+
+    .venta-tables-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .venta-table-direct-button {
+        width: 100%;
+    }
+
+    .venta-tables-stats div {
+        flex: 1;
+        text-align: left;
+    }
+
+    .venta-table-sale-title {
+        align-items: flex-start;
+    }
+
     .venta-pos-topbar,
     .venta-pos-catalog-panel,
     .venta-pos-summary-panel {

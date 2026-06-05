@@ -62,7 +62,7 @@ public class ItemsViewModel
     public string ProductId { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Detail { get; set; } = string.Empty;
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public string IconCss { get; set; } = string.Empty;
     public string ToneClass { get; set; } = string.Empty;
@@ -73,7 +73,13 @@ public class PagoItemViewModel
 {
     public string ProductId { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal Total => Quantity * UnitPrice;
+}
+
+public class QuantityChangeViewModel
+{
+    public string ProductId { get; set; } = string.Empty;
+    public decimal Quantity { get; set; }
 }

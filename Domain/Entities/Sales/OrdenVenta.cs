@@ -9,13 +9,13 @@ public class OrdenVenta : Entity
     public short Estado { get; set; }
     public DateTime FechaApertura { get; set; }
     public DateTime? FechaCierre { get; set; }
-    public double SubTotalProductos { get; set; }
-    public double SubTotalTiempo { get; set; }
-    public double DescuentoGlobal { get; set; }
-    public double RecargoGlobal { get; set; }
-    public double Total { get; set; }
-    public double TotalPagado { get; set; }
-    public double SaldoPendiente { get; set; }
+    public decimal SubTotalProductos { get; set; }
+    public decimal SubTotalTiempo { get; set; }
+    public decimal DescuentoGlobal { get; set; }
+    public decimal RecargoGlobal { get; set; }
+    public decimal Total { get; set; }
+    public decimal TotalPagado { get; set; }
+    public decimal SaldoPendiente { get; set; }
     public string? Observacion { get; set; }
 
     public Cliente? Cliente { get; set; }

@@ -1,0 +1,87 @@
+@using Domain.DTOs.Configuration
+@using WebClient.Models.Sales
+
+@if (SelectedVentaModel is null)
+{
+	<section class="venta-pos-app venta-tables-app">
+		<div class="venta-tables-header">
+			<div>
+				<span class="venta-pos-kicker">Mesas Disponible</span>
+				<h2>Seleccionar mesa</h2>
+			</div>
+
+			<div class="venta-tables-actions">
+				<button type="button" class="venta-table-direct-button" @onclick="OpenDirectSale">
+					<i class="bi bi-cash-register"></i>
+					<span>Venta directa</span>
+				</button>
+
+				<div class="venta-tables-stats">
+					<div>
+						<strong>@ActiveTablesCount</strong>
+						<span>Activas</span>
+					</div>
+					<div>
+						<strong>@InactiveTablesCount</strong>
+						<span>Inactivas</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@if (Model.Mesas.Count == 0)
+		{
+			<div class="venta-tables-empty">
+				<i class="bi bi-grid-3x3-gap"></i>
+				<strong>No hay mesas registradas</strong>
+				<span>Crea mesas desde configuracion para comenzar a vender por mesa.</span>
+			</div>
+		}
+		else
+		{
+			<div class="venta-tables-grid">
+				@foreach (var mesa in Model.Mesas)
+				{
+					<button type="button"
+							class="venta-table-card @(mesa.Activo ? "is-free" : "is-disabled")"
+							@onclick="@(() => SelectMesa(mesa))">
+						<div class="venta-table-card-head">
+							<div class="venta-table-icon">
+								<i class="bi bi-bounding-box-circles"></i>
+							</div>
+							<span class="venta-table-status">@GetMesaEstado(mesa)</span>
+						</div>
+
+						<div class="venta-table-copy">
+							<strong>@mesa.Nombre</strong>
+							<span>@(mesa.TipoMesa?.Nombre ?? "Sin tipo asignado")</span>
+						</div>
+
+						<div class="venta-table-card-foot">
+							<span>@GetMesaAccion(mesa)</span>
+							<i class="bi bi-arrow-right"></i>
+						</div>
+					</button>
+				}
+			</div>
+		}
+	</section>
+}
+else
+{
+	<section class="venta-pos-app">
+		<nav class="venta-table-sale-nav">
+			<button type="button" class="venta-pos-back-button" @onclick="BackToTables">
+				<i class="bi bi-arrow-left"></i>
+				<span>Volver a mesas</span>
+			</button>
+
+			<div class="venta-table-sale-title">
+				<span>@SaleContextLabel</span>
+				<strong>@SaleContextTitle</strong>
+			</div>
+		</nav>
+
+		<VentaComponent Model="SelectedVentaModel" />
+	</section>
+}
