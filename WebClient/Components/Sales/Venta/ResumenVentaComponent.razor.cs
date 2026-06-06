@@ -34,7 +34,7 @@ public partial class ResumenVentaComponent
         item.Cantidad = quantity;
         return OnCantidadModificada.InvokeAsync(new CantidadModificada
         {
-            ProductId = item.ProductId,
+            ProductId = item.IdProducto,
             Cantidad = quantity
         });
     }

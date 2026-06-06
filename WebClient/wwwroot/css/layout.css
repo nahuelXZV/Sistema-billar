@@ -904,7 +904,6 @@ body.dark-mode .iu-nav-menu-link--out {
 .home-progress-copy span,
 .home-alert-copy span,
 .home-quick-action-copy span,
-.home-reservation-details span,
 .home-table-status-card small,
 .home-activity-copy span {
     color: #96a9a0;
@@ -944,7 +943,6 @@ body.dark-mode .iu-nav-menu-link--out {
 }
 
 .home-table-name,
-.home-reservation-details strong,
 .home-progress-copy strong,
 .home-activity-copy strong,
 .home-alert-copy strong,
@@ -961,29 +959,11 @@ body.dark-mode .iu-nav-menu-link--out {
     border-color: rgba(31, 122, 90, 0.28);
 }
 
-.home-table-status-card.table-booked {
-    border-color: rgba(215, 165, 72, 0.22);
-}
-
 .home-table-status-card.table-warning {
     border-color: rgba(198, 91, 75, 0.26);
 }
-
-.home-reservation-time {
-    min-width: 5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-}
-
-.home-reservation-time strong,
 .home-activity-item time {
     color: #f4f8f5;
-}
-
-.home-reservation-time span {
-    color: #7f9388;
-    font-size: 0.84rem;
 }
 
 .home-progress-item {
@@ -1114,12 +1094,141 @@ body.dark-mode .iu-nav-menu-link--out {
     }
 
     .home-progress-copy,
-    .home-reservation-item {
+    .home-dashboard-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
     .home-activity-item {
         flex-wrap: wrap;
+    }
+}
+
+.home-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.home-dashboard-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.35rem 1.5rem;
+    background:
+        radial-gradient(circle at top right, rgba(49, 174, 127, 0.15), transparent 34%),
+        rgba(24, 31, 34, 0.96);
+}
+
+.home-dashboard-header h1 {
+    margin: 0.2rem 0 0.35rem;
+    color: #f4f8f5;
+    font-size: clamp(1.55rem, 2.4vw, 2.2rem);
+}
+
+.home-dashboard-header p {
+    max-width: 46rem;
+    margin: 0;
+    color: #96a9a0;
+}
+
+.home-dashboard-updated,
+.home-chart-period {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #91a69b;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.home-dashboard-updated {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid rgba(113, 132, 123, 0.18);
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.home-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.home-chart-card {
+    min-width: 0;
+    min-height: 25rem;
+    overflow: hidden;
+}
+
+.home-chart {
+    min-height: 20rem;
+    margin-top: 0.35rem;
+}
+
+.home-chart-empty {
+    min-height: 18rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: #84978d;
+    text-align: center;
+}
+
+.home-chart-empty i {
+    font-size: 2rem;
+    color: #5e7469;
+}
+
+.home-dashboard-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    color: #f0b5ad;
+}
+
+.home-dashboard-error > i {
+    font-size: 1.5rem;
+}
+
+.home-dashboard-error > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.home-chart .apexcharts-canvas,
+.home-chart .apexcharts-svg {
+    background: transparent !important;
+}
+
+.home-chart .apexcharts-text,
+.home-chart .apexcharts-legend-text {
+    fill: #95a89f !important;
+    color: #95a89f !important;
+}
+
+.home-chart .apexcharts-gridline {
+    stroke: rgba(142, 160, 151, 0.14);
+}
+
+.home-chart .apexcharts-tooltip,
+.home-chart .apexcharts-xaxistooltip {
+    color: #e8f0eb;
+    border-color: rgba(113, 132, 123, 0.22) !important;
+    background: #182022 !important;
+}
+
+.home-chart .apexcharts-tooltip-title {
+    border-color: rgba(113, 132, 123, 0.18) !important;
+    background: #202a2c !important;
+}
+
+@media (max-width: 991.98px) {
+    .home-chart-grid {
+        grid-template-columns: 1fr;
     }
 }

@@ -53,6 +53,7 @@
 				'Id',
 				'Nombre',
 				'Descripcion',
+				'Super administrador',
 				{
 					name: 'Acciones',
 					formatter: (cell, row) => renderProfileActions(row._cells[0].data)
@@ -63,7 +64,8 @@
 			  then: data => data.data.map(item => [
 				item.id,
 				item.nombre,
-				item.descripcion
+				item.descripcion,
+				item.esSuperAdministrador ? 'Si' : 'No'
 			  ]),
 			  total: data => data.total
 			},

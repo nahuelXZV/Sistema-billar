@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using ApexCharts;
 using WebClient.Common.Middlewares;
 using WebClient.Configs;
 using WebClient.Extensions;
@@ -33,6 +34,13 @@ services.AddHttpContextAccessor();
 services.AddServerSideBlazor()
     .AddCircuitOptions(options => options.DetailedErrors = true)
     .AddHubOptions(options => options.MaximumReceiveMessageSize = 102400000);
+services.AddApexCharts(options =>
+{
+    options.GlobalOptions = new ApexChartBaseOptions
+    {
+        Theme = new Theme { Palette = PaletteType.Palette4 }
+    };
+});
 #endregion
 
 #region Sesion

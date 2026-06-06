@@ -78,9 +78,4 @@ public partial class SeleccionarProductoComponent
 
         category.ContentLoaded = true;
     }
-
-    private static string FormatMoney(decimal amount)
-    {
-        return $"Bs {amount:N2}";
-    }
 }

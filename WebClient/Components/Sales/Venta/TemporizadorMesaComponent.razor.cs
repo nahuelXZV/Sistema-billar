@@ -136,13 +136,13 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
         billedHours = Math.Max(0.01m, billedHours);
 
         var existingItem = Venta.PuntoVenta.DetalleItems
-            .FirstOrDefault(item => item.ProductId == TimedProduct.Id);
+            .FirstOrDefault(item => item.IdProducto == TimedProduct.Id);
 
         if (existingItem is null)
         {
             Venta.PuntoVenta.DetalleItems.Add(new ItemsViewModel
             {
-                ProductId = TimedProduct.Id,
+                IdProducto = TimedProduct.Id,
                 Nombre = $"{TimedProduct.Nombre} ({ElapsedTimeText})",
                 Cantidad = billedHours,
                 PrecioUnitario = TimedProduct.Precio

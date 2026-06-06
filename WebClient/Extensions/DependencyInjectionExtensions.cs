@@ -1,6 +1,7 @@
 using System.Reflection;
 using Domain.Constants;
 using Domain.Interfaces.Services.Contact;
+using Domain.Interfaces.Services.General;
 using FluentValidation;
 using WebClient.Configs;
 using WebClient.Common.Middlewares;
@@ -18,6 +19,7 @@ using Domain.Validators.Contact;
 using Domain.Validators.Configuration;
 using Domain.Validators.Sales;
 using WebClient.Services.Contact;
+using WebClient.Services.General;
 using WebClient.Services.Sales;
 using WebClient.Services.Security;
 using WebClient.Services.Shared;
@@ -61,6 +63,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IModuloService, ModuloService>();
         services.AddScoped<IUsuarioService, UsuarioService>();
         services.AddScoped<IClienteService, ClienteService>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         services.AddScoped<IAlmacenService, AlmacenService>();
         services.AddScoped<ICategoriaService, CategoriaService>();

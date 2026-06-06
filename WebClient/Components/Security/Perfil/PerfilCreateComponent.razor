@@ -29,6 +29,11 @@
 								Required=true />
 					<ValidationMessage For="@(() => Perfil.Descripcion)" />
 				</div>
+
+				<div class="iu-span-2">
+					<IUInputCheckbox Label="Es super administrador"
+									 @bind-Value="Perfil.EsSuperAdministrador" />
+				</div>
 			</div>
 		</section>
 

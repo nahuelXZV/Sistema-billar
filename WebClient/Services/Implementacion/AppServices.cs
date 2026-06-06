@@ -1,6 +1,7 @@
 
 using Domain.Interfaces.Services.Contact;
 using Domain.Interfaces.Services.Configuration;
+using Domain.Interfaces.Services.General;
 using Domain.Interfaces.Services.Inventory;
 using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Security;
@@ -19,6 +20,7 @@ public class AppServices : IAppServices
     private IModuloService _moduloService;
     private IUsuarioService _usuarioService;
     private IClienteService _clienteService;
+    private IDashboardService _dashboardService;
 
     private IAlmacenService _almacenService;
     private ICategoriaService _categoriaService;
@@ -49,6 +51,7 @@ public class AppServices : IAppServices
     public IModuloService ModuloService => _moduloService ??= _serviceProvider.GetService<IModuloService>();
     public IUsuarioService UsuarioService => _usuarioService ??= _serviceProvider.GetService<IUsuarioService>();
     public IClienteService ClienteService => _clienteService ??= _serviceProvider.GetService<IClienteService>();
+    public IDashboardService DashboardService => _dashboardService ??= _serviceProvider.GetService<IDashboardService>();
     #endregion
 
 

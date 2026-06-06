@@ -9,13 +9,13 @@
 			<BuscarClienteComponent PuntoVenta="PuntoVenta" />
 
 			<div class="venta-pos-payment-modal-list">
-				@if (DetalleItems.Count == 0)
+				@if (PuntoVenta.ProductosPagar.Count == 0)
 				{
 					<div class="venta-pos-payment-empty">No hay productos pendientes.</div>
 				}
 				else
 				{
-					@foreach (var item in DetalleItems)
+					@foreach (var item in PuntoVenta.ProductosPagar)
 					{
 						<article class="venta-pos-payment-line @(item.IsSelected ? "is-selected" : string.Empty)">
 							<label class="venta-pos-payment-check">
@@ -60,7 +60,7 @@
 				{
 					<textarea class="venta-pos-note-textarea"
 							  placeholder="Escriba una nota para esta venta..."
-							  @bind="NotaVenta"
+							  @bind="PuntoVenta.NotaVenta"
 							  @bind:event="oninput"></textarea>
 				}
 
@@ -72,7 +72,7 @@
 							<input type="number"
 								   min="0"
 								   step="0.01"
-								   @bind-value="DescuentoGlobal"
+								   @bind-value="PuntoVenta.DescuentoGlobal"
 								   @bind-value:event="oninput" />
 						</div>
 					</label>
@@ -84,7 +84,7 @@
 							<input type="number"
 								   min="0"
 								   step="0.01"
-								   @bind-value="RecargoGlobal"
+								   @bind-value="PuntoVenta.RecargoGlobal"
 								   @bind-value:event="oninput" />
 						</div>
 					</label>
@@ -113,7 +113,7 @@
 							<input type="number"
 								   min="0"
 								   step="0.01"
-								   @bind-value="PaymentMethodAmount"
+								   @bind-value="MontoPagar"
 								   @bind-value:event="oninput" />
 						</div>
 					</label>
@@ -131,7 +131,7 @@
 				{
 					<div class="venta-pos-payment-empty">No hay metodos de pago activos.</div>
 				}
-				else if (DetallePagos.Count == 0)
+				else if (PuntoVenta.DetallePagos.Count == 0)
 				{
 					<div class="venta-pos-payment-empty">Agrega al menos un metodo de pago.</div>
 				}
@@ -140,10 +140,10 @@
 					<div class="venta-pos-payment-method-summary">
 						<div class="venta-pos-payment-method-summary-head">
 							<span>Resumen de pagos</span>
-							<strong>@TotalPaid.FormatoDinero()</strong>
+							<strong>@PuntoVenta.TotalPagado.FormatoDinero()</strong>
 						</div>
 
-						@foreach (var payment in DetallePagos)
+						@foreach (var payment in PuntoVenta.DetallePagos)
 						{
 							<div class="venta-pos-payment-method-row">
 								<span>
@@ -153,7 +153,7 @@
 									}
 									@payment.Nombre
 								</span>
-								<strong>@payment.Monto.FormatoDinero()</strong>
+								<strong>@payment.MontoTotal.FormatoDinero()</strong>
 								<button type="button"
 										aria-label="Quitar metodo de pago"
 										@onclick="@(() => EliminarMetodoPago(payment.Id))">
@@ -167,20 +167,20 @@
 
 			<div class="venta-pos-payment-modal-total">
 				<span>Total a pagar</span>
-				<strong>@PaymentTotal.FormatoDinero()</strong>
+				<strong>@PuntoVenta.MontoTotal.FormatoDinero()</strong>
 			</div>
 
-			@if (RemainingAmount > 0)
+			@if (MontoPendiente > 0)
 			{
 				<div class="venta-pos-payment-modal-pending">
-					<span>Faltante</span>
-					<strong>@RemainingAmount.FormatoDinero()</strong>
+					<span>Monto pendiente</span>
+					<strong>@MontoPendiente.FormatoDinero()</strong>
 				</div>
 			}
 
 			<div class="venta-pos-payment-modal-change">
 				<span>Cambio</span>
-				<strong>@ChangeAmount.FormatoDinero()</strong>
+				<strong>@PuntoVenta.Cambio.FormatoDinero()</strong>
 			</div>
 		</div>
 	</Body>

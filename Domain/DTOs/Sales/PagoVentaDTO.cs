@@ -7,8 +7,6 @@ public class PagoVentaDTO
     public long IdMetodoPago { get; set; }
     public DateTime Fecha { get; set; }
     public decimal MontoTotal { get; set; }
-    public decimal MontoRecibido { get; set; }
-    public decimal MontoCambio { get; set; }
     public string Observacion { get; set; } = string.Empty;
 
     public VentaDTO? Venta { get; set; }

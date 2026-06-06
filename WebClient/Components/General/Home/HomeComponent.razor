@@ -1,7 +1,7 @@
-@using WebClient.Components.Shared.Elements
-@inherits Components.MainBaseComponent;
+@using Domain.DTOs.General
+@inherits Components.MainBaseComponent
 
-@if (Dashboard is null)
+@if (IsLoading)
 {
 	<div class="iu-show home-dashboard-loading">
 		<div class="home-skeleton hero"></div>
@@ -13,213 +13,231 @@
 		</div>
 	</div>
 }
-else
+else if (!string.IsNullOrWhiteSpace(ErrorMessage))
 {
 	<section class="iu-show">
-		<div class="iu-hero">
-			<div class="iu-hero-copy">
-				<span class="iu-kicker">
-					<i class="bi bi-stars"></i>
-					Centro de control
-				</span>
-				<h1>@Dashboard.GreetingTitle</h1>
-				<p>@Dashboard.GreetingDescription</p>
-
-				<div class="home-hero-meta">
-					<div class="home-hero-pill">
-						<i class="bi bi-calendar3"></i>
-						@Dashboard.TodayLabel
-					</div>
-					<div class="home-hero-pill">
-						<i class="bi bi-activity"></i>
-						Turno @Dashboard.ActiveShift
-					</div>
-					<div class="home-hero-pill">
-						<i class="bi bi-broadcast-pin"></i>
-						@Dashboard.LiveStatus
-					</div>
-				</div>
-			</div>
-
-			<div class="home-hero-highlight">
-				<div class="home-highlight-label">Ingresos del dia</div>
-				<div class="home-highlight-value">@Dashboard.HighlightAmount</div>
-				<div class="home-highlight-caption">@Dashboard.HighlightCaption</div>
-
-				<div class="home-highlight-progress">
-					<div class="home-highlight-progress-bar" style="width:@($"{Dashboard.HighlightProgress}%")"></div>
-				</div>
-				<small>@Dashboard.HighlightSubtext</small>
+		<div class="iu-sec home-dashboard-error">
+			<i class="bi bi-exclamation-circle"></i>
+			<div>
+				<strong>No se pudo cargar el dashboard</strong>
+				<span>@ErrorMessage</span>
 			</div>
 		</div>
+	</section>
+}
+else if (Dashboard is not null)
+{
+	<section class="iu-show home-dashboard">
+		<section class="iu-sec home-dashboard-header">
+			<div>
+				<span class="iu-kicker">Analitica del negocio</span>
+				<h1>Rendimiento general</h1>
+				<p>Compara ventas, consumo de productos y uso de mesas en los periodos recientes.</p>
+			</div>
+			<div class="home-dashboard-updated">
+				<i class="bi bi-arrow-repeat"></i>
+				<span>Actualizado @Dashboard.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</span>
+			</div>
+		</section>
 
 		<div class="iu-grid-4">
-			@foreach (var metric in Dashboard.Metrics)
-			{
-				<article class="iu-sec home-kpi-card">
-					<div class="home-kpi-icon @metric.ToneClass">
-						<i class="@metric.IconCss"></i>
-					</div>
-					<div class="home-kpi-content">
-						<span>@metric.Label</span>
-						<strong>@metric.Value</strong>
-						<small>@metric.Caption</small>
-					</div>
-				</article>
-			}
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-success">
+					<i class="bi bi-cash-coin"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Ventas del mes</span>
+					<strong>@FormatCurrency(Dashboard.VentasMesActual)</strong>
+					<small>Facturacion acumulada del mes actual</small>
+				</div>
+			</article>
+
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-primary">
+					<i class="bi bi-graph-up-arrow"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Ventas en 12 meses</span>
+					<strong>@FormatCurrency(Dashboard.VentasUltimosDoceMeses)</strong>
+					<small>@Dashboard.CantidadVentasUltimosDoceMeses operaciones registradas</small>
+				</div>
+			</article>
+
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-warning">
+					<i class="bi bi-clock-history"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Horas de mesa</span>
+					<strong>@Dashboard.HorasMesaUltimosDoceMeses.ToString("N1")</strong>
+					<small>Tiempo consumido en los ultimos 12 meses</small>
+				</div>
+			</article>
+
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-danger">
+					<i class="bi bi-box-seam"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Unidades vendidas</span>
+					<strong>@Dashboard.UnidadesVendidasUltimosDoceMeses.ToString("N0")</strong>
+					<small>Productos vendidos en los ultimos 12 meses</small>
+				</div>
+			</article>
 		</div>
 
-		<div class="iu-grid">
-			<div class="iu-stack">
-				<section class="iu-sec home-panel-felt">
-					<div class="iu-head">
-						<div>
-							<span class="iu-kicker">Operacion en sala</span>
-							<h2>Estado de mesas</h2>
-						</div>
-						<span class="badge text-bg-primary">@Dashboard.TableSummaryLabel</span>
+		<div class="home-chart-grid">
+			<section class="iu-sec home-chart-card">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Demanda de sala</span>
+						<h2>Mesas mas usadas</h2>
 					</div>
+					<span class="home-chart-period">Ultimos 12 meses</span>
+				</div>
 
-					<div class="iu-grid-2">
-						@foreach (var table in Dashboard.Tables)
-						{
-							<article class="home-table-status-card @table.StateClass">
-								<div class="home-table-status-top">
-									<span class="home-table-name">@table.Name</span>
-									<span class="badge @table.BadgeClass">@table.State</span>
-								</div>
-								<strong>@table.PrimaryText</strong>
-								<small>@table.SecondaryText</small>
-							</article>
-						}
+				@if (Dashboard.MesasMasUsadas.Count > 0)
+				{
+					<div class="home-chart">
+						<ApexChart TItem="DashboardChartItemDTO">
+							<ApexPointSeries TItem="DashboardChartItemDTO"
+											 Items="Dashboard.MesasMasUsadas"
+											 Name="Usos"
+											 SeriesType="SeriesType.Bar"
+											 XValue="item => item.Etiqueta"
+											 YValue="item => item.Valor" />
+						</ApexChart>
 					</div>
-				</section>
+				}
+				else
+				{
+					<DashboardEmptyState Message="Aun no hay usos de mesa registrados en este periodo." />
+				}
+			</section>
 
-				<section class="iu-sec">
-					<div class="iu-head">
-						<div>
-							<span class="iu-kicker">Agenda inmediata</span>
-							<h2>Reservas proximas</h2>
-						</div>
-						<a href="/Mesas/Listado" class="iu-link">Ver mesas</a>
+			<section class="iu-sec home-chart-card">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Preferencias de consumo</span>
+						<h2>Productos mas vendidos</h2>
 					</div>
+					<span class="home-chart-period">Top 7</span>
+				</div>
 
-					<div class="iu-list">
-						@foreach (var reservation in Dashboard.UpcomingReservations)
-						{
-							<article class="iu-item home-reservation-item">
-								<div class="home-reservation-time">
-									<strong>@reservation.Time</strong>
-									<span>@reservation.Duration</span>
-								</div>
-								<div class="home-reservation-details">
-									<strong>@reservation.ClientName</strong>
-									<span>@reservation.Detail</span>
-								</div>
-								<span class="badge @reservation.BadgeClass">@reservation.Status</span>
-							</article>
-						}
+				@if (Dashboard.ProductosMasVendidos.Count > 0)
+				{
+					<div class="home-chart">
+						<ApexChart TItem="DashboardChartItemDTO">
+							<ApexPointSeries TItem="DashboardChartItemDTO"
+											 Items="Dashboard.ProductosMasVendidos"
+											 Name="Unidades"
+											 SeriesType="SeriesType.Donut"
+											 XValue="item => item.Etiqueta"
+											 YValue="item => item.Valor" />
+						</ApexChart>
 					</div>
-				</section>
-			</div>
+				}
+				else
+				{
+					<DashboardEmptyState Message="Aun no hay productos vendidos en este periodo." />
+				}
+			</section>
 
-			<div class="iu-stack">
-				<section class="iu-sec">
-					<div class="iu-head">
-						<div>
-							<span class="iu-kicker">Radar del negocio</span>
-							<h2>Resumen de hoy</h2>
-						</div>
+			<section class="iu-sec home-chart-card">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Tendencia anual</span>
+						<h2>Ventas por mes</h2>
 					</div>
+					<span class="home-chart-period">12 meses</span>
+				</div>
 
-					<div class="iu-list">
-						@foreach (var summary in Dashboard.Summaries)
-						{
-							<div class="home-progress-item">
-								<div class="home-progress-copy">
-									<strong>@summary.Label</strong>
-									<span>@summary.ValueText</span>
-								</div>
-								<div class="home-progress-track">
-									<div class="home-progress-bar @summary.ToneClass" style="width:@($"{summary.Progress}%")"></div>
-								</div>
-							</div>
-						}
-					</div>
-				</section>
+				<div class="home-chart">
+					<ApexChart TItem="DashboardChartItemDTO">
+						<ApexPointSeries TItem="DashboardChartItemDTO"
+										 Items="Dashboard.VentasPorMes"
+										 Name="Ventas"
+										 SeriesType="SeriesType.Area"
+										 XValue="item => item.Etiqueta"
+										 YValue="item => item.Valor" />
+					</ApexChart>
+				</div>
+			</section>
 
-				<section class="iu-sec">
-					<div class="iu-head">
-						<div>
-							<span class="iu-kicker">Ultimos movimientos</span>
-							<h2>Actividad reciente</h2>
-						</div>
-						<a href="/Producto/Listado" class="iu-link">Inventario</a>
+			<section class="iu-sec home-chart-card">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Ritmo reciente</span>
+						<h2>Ventas por semana</h2>
 					</div>
+					<span class="home-chart-period">8 semanas</span>
+				</div>
 
-					<div class="iu-list">
-						@foreach (var activity in Dashboard.RecentActivities)
-						{
-							<article class="iu-item home-activity-item">
-								<span class="home-activity-dot @activity.ToneClass"></span>
-								<div class="home-activity-copy">
-									<strong>@activity.Title</strong>
-									<span>@activity.Description</span>
-								</div>
-								<time>@activity.TimeLabel</time>
-							</article>
-						}
-					</div>
-				</section>
-
-				<section class="iu-sec">
-					<div class="iu-head">
-						<div>
-							<span class="iu-kicker">Atencion requerida</span>
-							<h2>Alertas operativas</h2>
-						</div>
-					</div>
-
-					<div class="iu-list">
-						@foreach (var alert in Dashboard.Alerts)
-						{
-							<article class="iu-item home-alert-item">
-								<div class="home-alert-icon @alert.ToneClass">
-									<i class="@alert.IconCss"></i>
-								</div>
-								<div class="home-alert-copy">
-									<strong>@alert.Title</strong>
-									<span>@alert.Description</span>
-								</div>
-							</article>
-						}
-					</div>
-				</section>
-			</div>
+				<div class="home-chart">
+					<ApexChart TItem="DashboardChartItemDTO">
+						<ApexPointSeries TItem="DashboardChartItemDTO"
+										 Items="Dashboard.VentasPorSemana"
+										 Name="Ventas"
+										 SeriesType="SeriesType.Line"
+										 XValue="item => item.Etiqueta"
+										 YValue="item => item.Valor" />
+					</ApexChart>
+				</div>
+			</section>
 		</div>
 
 		<section class="iu-sec">
 			<div class="iu-head">
 				<div>
 					<span class="iu-kicker">Acciones rapidas</span>
-					<h2>Atajos del sistema</h2>
+					<h2>Gestion operativa</h2>
 				</div>
 			</div>
 
 			<div class="iu-grid-4">
-				@foreach (var action in Dashboard.QuickActions)
-				{
-					<a class="iu-sec home-quick-action" href="@action.Url">
-						<div class="home-quick-action-icon @action.ToneClass">
-							<i class="@action.IconCss"></i>
-						</div>
-						<div class="home-quick-action-copy">
-							<strong>@action.Title</strong>
-							<span>@action.Description</span>
-						</div>
-						<i class="bi bi-arrow-up-right"></i>
-					</a>
-				}
+				<a class="iu-sec home-quick-action" href="/Venta/VentaMesas">
+					<div class="home-quick-action-icon tone-primary">
+						<i class="bi bi-grid-3x3-gap-fill"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>Abrir mesa</strong>
+						<span>Iniciar consumo y controlar tiempo de juego.</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
+
+				<a class="iu-sec home-quick-action" href="/Venta/VentaDirecta">
+					<div class="home-quick-action-icon tone-success">
+						<i class="bi bi-cart-check"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>Venta directa</strong>
+						<span>Registrar una venta sin asignarla a una mesa.</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
+
+				<a class="iu-sec home-quick-action" href="/Producto/Listado">
+					<div class="home-quick-action-icon tone-warning">
+						<i class="bi bi-cup-straw"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>Productos</strong>
+						<span>Gestionar bebidas, snacks y servicios.</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
+
+				<a class="iu-sec home-quick-action" href="/TransaccionInventario/Crear">
+					<div class="home-quick-action-icon tone-danger">
+						<i class="bi bi-arrow-left-right"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>Movimiento de stock</strong>
+						<span>Registrar entradas y salidas de inventario.</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
 			</div>
 		</section>
 	</section>

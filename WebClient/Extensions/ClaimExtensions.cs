@@ -77,6 +77,7 @@ public static class ClaimExtensions
             new Claim(Constantes.ClaimTypes.Token, usuario.Token??""),
             new Claim(Constantes.ClaimTypes.IdsAccesosPermitidos, string.Join(",", usuario.Perfil!.ListaAccesos.Select(acceso => acceso.Acceso!.Id.ToString()))),
             new Claim(Constantes.ClaimTypes.AccesosPermitidos, usuario.Perfil!.ListaAccesos.Select(acceso => acceso.Acceso!.Controlador).Distinct().Serialize()),
+            new Claim(Constantes.ClaimTypes.EsSuperAdmin, usuario.Perfil!.EsSuperAdministrador.ToString()),
         };
         return claims;
     }

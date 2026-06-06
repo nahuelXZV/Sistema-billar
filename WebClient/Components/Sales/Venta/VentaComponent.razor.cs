@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Components;
 using WebClient.Models.Sales;
 using WebClient.Extensions;
 using WebClient.Services;
+using Domain.DTOs.Sales;
+using System.Threading.Tasks;
 
 namespace WebClient.Components.Sales.Venta;
 
@@ -24,25 +26,40 @@ public partial class VentaComponent
 
 
     #region Venta Confirmada
-    private void PagoConfirmado(IReadOnlyList<ItemsViewModel> paidItems)
+    private async Task PagoConfirmado(IReadOnlyList<ItemsViewModel> paidItems)
     {
-        // Actualizar el detalle de la venta con los items pagados
-        foreach (var paidItem in paidItems)
+        try
         {
-            var orderItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.ProductId == paidItem.ProductId);
-            if (orderItem is null)
+            var ventaDto = Model.PuntoVenta.GenerarDTOVenta();
+            var response = await AppServices.VentaService.Create(ventaDto);
+
+            foreach (var paidItem in paidItems)
             {
-                continue;
+                var orderItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.IdProducto == paidItem.IdProducto);
+                if (orderItem is null)
+                {
+                    continue;
+                }
+
+                orderItem.Cantidad = orderItem.Cantidad - paidItem.Cantidad;
+                orderItem.Cantidad.Redondear();
+                if (orderItem.Cantidad <= 0)
+                {
+                    Model.PuntoVenta.DetalleItems.Remove(orderItem);
+                }
             }
 
-            orderItem.Cantidad = orderItem.Cantidad - paidItem.Cantidad;
-            orderItem.Cantidad.Redondear();
-            if (orderItem.Cantidad <= 0)
+            if (Model.PuntoVenta.DetalleItems.Count == 0)
             {
-                Model.PuntoVenta.DetalleItems.Remove(orderItem);
+                LimpiarVenta();
             }
+
+            await ShowSuccessMessage("Venta finalizada.");
         }
-
+        catch (Exception ex)
+        {
+            await ShowErrorMessage(ex);
+        }
 
 
     }
@@ -51,7 +68,7 @@ public partial class VentaComponent
     #region Event Handlers
     private void AgregarItem(ProductosViewModel product)
     {
-        var existingItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.ProductId == product.Id);
+        var existingItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.IdProducto == product.Id);
         if (existingItem is not null)
         {
             existingItem.Cantidad = existingItem.Cantidad + 1;
@@ -61,7 +78,7 @@ public partial class VentaComponent
 
         Model.PuntoVenta.DetalleItems.Add(new ItemsViewModel
         {
-            ProductId = product.Id,
+            IdProducto = product.Id,
             Nombre = product.Nombre,
             Cantidad = 1,
             PrecioUnitario = product.Precio,
@@ -70,7 +87,7 @@ public partial class VentaComponent
 
     private void EliminarItem(long productId)
     {
-        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.ProductId == productId);
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.IdProducto == productId);
         if (item is not null)
         {
             Model.PuntoVenta.DetalleItems.Remove(item);
@@ -89,7 +106,7 @@ public partial class VentaComponent
 
     private void SetearCantidad(CantidadModificada quantityChange)
     {
-        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.ProductId == quantityChange.ProductId);
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.IdProducto == quantityChange.ProductId);
         if (item is null)
         {
             return;
@@ -113,7 +130,7 @@ public partial class VentaComponent
         Model.PuntoVenta.ClienteSeleccionado = null;
         Model.PuntoVenta.NotaVenta = string.Empty;
         Model.PuntoVenta.DescuentoGlobal = 0;
-        Model.PuntoVenta.RecargoTotal = 0;
+        Model.PuntoVenta.RecargoGlobal = 0;
     }
 
     private void MostrarModalPagoHandler()
@@ -130,7 +147,7 @@ public partial class VentaComponent
             return;
         }
 
-        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.ProductId == productId);
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.IdProducto == productId);
         if (item is null)
         {
             return;

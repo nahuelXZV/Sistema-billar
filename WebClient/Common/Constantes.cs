@@ -20,8 +20,7 @@ public class Constantes
         public const string IdsAccesosPermitidos = "idsAccesosPermitidos";
         public const string IpSesion = "ipSesion";
         public const string ListaAccesos = "ListaAccesos";
-        //public const string { get; set; }
-
+        public const string EsSuperAdmin = "EsSuperAdministrador";
     }
 
     public static class CodigoConceptos
