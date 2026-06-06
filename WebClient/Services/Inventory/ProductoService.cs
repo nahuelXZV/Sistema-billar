@@ -48,6 +48,12 @@ public class ProductoService : AppBaseServices, IProductoService
         return await GetAsync<ProductoDTO>(uri);
     }
 
+    public async Task<ProductoDTO> GetById(long id, long idVendedor)
+    {
+        var uri = $"{id}/Vendedor/{idVendedor}";
+        return await GetAsync<ProductoDTO>(uri);
+    }
+
     public async Task<bool> Update(ProductoDTO producto)
     {
         var uri = $"";

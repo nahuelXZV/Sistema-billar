@@ -19,7 +19,7 @@ public class TransaccionInventarioController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<TransaccionInventarioViewModel>();
         return View(model);

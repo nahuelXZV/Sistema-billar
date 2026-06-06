@@ -8,6 +8,5 @@ public class TipoMesaViewModel : MainViewModel
     public TipoMesaDTO TipoMesa { get; set; }
     public List<ProductoDTO> ListaProductos { get; set; }
 
-    public TipoMesaViewModel() : base() { }
 }
 

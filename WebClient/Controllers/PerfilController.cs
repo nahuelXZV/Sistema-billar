@@ -19,7 +19,7 @@ public class PerfilController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<PerfilViewModel>();
         return View(model);

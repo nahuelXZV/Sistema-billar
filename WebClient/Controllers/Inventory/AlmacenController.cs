@@ -19,7 +19,7 @@ public class AlmacenController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<AlmacenViewModel>();
         //model.IncluirBlazorComponents = true;

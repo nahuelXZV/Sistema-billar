@@ -1298,6 +1298,83 @@
     padding: 0.42rem 0.62rem;
 }
 
+.venta-table-timer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    margin-left: auto;
+}
+
+.venta-table-timer-value {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    min-width: 4.2rem;
+    padding: 0.22rem 0.38rem;
+    border: 1px solid rgba(113, 132, 123, 0.12);
+    border-radius: 0.55rem;
+    background: rgba(11, 16, 15, 0.68);
+}
+
+.venta-table-timer-value span {
+    color: #8fa69b;
+    font-size: 0.6rem;
+}
+
+.venta-table-timer-value strong {
+    color: #f4f8f5;
+    font-size: 0.76rem;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.venta-table-timer-value:first-child strong {
+    color: #72ddb1;
+    font-variant-numeric: tabular-nums;
+}
+
+.venta-table-timer-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.28rem;
+    min-height: 2rem;
+    border-radius: 0.58rem;
+    padding: 0.3rem 0.52rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.venta-table-timer-button.is-pause {
+    border: 1px solid rgba(245, 189, 92, 0.22);
+    background: rgba(96, 67, 24, 0.2);
+    color: #f3c677;
+}
+
+.venta-table-timer-button.is-finish {
+    border: 1px solid rgba(38, 192, 124, 0.24);
+    background: rgba(31, 122, 90, 0.18);
+    color: #8de3bd;
+}
+
+.venta-table-timer-finished {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #72ddb1;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.venta-table-timer-message {
+    margin-left: auto;
+    color: #f3c677;
+    font-size: 0.68rem;
+    line-height: 1.2;
+    text-align: right;
+}
+
 .venta-table-sale-title {
     display: flex;
     flex-direction: column;
@@ -1309,6 +1386,14 @@
         color: #f4f8f5;
         font-size: 0.95rem;
     }
+
+.venta-table-sale-title small {
+    max-width: 14rem;
+    color: #f3c677;
+    font-size: 0.62rem;
+    line-height: 1.15;
+    text-align: right;
+}
 
 .venta-tables-empty {
     display: flex;
@@ -1377,6 +1462,28 @@
 
     .venta-table-sale-title {
         align-items: flex-start;
+    }
+
+    .venta-table-timer {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .venta-table-timer-message {
+        width: 100%;
+        margin-left: 0;
+        text-align: left;
+    }
+
+    .venta-table-timer-value {
+        flex: 1;
+    }
+
+    .venta-table-sale-title small {
+        max-width: none;
+        text-align: left;
     }
 
     .venta-pos-topbar,

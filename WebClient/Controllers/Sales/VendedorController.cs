@@ -19,7 +19,7 @@ public class VendedorController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<VendedorViewModel>();
         return View(model);

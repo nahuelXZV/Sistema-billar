@@ -9,13 +9,13 @@ public static class HttpRequestExtensions
     {
         string hostName = Dns.GetHostName();
         IPAddress[] addresses = Dns.GetHostAddresses(hostName);
-        string ip = addresses.FirstOrDefault(address => address.AddressFamily == AddressFamily.InterNetwork).ToString();
+        string ip = addresses.FirstOrDefault(address => address.AddressFamily == AddressFamily.InterNetwork)?.ToString() ?? "1.1.1.1";
         return ip;
     }
 
     public static string GetClientIpAddress(this HttpRequest request)
     {
-        string ip = request.Headers["X-Forwarded-For"].FirstOrDefault();
+        string ip = request.Headers["X-Forwarded-For"].FirstOrDefault() ?? "1.1.1.1";
 
         if (!string.IsNullOrWhiteSpace(ip)) ip = ip.Split(",")[0];
 
@@ -28,7 +28,7 @@ public static class HttpRequestExtensions
             }
         }
 
-        if (string.IsNullOrWhiteSpace(ip)) ip = request.Headers["REMOTE_ADDR"].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(ip)) ip = request.Headers["REMOTE_ADDR"].FirstOrDefault() ?? "1.1.1.1";
 
         if (ip.Contains(":")) ip = ip.Split(":")[0];
 

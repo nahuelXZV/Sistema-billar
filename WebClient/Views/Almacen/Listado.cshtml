@@ -11,8 +11,8 @@
 
 	Model.ListaItemsMenu = new List<ItemMenu>
 	{
-		new ItemMenu { Id = MenuItemId.Editar, Text = "Editar", IconCss = "fa fa-pencil", Url = Url.Action("Crear", "Almacen"), ActionType = MenuItemActionType.POST },
-		new ItemMenu { Id = MenuItemId.Eliminar, Text = "Eliminar", IconCss = "fa fa-trash", Url = Url.Action("Eliminar", "Almacen"), ActionType = MenuItemActionType.POST, Confirm = true, ConfirmMessage = "Esta seguro de eliminar este almacen?" },
+		new ItemMenu { Id = MenuItemId.Editar, Text = "Editar", IconCss = "fa fa-pencil", Url = Url.Action("Crear", "Almacen")!, ActionType = MenuItemActionType.POST },
+		new ItemMenu { Id = MenuItemId.Eliminar, Text = "Eliminar", IconCss = "fa fa-trash", Url = Url.Action("Eliminar", "Almacen")!, ActionType = MenuItemActionType.POST, Confirm = true, ConfirmMessage = "Esta seguro de eliminar este almacen?" },
 	};
 }
 

@@ -19,7 +19,7 @@ public class UnidadMedidaController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<UnidadMedidaViewModel>();
         //model.IncluirBlazorComponents = true;

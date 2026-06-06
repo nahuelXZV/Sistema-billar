@@ -42,6 +42,11 @@ public partial class VentaMesasComponent
         SelectedVentaModel = null;
     }
 
+    private void TiempoFinalizado()
+    {
+        StateHasChanged();
+    }
+
     private static string GetMesaEstado(MesaDTO mesa)
     {
         return mesa.Activo ? "Libre" : "Inactiva";
@@ -51,4 +56,5 @@ public partial class VentaMesasComponent
     {
         return mesa.Activo ? "Abrir venta" : "Ver mesa";
     }
+
 }

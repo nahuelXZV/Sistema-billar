@@ -19,7 +19,7 @@ public class ClienteController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<ClienteViewModel>();
         return View(model);

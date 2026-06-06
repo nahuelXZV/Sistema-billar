@@ -20,7 +20,7 @@ public class ProductoController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<ProductoViewModel>();
         //model.IncluirBlazorComponents = true;

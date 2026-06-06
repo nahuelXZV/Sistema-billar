@@ -19,7 +19,7 @@ public class TipoMesaController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<TipoMesaViewModel>();
         //model.IncluirBlazorComponents = true;

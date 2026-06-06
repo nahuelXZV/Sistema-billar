@@ -27,10 +27,11 @@ public class GetMesaByIdQueryHandler : ICommandHandler<GetMesaByIdQuery, Respons
     public async Task<Response<MesaDTO>> Handle(GetMesaByIdQuery request, CancellationToken cancellationToken)
     {
         var query = _repository.Query()
+            .Include(p => p.TipoMesa)
             .Where(p => !p.Eliminado)
             .Where(p => p.Id == request.Id);
 
-        var mesa = await query.FirstOrDefaultAsync();
+        var mesa = await query.FirstOrDefaultAsync(cancellationToken);
         if (mesa == null) throw new Exception("Mesa no encontrada.");
 
         var mesaDto = _mapper.Map<MesaDTO>(mesa);

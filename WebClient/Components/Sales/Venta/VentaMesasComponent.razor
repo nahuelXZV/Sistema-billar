@@ -76,6 +76,13 @@ else
 				<span>Volver a mesas</span>
 			</button>
 
+			@if (SelectedMesa is not null)
+			{
+				<TemporizadorMesaComponent Mesa="SelectedMesa"
+										   Venta="SelectedVentaModel"
+										   OnTiempoFinalizado="TiempoFinalizado" />
+			}
+
 			<div class="venta-table-sale-title">
 				<span>@SaleContextLabel</span>
 				<strong>@SaleContextTitle</strong>

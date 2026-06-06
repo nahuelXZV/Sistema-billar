@@ -9,6 +9,7 @@ public interface IProductoService
     Task<bool> Update(ProductoDTO producto);
     Task<bool> Delete(long id);
     Task<ProductoDTO> GetById(long id);
+    Task<ProductoDTO> GetById(long id, long idVendedor);
     Task<ResponseFilterDTO<ProductoDTO>> GetAll(FilterDTO? filter);
     Task<List<ProductoDTO>> GetAll();
     Task<List<ProductoDTO>> GetByCategoria(long idCategoria, long idVendedor);

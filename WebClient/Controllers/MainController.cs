@@ -12,8 +12,6 @@ public class MainController : Controller
     protected ViewModelFactory _viewModelFactory { get; set; }
     protected readonly IAppServices _appServices;
 
-    public MainController() { }
-
     public MainController(ViewModelFactory viewModelFactory, IAppServices services)
     {
         _viewModelFactory = viewModelFactory;

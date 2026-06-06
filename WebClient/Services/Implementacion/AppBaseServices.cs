@@ -54,12 +54,12 @@ public class AppBaseServices
         return cinemaResponse.Data;
     }
 
-    protected async Task<TResult> PostAsync<TResult>(object content = default) where TResult : new()
+    protected async Task<TResult> PostAsync<TResult>(object content = default!) where TResult : new()
     {
         return await PostAsync<TResult>("", content);
     }
 
-    protected async Task<TResult> PostAsync<TResult>(string uri = "", object content = default) where TResult : new()
+    protected async Task<TResult> PostAsync<TResult>(string uri = "", object content = default!) where TResult : new()
     {
         var body = new StringContent(content.Serialize(), Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync($"{_serviceBaseUrl}/{uri}", body);
@@ -78,12 +78,12 @@ public class AppBaseServices
         return cinemaResponse.Data;
     }
 
-    protected async Task<TResult> PutAsync<TResult>(object content = default) where TResult : new()
+    protected async Task<TResult> PutAsync<TResult>(object content = default!) where TResult : new()
     {
         return await PutAsync<TResult>("", content);
     }
 
-    protected async Task<TResult> PutAsync<TResult>(string uri = "", object content = default) where TResult : new()
+    protected async Task<TResult> PutAsync<TResult>(string uri = "", object content = default!) where TResult : new()
     {
         var body = new StringContent(content.Serialize(), Encoding.UTF8, "application/json");
         var response = await _httpClient.PutAsync($"{_serviceBaseUrl}/{uri}", body);

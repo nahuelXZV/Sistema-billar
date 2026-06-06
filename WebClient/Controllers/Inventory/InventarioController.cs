@@ -18,7 +18,7 @@ public class InventarioController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listado()
+    public IActionResult Listado()
     {
         var model = _viewModelFactory.Create<InventarioViewModel>();
         return View(model);

@@ -35,6 +35,16 @@ public class ProductoController : MainController
         return Ok(await Mediator.Send(new GetProductosByCategoriaQuery() { IdCategoria = idCategoria, IdVendedor = idVendedor }));
     }
 
+    [HttpGet("{idProd}/Vendedor/{idVendedor}")]
+    public async Task<IActionResult> GetByIdVendedor(long idProd, long idVendedor)
+    {
+        return Ok(await Mediator.Send(new GetProductoByIdVendedorQuery
+        {
+            IdProducto = idProd,
+            IdVendedor = idVendedor
+        }));
+    }
+
     [HttpGet("{idProd}")]
     public async Task<IActionResult> GetById(long idProd)
     {

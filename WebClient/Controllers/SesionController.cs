@@ -40,7 +40,7 @@ public class SesionController : Controller
                 Password = model.Password
             });
 
-            if (usuarioDTO == null) throw new Exception("Crendenciales no validas.");
+            if (usuarioDTO == null || usuarioDTO.Perfil == null) throw new Exception("Crendenciales no validas.");
 
             var claimsUsuario = usuarioDTO.GetClaims(model);
             await HttpContext.IniciarSesion(claimsUsuario, false);

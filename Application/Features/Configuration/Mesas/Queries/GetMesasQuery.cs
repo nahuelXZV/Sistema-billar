@@ -25,7 +25,11 @@ public class GetMesasQueryHandler : ICommandHandler<GetMesasQuery, Response<List
 
     public async Task<Response<List<MesaDTO>>> Handle(GetMesasQuery request, CancellationToken cancellationToken)
     {
-        var listaMesas = await _repository.Query().Where(p => !p.Eliminado).ToListAsync(cancellationToken);
+        var listaMesas = await _repository.Query()
+            .Include(p => p.TipoMesa)
+            .Where(p => !p.Eliminado)
+            .ToListAsync(cancellationToken);
+
         var listaMesasDtos = _mapper.Map<List<MesaDTO>>(listaMesas);
         return new Response<List<MesaDTO>>(listaMesasDtos);
     }

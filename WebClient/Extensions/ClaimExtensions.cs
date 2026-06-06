@@ -14,7 +14,7 @@ public static class ClaimExtensions
     {
         var user = httpContext.User;
 
-        if (user.Identity.IsAuthenticated)
+        if (user.Identity != null && user.Identity.IsAuthenticated)
         {
             user.UpdateClaims(claims);
         }
@@ -52,15 +52,15 @@ public static class ClaimExtensions
         try
         {
             var identity = currentPrincipal.Identity as ClaimsIdentity;
-            if (identity == null) return null;
+            if (identity == null) return "";
 
             var claim = identity.Claims.FirstOrDefault(c => c.Type == key);
-            return claim?.Value;
+            return claim?.Value ?? "";
         }
         catch (Exception ex)
         {
             string message = ex.Message;
-            return null;
+            return "";
         }
     }
 
@@ -75,8 +75,8 @@ public static class ClaimExtensions
             new Claim(Constantes.ClaimTypes.Correo, usuario.Email),
             new Claim(Constantes.ClaimTypes.IpSesion, model.DireccionIp),
             new Claim(Constantes.ClaimTypes.Token, usuario.Token??""),
-            new Claim(Constantes.ClaimTypes.IdsAccesosPermitidos, string.Join(",", usuario.Perfil.ListaAccesos.Select(acceso => acceso.Acceso.Id.ToString()))),
-            new Claim(Constantes.ClaimTypes.AccesosPermitidos, usuario.Perfil.ListaAccesos.Select(acceso => acceso.Acceso.Controlador).Distinct().Serialize()),
+            new Claim(Constantes.ClaimTypes.IdsAccesosPermitidos, string.Join(",", usuario.Perfil!.ListaAccesos.Select(acceso => acceso.Acceso!.Id.ToString()))),
+            new Claim(Constantes.ClaimTypes.AccesosPermitidos, usuario.Perfil!.ListaAccesos.Select(acceso => acceso.Acceso!.Controlador).Distinct().Serialize()),
         };
         return claims;
     }
