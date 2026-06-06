@@ -26,6 +26,26 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
     public async Task<Response<long>> Handle(CreateVentaCommand request, CancellationToken cancellationToken)
     {
         Venta venta = _mapper.Map<Venta>(request.VentaDTO);
+        venta.Id = 0;
+        venta.ListaDetalles = _mapper.Map<List<VentaDetalle>>(
+            request.VentaDTO.ListaDetalles ?? []);
+        venta.ListaPagos = _mapper.Map<List<PagoVenta>>(
+            request.VentaDTO.ListaPagos ?? []);
+
+        if (venta.IdOrdenVenta == 0) venta.IdOrdenVenta = null;
+        foreach (var detalle in venta.ListaDetalles)
+        {
+            detalle.Id = 0;
+            detalle.IdVenta = 0;
+            if (detalle.IdOrdenVentaDetalle == 0)
+                detalle.IdOrdenVentaDetalle = null;
+        }
+        foreach (var pago in venta.ListaPagos)
+        {
+            pago.Id = 0;
+            pago.IdVenta = 0;
+        }
+
         venta = await _repository.AddAsync(venta);
         await _repository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
 

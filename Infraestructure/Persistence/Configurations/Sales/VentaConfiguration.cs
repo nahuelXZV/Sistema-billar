@@ -21,6 +21,12 @@ public class VentaConfiguration : IEntityTypeConfiguration<Venta>
         builder.Property(a => a.Total)
             .HasPrecision(18, 2);
 
+        builder.Property(a => a.TotalPagado)
+            .HasPrecision(18, 2);
+
+        builder.Property(a => a.Cambio)
+            .HasPrecision(18, 2);
+
         builder.HasOne(a => a.OrdenVenta)
             .WithMany()
             .HasForeignKey(a => a.IdOrdenVenta)
@@ -33,5 +39,13 @@ public class VentaConfiguration : IEntityTypeConfiguration<Venta>
         builder.HasOne(a => a.Vendedor)
             .WithMany()
             .HasForeignKey(a => a.IdVendedor);
+
+        builder.HasMany(a => a.ListaDetalles)
+            .WithOne(a => a.Venta)
+            .HasForeignKey(a => a.IdVenta);
+
+        builder.HasMany(a => a.ListaPagos)
+            .WithOne(a => a.Venta)
+            .HasForeignKey(a => a.IdVenta);
     }
 }

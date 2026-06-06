@@ -20,4 +20,6 @@ public class Venta : Entity
     public OrdenVenta? OrdenVenta { get; set; }
     public Cliente? Cliente { get; set; }
     public Vendedor? Vendedor { get; set; }
+    public List<VentaDetalle> ListaDetalles { get; set; } = [];
+    public List<PagoVenta> ListaPagos { get; set; } = [];
 }

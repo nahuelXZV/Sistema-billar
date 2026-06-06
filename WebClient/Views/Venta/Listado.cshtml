@@ -1,0 +1,137 @@
+@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Sales
+@model VentaViewModel
+
+@{
+	ViewData["Title"] = "Ventas";
+	ViewData["Module"] = "Ventas";
+	ViewData["Action"] = "Listado";
+	ViewData["Url"] = Url.Action("Listado", "Venta");
+
+	Model.ListaItemsMenu = new List<ItemMenu>
+	{
+		new ItemMenu
+		{
+			Id = MenuItemId.Detalles,
+			Text = "Ver venta",
+			IconCss = "bi bi-eye",
+			Url = Url.Action("Ver", "Venta"),
+			ActionType = MenuItemActionType.GET
+		},
+		new ItemMenu
+		{
+			Id = MenuItemId.Eliminar,
+			Text = "Eliminar venta",
+			IconCss = "bi bi-trash",
+			Url = Url.Action("Eliminar", "Venta"),
+			ActionType = MenuItemActionType.POST,
+			Confirm = true,
+			ConfirmMessage = "¿Está seguro de eliminar esta venta?"
+		}
+	};
+}
+
+@section ActionBar {
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<a asp-controller="Venta" asp-action="VentaDirecta" class="iu-btn iu-btn-primary">
+				<i class="bi bi-plus-lg"></i>
+				Nueva venta
+			</a>
+		</div>
+	</div>
+}
+
+<section class="iu-show">
+	<section class="iu-sec">
+		<div id="table-wrapper"></div>
+	</section>
+</section>
+
+@section Scripts {
+	<script>
+		const formatCurrency = (value) => new Intl.NumberFormat('es-BO', {
+			style: 'currency',
+			currency: 'BOB'
+		}).format(value ?? 0);
+
+		const formatDate = (value) => new Intl.DateTimeFormat('es-BO', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		}).format(new Date(value));
+
+		const renderSaleActions = (id) => gridjs.html(`
+			<button type="button"
+					class="inv-btn-action"
+					aria-label="Abrir acciones de la venta"
+					onclick="togglePortalDropdown(event, '${id}')">
+				<i class="bi bi-three-dots"></i>
+			</button>
+		`);
+
+		const renderSaleStatus = (status) => {
+			const statuses = {
+				0: { text: 'Registrada', tone: 'tone-primary' },
+				1: { text: 'Pagada', tone: 'tone-success' },
+				2: { text: 'Anulada', tone: 'tone-danger' }
+			};
+			const current = statuses[status] ?? { text: `Estado ${status}`, tone: 'tone-warning' };
+			return gridjs.html(`<span class="iu-chip ${current.tone}">${current.text}</span>`);
+		};
+
+		new gridjs.Grid({
+			columns: [
+				{ name: 'Id', hidden: true },
+				'Nro. venta',
+				{
+					name: 'Fecha',
+					formatter: (cell) => formatDate(cell)
+				},
+				{
+					name: 'Cliente',
+					formatter: (cell) => cell || 'Sin cliente'
+				},
+				{
+					name: 'Vendedor',
+					formatter: (cell) => cell || '-'
+				},
+				{
+					name: 'Total',
+					formatter: (cell) => formatCurrency(cell)
+				},
+				{
+					name: 'Pagado',
+					formatter: (cell) => formatCurrency(cell)
+				},
+				{
+					name: 'Estado',
+					formatter: (cell) => renderSaleStatus(cell)
+				},
+				{
+					name: 'Acciones',
+					sort: false,
+					formatter: (cell, row) => renderSaleActions(row._cells[0].data)
+				}
+			],
+			server: {
+				url: urlWeb + 'Venta/GetAll',
+				then: data => data.data.map(venta => [
+					venta.id,
+					venta.numero,
+					venta.fecha,
+					venta.cliente?.nombre,
+					venta.vendedor?.nombre,
+					venta.total,
+					venta.totalPagado,
+					venta.estado
+				]),
+				total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById('table-wrapper'));
+	</script>
+}

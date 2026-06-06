@@ -31,7 +31,11 @@ public class GetVentaByIdQueryHandler : ICommandHandler<GetVentaByIdQuery, Respo
             .Where(p => p.Id == request.Id)
             .Include(p => p.OrdenVenta)
             .Include(p => p.Cliente)
-            .Include(p => p.Vendedor);
+            .Include(p => p.Vendedor)
+            .Include(p => p.ListaDetalles)
+                .ThenInclude(d => d.Producto)
+            .Include(p => p.ListaPagos)
+                .ThenInclude(p => p.MetodoPago);
 
         var venta = await query.FirstOrDefaultAsync(cancellationToken);
         if (venta == null) throw new Exception("Venta no encontrada.");

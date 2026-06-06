@@ -16,7 +16,7 @@ public class PagoVentaConfiguration : IEntityTypeConfiguration<PagoVenta>
             .HasPrecision(18, 2);
 
         builder.HasOne(a => a.Venta)
-            .WithMany()
+            .WithMany(a => a.ListaPagos)
             .HasForeignKey(a => a.IdVenta);
 
         builder.HasOne(a => a.MetodoPago)

@@ -50,6 +50,8 @@ public class GeneralProfile : Profile
         CreateMap<OrdenVentaDetalle, OrdenVentaDetalleDTO>();
         CreateMap<Venta, VentaDTO>();
         CreateMap<VentaDetalle, VentaDetalleDTO>();
+        CreateMap<PagoVenta, PagoVentaDTO>()
+            .ForMember(dest => dest.Venta, opt => opt.Ignore());
         CreateMap<UsoMesa, UsoMesaDTO>();
         CreateMap<MetodoPago, MetodoPagoDTO>();
 
@@ -85,8 +87,19 @@ public class GeneralProfile : Profile
         CreateMap<VendedorAlmacenDTO, VendedorAlmacenes>();
         CreateMap<OrdenVentaDTO, OrdenVenta>();
         CreateMap<OrdenVentaDetalleDTO, OrdenVentaDetalle>();
-        CreateMap<VentaDTO, Venta>();
-        CreateMap<VentaDetalleDTO, VentaDetalle>();
+        CreateMap<VentaDTO, Venta>()
+            .ForMember(dest => dest.OrdenVenta, opt => opt.Ignore())
+            .ForMember(dest => dest.Cliente, opt => opt.Ignore())
+            .ForMember(dest => dest.Vendedor, opt => opt.Ignore())
+            .ForMember(dest => dest.ListaDetalles, opt => opt.Ignore())
+            .ForMember(dest => dest.ListaPagos, opt => opt.Ignore());
+        CreateMap<VentaDetalleDTO, VentaDetalle>()
+            .ForMember(dest => dest.Venta, opt => opt.Ignore())
+            .ForMember(dest => dest.OrdenVentaDetalle, opt => opt.Ignore())
+            .ForMember(dest => dest.Producto, opt => opt.Ignore());
+        CreateMap<PagoVentaDTO, PagoVenta>()
+            .ForMember(dest => dest.Venta, opt => opt.Ignore())
+            .ForMember(dest => dest.MetodoPago, opt => opt.Ignore());
         CreateMap<UsoMesaDTO, UsoMesa>();
         CreateMap<MetodoPagoDTO, MetodoPago>();
         #endregion

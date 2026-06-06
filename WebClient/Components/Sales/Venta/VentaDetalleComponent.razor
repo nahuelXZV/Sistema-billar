@@ -1,0 +1,132 @@
+<section class="iu-sec mb-3">
+	<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+		<div>
+			<div class="text-white small">VENTA</div>
+			<h2 class="mb-1">@Venta.Numero</h2>
+			<div class="text-white">@Venta.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
+		</div>
+		<span class="iu-chip @TonoEstado">@Estado</span>
+	</div>
+
+	<div class="row g-3">
+		<div class="col-md-4">
+			<div class="text-white small">Cliente</div>
+			<div class="fw-semibold">@(Venta.Cliente?.Nombre ?? "Sin cliente")</div>
+			<div class="text-white">@(Venta.Cliente?.Documento ?? "-")</div>
+		</div>
+		<div class="col-md-4">
+			<div class="text-white small">Vendedor</div>
+			<div class="fw-semibold">@(Venta.Vendedor?.Nombre ?? "-")</div>
+		</div>
+		<div class="col-md-4">
+			<div class="text-white small">Observación</div>
+			<div>@(string.IsNullOrWhiteSpace(Venta.Observacion) ? "Sin observaciones" : Venta.Observacion)</div>
+		</div>
+	</div>
+</section>
+
+<section class="iu-sec mb-3">
+	<h5 class="mb-3">Productos</h5>
+	<div class="table-responsive">
+		<table class="table table-sm table-hover align-middle">
+			<thead>
+				<tr>
+					<th>Producto</th>
+					<th class="text-end">Cantidad</th>
+					<th class="text-end">Precio unitario</th>
+					<th class="text-end">Descuento</th>
+					<th class="text-end">Total</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (Venta.ListaDetalles?.Any() == true)
+				{
+					@foreach (var detalle in Venta.ListaDetalles)
+					{
+						<tr>
+							<td>@detalle.NombreProducto</td>
+							<td class="text-end">@detalle.Cantidad.ToString("N2")</td>
+							<td class="text-end">Bs @detalle.PrecioUnitario.ToString("N2")</td>
+							<td class="text-end">Bs @((detalle.Descuento ?? 0).ToString("N2"))</td>
+							<td class="text-end fw-semibold">Bs @detalle.Total.ToString("N2")</td>
+						</tr>
+					}
+				}
+				else
+				{
+					<tr>
+						<td colspan="5" class="text-center text-secondary py-4">
+							La venta no tiene productos.
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</section>
+
+<div class="row g-3">
+	<div class="col-lg-7">
+		<section class="iu-sec h-100">
+			<h5 class="mb-3">Pagos</h5>
+			<div class="table-responsive">
+				<table class="table table-sm align-middle">
+					<thead>
+						<tr>
+							<th>Método</th>
+							<th>Fecha</th>
+							<th class="text-end">Monto</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (Venta.ListaPagos?.Any() == true)
+						{
+							@foreach (var pago in Venta.ListaPagos)
+							{
+								<tr>
+									<td>@(pago.MetodoPago?.Nombre ?? "-")</td>
+									<td>@pago.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+									<td class="text-end fw-semibold">Bs @pago.MontoTotal.ToString("N2")</td>
+								</tr>
+							}
+						}
+						else
+						{
+							<tr>
+								<td colspan="3" class="text-center text-secondary py-4">
+									No existen pagos registrados.
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</div>
+
+	<div class="col-lg-5">
+		<section class="iu-sec h-100">
+			<h5 class="mb-3">Resumen</h5>
+			<div class="d-flex justify-content-between py-2 border-bottom">
+				<span>Subtotal</span>
+				<strong>Bs @Venta.SubTotal.ToString("N2")</strong>
+			</div>
+			<div class="d-flex justify-content-between py-2 border-bottom">
+				<span>Descuento</span>
+				<strong>Bs @Venta.Descuento.ToString("N2")</strong>
+			</div>
+			<div class="d-flex justify-content-between py-2 border-bottom">
+				<span>Total pagado</span>
+				<strong>Bs @Venta.TotalPagado.ToString("N2")</strong>
+			</div>
+			<div class="d-flex justify-content-between py-2 border-bottom">
+				<span>Cambio</span>
+				<strong>Bs @Venta.Cambio.ToString("N2")</strong>
+			</div>
+			<div class="d-flex justify-content-between align-items-center pt-3">
+				<span class="fs-5">Total</span>
+				<strong class="fs-4">Bs @Venta.Total.ToString("N2")</strong>
+			</div>
+		</section>
+	</div>
+</div>

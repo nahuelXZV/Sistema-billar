@@ -29,6 +29,8 @@ public class GetVentasQueryHandler : ICommandHandler<GetVentasQuery, Response<Li
             .Include(p => p.OrdenVenta)
             .Include(p => p.Cliente)
             .Include(p => p.Vendedor)
+            .Include(p => p.ListaDetalles)
+            .Include(p => p.ListaPagos)
             .Where(p => !p.Eliminado)
             .ToListAsync(cancellationToken);
 
