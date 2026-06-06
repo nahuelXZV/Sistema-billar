@@ -9,77 +9,82 @@ public class PuntoVentaViewModel
     public string NombreVendedor { get; set; } = string.Empty;
     public ClienteDTO? ClienteSeleccionado { get; set; }
 
-
+    #region Datos Venta
     public string NotaVenta { get; set; } = string.Empty;
-    public decimal DiscountAmount { get; set; }
-    public decimal ServiceCharge { get; set; }
+    public decimal DescuentoGlobal { get; set; }
+    public decimal RecargoTotal { get; set; }
+    public List<ItemsViewModel> DetalleItems { get; set; } = [];
+    #endregion
 
-    public List<ItemsViewModel> OrderItems { get; set; } = [];
-    public decimal Subtotal => OrderItems.Sum(item => item.Total);
-    public decimal GrandTotal => Subtotal - DiscountAmount + ServiceCharge;
+    public decimal Subtotal => DetalleItems.Sum(item => item.Total);
+    public decimal Total => Subtotal - DescuentoGlobal + RecargoTotal;
 
     #region Navigation State
     public List<CategoriasViewModel> RootCategories { get; set; } = [];
     public CategoriasViewModel? CurrentNode { get; set; }
     public List<CategoriasViewModel> SelectedPath { get; set; } = [];
-    public IReadOnlyList<CategoriasViewModel> VisibleCategories => CurrentNode is null ? RootCategories : CurrentNode.Children;
-    public IReadOnlyList<ProductosViewModel> VisibleProducts => ShowingProducts && CurrentNode is not null ? CurrentNode.Products : [];
-    public bool ShowingProducts => CurrentNode is not null && CurrentNode.Children.Count == 0;
+    public IReadOnlyList<CategoriasViewModel> VisibleCategories => CurrentNode is null ? RootCategories : CurrentNode.SubCategorias;
+    public IReadOnlyList<ProductosViewModel> VisibleProducts => ShowingProducts && CurrentNode is not null ? CurrentNode.Productos : [];
+    public bool ShowingProducts => CurrentNode is not null && CurrentNode.SubCategorias.Count == 0;
     #endregion
 }
 
 public class CategoriasViewModel
 {
-    public string Id { get; set; } = string.Empty;
-    public long CategoriaId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public long Id { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
     public string IconCss { get; set; } = string.Empty;
     public string ToneClass { get; set; } = string.Empty;
-    public string CardCaption { get; set; } = string.Empty;
     public bool ContentLoaded { get; set; }
-    public List<CategoriasViewModel> Children { get; set; } = [];
-    public List<ProductosViewModel> Products { get; set; } = [];
+    public List<CategoriasViewModel> SubCategorias { get; set; } = [];
+    public List<ProductosViewModel> Productos { get; set; } = [];
 }
 
 public class ProductosViewModel
 {
-    public string Id { get; set; } = string.Empty;
-    public long ProductoId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public long Id { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
-    public decimal Price { get; set; }
-    public string CategoryLabel { get; set; } = string.Empty;
+    public decimal Precio { get; set; }
     public string IconCss { get; set; } = string.Empty;
     public string ToneClass { get; set; } = string.Empty;
-    public string MediaLabel { get; set; } = string.Empty;
 }
 
 public class ItemsViewModel
 {
-    public string ProductId { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Detail { get; set; } = string.Empty;
-    public decimal Quantity { get; set; }
-    public decimal UnitPrice { get; set; }
-    public string IconCss { get; set; } = string.Empty;
-    public string ToneClass { get; set; } = string.Empty;
-    public decimal Total => Quantity * UnitPrice;
+    public long ProductId { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public decimal Cantidad { get; set; }
+    public decimal PrecioUnitario { get; set; }
+    public decimal Total => Cantidad * PrecioUnitario;
 }
 
-public class PagoItemViewModel
+public class CantidadModificada
 {
-    public string ProductId { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public decimal Quantity { get; set; }
-    public decimal UnitPrice { get; set; }
-    public decimal Total => Quantity * UnitPrice;
+    public long ProductId { get; set; }
+    public decimal Cantidad { get; set; }
 }
 
-public class QuantityChangeViewModel
+public class DetallePagoViewModel
 {
-    public string ProductId { get; set; } = string.Empty;
-    public decimal Quantity { get; set; }
+    public string Id { get; set; } = string.Empty;
+    public long IdMetodoPago { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string Abreviatura { get; set; } = string.Empty;
+    public string Icono { get; set; } = string.Empty;
+    public decimal Monto { get; set; }
+}
+
+public class ModalPagoItemViewModel
+{
+    public long ProductId { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public decimal CantidadDisponible { get; set; }
+    public decimal CantidadPagar { get; set; }
+    public decimal PrecioUnitario { get; set; }
+    public bool IsSelected { get; set; }
+    public decimal Total => CantidadPagar * PrecioUnitario;
 }

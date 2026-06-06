@@ -1,4 +1,5 @@
 @using WebClient.Components.Shared.Elements
+@using WebClient.Extensions
 @using WebClient.Models.Sales
 @inherits Components.MainBaseComponent;
 
@@ -8,41 +9,41 @@
 			<BuscarClienteComponent PuntoVenta="PuntoVenta" />
 
 			<div class="venta-pos-payment-modal-list">
-				@if (PaymentItems.Count == 0)
+				@if (DetalleItems.Count == 0)
 				{
 					<div class="venta-pos-payment-empty">No hay productos pendientes.</div>
 				}
 				else
 				{
-					@foreach (var item in PaymentItems)
+					@foreach (var item in DetalleItems)
 					{
 						<article class="venta-pos-payment-line @(item.IsSelected ? "is-selected" : string.Empty)">
 							<label class="venta-pos-payment-check">
 								<input type="checkbox" @bind="item.IsSelected" />
-								<span>@item.Name</span>
+								<span>@item.Nombre</span>
 							</label>
 
 							<div class="venta-pos-payment-line-meta">
-								<small>@($"{FormatQuantity(item.AvailableQuantity)} disponibles")</small>
-								<strong>@FormatMoney(item.UnitPrice)</strong>
+								<small>@($"{item.CantidadDisponible.FormatearCantidad()} disponibles")</small>
+								<strong>@item.PrecioUnitario.FormatoDinero()</strong>
 							</div>
 
 							<div class="venta-pos-payment-line-actions">
 								<div class="venta-pos-stepper d-flex align-items-center">
-									<button type="button" @onclick="@(() => DecreasePayQuantity(item))" disabled="@(!item.IsSelected)">
+									<button type="button" @onclick="@(() => DisminuirCantidad(item))" disabled="@(!item.IsSelected)">
 										<i class="bi bi-dash"></i>
 									</button>
 									<input type="text"
 										   inputmode="decimal"
-										   value="@FormatQuantity(item.QuantityToPay)"
+										   value="@item.CantidadPagar.FormatearCantidad()"
 										   disabled="@(!item.IsSelected)"
-										   @onchange="@((args) => SetPayQuantity(item, ParseQuantity(args.Value)))" />
-									<button type="button" @onclick="@(() => IncreasePayQuantity(item))" disabled="@(!item.IsSelected)">
+										   @onchange="@((args) => SetearCantidad(item, ParseQuantity(args.Value)))" />
+									<button type="button" @onclick="@(() => IncrementarCantidad(item))" disabled="@(!item.IsSelected)">
 										<i class="bi bi-plus"></i>
 									</button>
 								</div>
 
-								<strong>@FormatMoney(item.Total)</strong>
+								<strong>@item.Total.FormatoDinero()</strong>
 							</div>
 						</article>
 					}
@@ -59,7 +60,7 @@
 				{
 					<textarea class="venta-pos-note-textarea"
 							  placeholder="Escriba una nota para esta venta..."
-							  @bind="PaymentNote"
+							  @bind="NotaVenta"
 							  @bind:event="oninput"></textarea>
 				}
 
@@ -71,7 +72,7 @@
 							<input type="number"
 								   min="0"
 								   step="0.01"
-								   @bind-value="DiscountAmount"
+								   @bind-value="DescuentoGlobal"
 								   @bind-value:event="oninput" />
 						</div>
 					</label>
@@ -83,7 +84,7 @@
 							<input type="number"
 								   min="0"
 								   step="0.01"
-								   @bind-value="ServiceCharge"
+								   @bind-value="RecargoGlobal"
 								   @bind-value:event="oninput" />
 						</div>
 					</label>
@@ -120,7 +121,7 @@
 					<button type="button"
 							class="venta-pos-payment-method-add"
 							disabled="@(!CanAddPaymentMethod)"
-							@onclick="AddPaymentMethod">
+							@onclick="AgregarMetodoPago">
 						<i class="bi bi-plus-lg"></i>
 						Agregar
 					</button>
@@ -130,7 +131,7 @@
 				{
 					<div class="venta-pos-payment-empty">No hay metodos de pago activos.</div>
 				}
-				else if (PaymentMethods.Count == 0)
+				else if (DetallePagos.Count == 0)
 				{
 					<div class="venta-pos-payment-empty">Agrega al menos un metodo de pago.</div>
 				}
@@ -139,10 +140,10 @@
 					<div class="venta-pos-payment-method-summary">
 						<div class="venta-pos-payment-method-summary-head">
 							<span>Resumen de pagos</span>
-							<strong>@FormatMoney(TotalPaid)</strong>
+							<strong>@TotalPaid.FormatoDinero()</strong>
 						</div>
 
-						@foreach (var payment in PaymentMethods)
+						@foreach (var payment in DetallePagos)
 						{
 							<div class="venta-pos-payment-method-row">
 								<span>
@@ -150,12 +151,12 @@
 									{
 										<i class="@payment.Icono"></i>
 									}
-									@payment.Name
+									@payment.Nombre
 								</span>
-								<strong>@FormatMoney(payment.Amount)</strong>
+								<strong>@payment.Monto.FormatoDinero()</strong>
 								<button type="button"
 										aria-label="Quitar metodo de pago"
-										@onclick="@(() => RemovePaymentMethod(payment.Id))">
+										@onclick="@(() => EliminarMetodoPago(payment.Id))">
 									<i class="bi bi-x-lg"></i>
 								</button>
 							</div>
@@ -166,20 +167,20 @@
 
 			<div class="venta-pos-payment-modal-total">
 				<span>Total a pagar</span>
-				<strong>@FormatMoney(PaymentTotal)</strong>
+				<strong>@PaymentTotal.FormatoDinero()</strong>
 			</div>
 
 			@if (RemainingAmount > 0)
 			{
 				<div class="venta-pos-payment-modal-pending">
 					<span>Faltante</span>
-					<strong>@FormatMoney(RemainingAmount)</strong>
+					<strong>@RemainingAmount.FormatoDinero()</strong>
 				</div>
 			}
 
 			<div class="venta-pos-payment-modal-change">
 				<span>Cambio</span>
-				<strong>@FormatMoney(ChangeAmount)</strong>
+				<strong>@ChangeAmount.FormatoDinero()</strong>
 			</div>
 		</div>
 	</Body>
@@ -190,7 +191,7 @@
 		<button type="button"
 				class="venta-pos-client-modal-button is-primary"
 				disabled="@(!CanConfirmPayment)"
-				@onclick="ConfirmPaymentAsync">
+				@onclick="ConfirmarPago">
 			<i class="bi bi-check2-circle"></i>
 			<span>Confirmar pago</span>
 		</button>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Domain.DTOs.Sales;
 using System.Globalization;
 using WebClient.Models.Sales;
+using WebClient.Extensions;
 
 namespace WebClient.Components.Sales.Venta;
 
@@ -10,24 +11,24 @@ public partial class ModalPagoComponent
     [Parameter] public PuntoVentaViewModel PuntoVenta { get; set; } = new();
     [Parameter] public bool Visible { get; set; }
     [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
-    [Parameter] public EventCallback<IReadOnlyList<PagoItemViewModel>> OnPaymentConfirmed { get; set; }
+    [Parameter] public EventCallback<IReadOnlyList<ItemsViewModel>> OnPaymentConfirmed { get; set; }
 
     private bool _wasVisible;
-    private List<ModalPagoItemViewModel> PaymentItems { get; set; } = [];
-    private List<MetodoPagoDTO> MetodosPago { get; set; } = [];
-    private List<ModalMetodoPagoViewModel> PaymentMethods { get; set; } = [];
-    private string PaymentNote { get; set; } = string.Empty;
-    private decimal DiscountAmount { get; set; }
-    private decimal ServiceCharge { get; set; }
-    private long SelectedMetodoPagoId { get; set; }
-    private decimal PaymentMethodAmount { get; set; }
     private bool IsNoteOpen { get; set; }
-    private decimal SelectedSubtotal => PaymentItems.Where(item => item.IsSelected).Sum(item => item.Total);
-    private decimal PaymentTotal => Math.Max(0, SelectedSubtotal - DiscountAmount + ServiceCharge);
-    private decimal TotalPaid => PaymentMethods.Sum(payment => payment.Amount);
+    private List<ModalPagoItemViewModel> DetalleItems { get; set; } = [];
+    private List<MetodoPagoDTO> MetodosPago { get; set; } = [];
+    private List<DetallePagoViewModel> DetallePagos { get; set; } = [];
+    private long SelectedMetodoPagoId { get; set; }
+    private string NotaVenta { get; set; } = string.Empty;
+    private decimal DescuentoGlobal { get; set; }
+    private decimal RecargoGlobal { get; set; }
+    private decimal PaymentMethodAmount { get; set; }
+    private decimal SelectedSubtotal => DetalleItems.Where(item => item.IsSelected).Sum(item => item.Total);
+    private decimal PaymentTotal => Math.Max(0, SelectedSubtotal - DescuentoGlobal + RecargoGlobal);
+    private decimal TotalPaid => DetallePagos.Sum(payment => payment.Monto);
     private decimal RemainingAmount => Math.Max(0, PaymentTotal - TotalPaid);
     private decimal ChangeAmount => Math.Max(0, TotalPaid - PaymentTotal);
-    private bool HasSelectedItems => PaymentItems.Any(item => item.IsSelected && item.QuantityToPay > 0);
+    private bool HasSelectedItems => DetalleItems.Any(item => item.IsSelected && item.CantidadPagar > 0);
     private bool CanAddPaymentMethod => HasSelectedItems && PaymentTotal > 0 && SelectedMetodoPagoId > 0 && PaymentMethodAmount > 0;
     private bool CanConfirmPayment => HasSelectedItems && PaymentTotal > 0 && TotalPaid >= PaymentTotal;
 
@@ -44,24 +45,22 @@ public partial class ModalPagoComponent
 
     private void LoadPaymentItems()
     {
-        PaymentNote = string.Empty;
-        DiscountAmount = 0;
-        ServiceCharge = 0;
+        NotaVenta = string.Empty;
+        DescuentoGlobal = 0;
+        RecargoGlobal = 0;
         SelectedMetodoPagoId = MetodosPago.FirstOrDefault()?.Id ?? 0;
-        PaymentMethods.Clear();
+        DetallePagos.Clear();
         IsNoteOpen = false;
 
-        PaymentItems = PuntoVenta.OrderItems
-            .Select(item => new ModalPagoItemViewModel
-            {
-                ProductId = item.ProductId,
-                Name = item.Name,
-                AvailableQuantity = item.Quantity,
-                QuantityToPay = item.Quantity,
-                UnitPrice = item.UnitPrice,
-                IsSelected = true
-            })
-            .ToList();
+        DetalleItems = PuntoVenta.DetalleItems.Select(item => new ModalPagoItemViewModel
+        {
+            ProductId = item.ProductId,
+            Nombre = item.Nombre,
+            CantidadDisponible = item.Cantidad,
+            CantidadPagar = item.Cantidad,
+            PrecioUnitario = item.PrecioUnitario,
+            IsSelected = true
+        }).ToList();
 
         PaymentMethodAmount = PaymentTotal;
     }
@@ -77,45 +76,43 @@ public partial class ModalPagoComponent
         }
     }
 
-    private void ToggleNote()
+    private void IncrementarCantidad(ModalPagoItemViewModel item)
     {
-        IsNoteOpen = !IsNoteOpen;
-    }
-
-    private void IncreasePayQuantity(ModalPagoItemViewModel item)
-    {
-        if (!item.IsSelected || item.QuantityToPay >= item.AvailableQuantity)
+        if (!item.IsSelected || item.CantidadPagar >= item.CantidadDisponible)
         {
             return;
         }
 
-        item.QuantityToPay = NormalizeQuantity(Math.Min(item.AvailableQuantity, item.QuantityToPay + 1));
+        item.CantidadPagar = Math.Min(item.CantidadDisponible, item.CantidadPagar + 1);
+        item.CantidadPagar.Redondear();
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
-    private void DecreasePayQuantity(ModalPagoItemViewModel item)
+    private void DisminuirCantidad(ModalPagoItemViewModel item)
     {
-        if (!item.IsSelected || item.QuantityToPay <= 0.01m)
+        if (!item.IsSelected || item.CantidadPagar <= 0.01m)
         {
             return;
         }
 
-        item.QuantityToPay = NormalizeQuantity(Math.Max(0.01m, item.QuantityToPay - 1));
+        item.CantidadPagar = Math.Max(0.01m, item.CantidadPagar - 1);
+        item.CantidadPagar.Redondear();
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
-    private void SetPayQuantity(ModalPagoItemViewModel item, decimal quantity)
+    private void SetearCantidad(ModalPagoItemViewModel item, decimal quantity)
     {
         if (!item.IsSelected)
         {
             return;
         }
 
-        item.QuantityToPay = NormalizeQuantity(Math.Clamp(quantity, 0.01m, item.AvailableQuantity));
+        item.CantidadPagar = Math.Clamp(quantity, 0.01m, item.CantidadDisponible);
+        item.CantidadPagar.Redondear();
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
-    private void AddPaymentMethod()
+    private void AgregarMetodoPago()
     {
         var metodoPago = MetodosPago.FirstOrDefault(metodo => metodo.Id == SelectedMetodoPagoId);
         if (metodoPago is null || PaymentMethodAmount <= 0)
@@ -123,53 +120,43 @@ public partial class ModalPagoComponent
             return;
         }
 
-        var existingPayment = PaymentMethods.FirstOrDefault(payment => payment.IdMetodoPago == metodoPago.Id);
+        var existingPayment = DetallePagos.FirstOrDefault(payment => payment.IdMetodoPago == metodoPago.Id);
         if (existingPayment is not null)
         {
-            existingPayment.Amount += PaymentMethodAmount;
+            existingPayment.Monto += PaymentMethodAmount;
         }
         else
         {
-            PaymentMethods.Add(new ModalMetodoPagoViewModel
+            DetallePagos.Add(new DetallePagoViewModel
             {
                 Id = Guid.NewGuid().ToString("N"),
                 IdMetodoPago = metodoPago.Id,
-                Name = metodoPago.Nombre,
-                Abbreviation = metodoPago.Abreviatura,
+                Nombre = metodoPago.Nombre,
+                Abreviatura = metodoPago.Abreviatura,
                 Icono = metodoPago.Icono,
-                Amount = PaymentMethodAmount
+                Monto = PaymentMethodAmount
             });
         }
 
         PaymentMethodAmount = RemainingAmount > 0 ? RemainingAmount : 0;
     }
 
-    private void RemovePaymentMethod(string id)
+    private void EliminarMetodoPago(string id)
     {
-        PaymentMethods.RemoveAll(payment => payment.Id == id);
+        DetallePagos.RemoveAll(payment => payment.Id == id);
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
-    private void ResetSuggestedPaymentAmountIfEmpty()
+    private async Task ConfirmarPago()
     {
-        if (PaymentMethods.Count == 0)
-        {
-            PaymentMethodAmount = PaymentTotal;
-        }
-    }
-
-    private async Task ConfirmPaymentAsync()
-    {
-        var paidItems = PaymentItems
-            .Where(item => item.IsSelected && item.QuantityToPay > 0)
-            .Select(item => new PagoItemViewModel
+        var paidItems = DetalleItems.Where(item => item.IsSelected && item.CantidadPagar > 0)
+            .Select(item => new ItemsViewModel
             {
                 ProductId = item.ProductId,
-                Name = item.Name,
-                Quantity = Math.Min(item.QuantityToPay, item.AvailableQuantity),
-                UnitPrice = item.UnitPrice
-            })
-            .ToList();
+                Nombre = item.Nombre,
+                Cantidad = Math.Min(item.CantidadPagar, item.CantidadDisponible),
+                PrecioUnitario = item.PrecioUnitario
+            }).ToList();
 
         if (paidItems.Count == 0 || !CanConfirmPayment)
         {
@@ -180,13 +167,27 @@ public partial class ModalPagoComponent
         await CloseAsync();
     }
 
+
+    #region Utils
+    private void ResetSuggestedPaymentAmountIfEmpty()
+    {
+        if (DetallePagos.Count == 0)
+        {
+            PaymentMethodAmount = PaymentTotal;
+        }
+    }
+
+    private void ToggleNote()
+    {
+        IsNoteOpen = !IsNoteOpen;
+    }
+
     private async Task CloseAsync()
     {
         Visible = false;
         _wasVisible = false;
         await VisibleChanged.InvokeAsync(false);
     }
-
     private async Task HandleVisibleChangedAsync(bool visible)
     {
         if (visible)
@@ -198,17 +199,6 @@ public partial class ModalPagoComponent
 
         await CloseAsync();
     }
-
-    private static string FormatMoney(decimal amount)
-    {
-        return $"Bs {amount:N2}";
-    }
-
-    private static string FormatQuantity(decimal quantity)
-    {
-        return quantity.ToString("0.##", CultureInfo.InvariantCulture);
-    }
-
     private static decimal ParseQuantity(object? value)
     {
         var text = Convert.ToString(value, CultureInfo.CurrentCulture)?.Trim();
@@ -227,30 +217,5 @@ public partial class ModalPagoComponent
             ? currentCultureQuantity
             : 0;
     }
-
-    private static decimal NormalizeQuantity(decimal quantity)
-    {
-        return Math.Round(quantity, 2, MidpointRounding.AwayFromZero);
-    }
-
-    private sealed class ModalPagoItemViewModel
-    {
-        public string ProductId { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public decimal AvailableQuantity { get; set; }
-        public decimal QuantityToPay { get; set; }
-        public decimal UnitPrice { get; set; }
-        public bool IsSelected { get; set; }
-        public decimal Total => QuantityToPay * UnitPrice;
-    }
-
-    private sealed class ModalMetodoPagoViewModel
-    {
-        public string Id { get; set; } = string.Empty;
-        public long IdMetodoPago { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Abbreviation { get; set; } = string.Empty;
-        public string Icono { get; set; } = string.Empty;
-        public decimal Amount { get; set; }
-    }
+    #endregion
 }

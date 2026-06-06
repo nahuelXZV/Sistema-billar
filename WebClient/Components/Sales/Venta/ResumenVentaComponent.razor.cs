@@ -7,56 +7,46 @@ namespace WebClient.Components.Sales.Venta;
 public partial class ResumenVentaComponent
 {
     [Parameter] public PuntoVentaViewModel PuntoVenta { get; set; } = new();
-    [Parameter] public EventCallback<string> OnRemoveItem { get; set; }
-    [Parameter] public EventCallback<string> OnIncreaseQuantity { get; set; }
-    [Parameter] public EventCallback<string> OnDecreaseQuantity { get; set; }
-    [Parameter] public EventCallback<QuantityChangeViewModel> OnQuantityChanged { get; set; }
-    [Parameter] public EventCallback OnClearSale { get; set; }
-    [Parameter] public EventCallback OnOpenPayment { get; set; }
+    [Parameter] public EventCallback<long> OnEliminarItem { get; set; }
+    [Parameter] public EventCallback<long> OnIncrementarCantidad { get; set; }
+    [Parameter] public EventCallback<long> OnDecrementarCantidad { get; set; }
+    [Parameter] public EventCallback<CantidadModificada> OnCantidadModificada { get; set; }
+    [Parameter] public EventCallback OnLimpiarVenta { get; set; }
+    [Parameter] public EventCallback OnAbrirPago { get; set; }
 
-    private Task RemoveItemAsync(string productId)
+    private Task EliminarItem(long productId)
     {
-        return OnRemoveItem.InvokeAsync(productId);
+        return OnEliminarItem.InvokeAsync(productId);
     }
 
-    private Task IncreaseQuantityAsync(string productId)
+    private Task IncrementarCantidad(long productId)
     {
-        return OnIncreaseQuantity.InvokeAsync(productId);
+        return OnIncrementarCantidad.InvokeAsync(productId);
     }
 
-    private Task DecreaseQuantityAsync(string productId)
+    private Task DecrementarCantidad(long productId)
     {
-        return OnDecreaseQuantity.InvokeAsync(productId);
+        return OnDecrementarCantidad.InvokeAsync(productId);
     }
 
-    private Task SetQuantityAsync(ItemsViewModel item, decimal quantity)
+    private Task SetearCantidad(ItemsViewModel item, decimal quantity)
     {
-        item.Quantity = quantity;
-        return OnQuantityChanged.InvokeAsync(new QuantityChangeViewModel
+        item.Cantidad = quantity;
+        return OnCantidadModificada.InvokeAsync(new CantidadModificada
         {
             ProductId = item.ProductId,
-            Quantity = quantity
+            Cantidad = quantity
         });
     }
 
-    private Task ClearSaleAsync()
+    private Task LimpiarVenta()
     {
-        return OnClearSale.InvokeAsync();
+        return OnLimpiarVenta.InvokeAsync();
     }
 
-    private Task OpenPaymentAsync()
+    private Task AbrirModalPago()
     {
-        return OnOpenPayment.InvokeAsync();
-    }
-
-    private static string FormatMoney(decimal amount)
-    {
-        return $"Bs {amount:N2}";
-    }
-
-    private static string FormatQuantity(decimal quantity)
-    {
-        return quantity.ToString("0.##", CultureInfo.InvariantCulture);
+        return OnAbrirPago.InvokeAsync();
     }
 
     private static decimal ParseQuantity(object? value)

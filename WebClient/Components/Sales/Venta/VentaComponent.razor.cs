@@ -1,169 +1,148 @@
 using Microsoft.AspNetCore.Components;
 using WebClient.Models.Sales;
+using WebClient.Extensions;
+using WebClient.Services;
 
 namespace WebClient.Components.Sales.Venta;
 
 public partial class VentaComponent
 {
     [Parameter] public VentaViewModel Model { get; set; } = new();
-    private bool IsPaymentModalOpen { get; set; }
+    private bool MostrarModalPago { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        Model.PuntoVenta ??= await LoadPuntoVentaAsync();
+        Model.PuntoVenta = await LoadPuntoVentaAsync();
     }
 
     private async Task<PuntoVentaViewModel> LoadPuntoVentaAsync()
     {
         var categoriasBase = await AppServices.CategoriaService.GetCategoriasBase();
-        return PuntoVentaMapper.Create(categoriasBase, Model.Vendedor);
+        return PuntoVentaUtils.Create(categoriasBase, Model.Vendedor);
     }
 
-    private void AddProduct(ProductosViewModel product)
+
+    #region Venta Confirmada
+    private void PagoConfirmado(IReadOnlyList<ItemsViewModel> paidItems)
     {
-        if (Model.PuntoVenta is null)
-        {
-            return;
-        }
-
-        var existingItem = Model.PuntoVenta.OrderItems.FirstOrDefault(item => item.ProductId == product.Id);
-        if (existingItem is not null)
-        {
-            existingItem.Quantity = NormalizeQuantity(existingItem.Quantity + 1);
-            return;
-        }
-
-        Model.PuntoVenta.OrderItems.Add(CreateOrderItem(product));
-    }
-
-    private void RemoveItem(string productId)
-    {
-        if (Model.PuntoVenta is null)
-        {
-            return;
-        }
-
-        var item = Model.PuntoVenta.OrderItems.FirstOrDefault(orderItem => orderItem.ProductId == productId);
-        if (item is not null)
-        {
-            Model.PuntoVenta.OrderItems.Remove(item);
-        }
-    }
-
-    private void IncreaseQuantity(string productId)
-    {
-        ChangeQuantity(productId, 1);
-    }
-
-    private void DecreaseQuantity(string productId)
-    {
-        ChangeQuantity(productId, -1);
-    }
-
-    private void SetQuantity(QuantityChangeViewModel quantityChange)
-    {
-        if (Model.PuntoVenta is null)
-        {
-            return;
-        }
-
-        var item = Model.PuntoVenta.OrderItems.FirstOrDefault(orderItem => orderItem.ProductId == quantityChange.ProductId);
-        if (item is null)
-        {
-            return;
-        }
-
-        item.Quantity = NormalizeQuantity(quantityChange.Quantity);
-        if (item.Quantity <= 0)
-        {
-            Model.PuntoVenta.OrderItems.Remove(item);
-        }
-    }
-
-    private void ClearSale()
-    {
-        if (Model.PuntoVenta is null)
-        {
-            return;
-        }
-
-        Model.PuntoVenta.OrderItems.Clear();
-        Model.PuntoVenta.SelectedPath.Clear();
-        Model.PuntoVenta.CurrentNode = null;
-        Model.PuntoVenta.ClienteSeleccionado = null;
-        Model.PuntoVenta.NotaVenta = string.Empty;
-        Model.PuntoVenta.DiscountAmount = 0;
-        Model.PuntoVenta.ServiceCharge = 0;
-    }
-
-    private void OpenPaymentModal()
-    {
-        if (Model.PuntoVenta?.OrderItems.Count > 0)
-        {
-            IsPaymentModalOpen = true;
-        }
-    }
-
-    private void ApplyPayment(IReadOnlyList<PagoItemViewModel> paidItems)
-    {
-        if (Model.PuntoVenta is null)
-        {
-            return;
-        }
-
+        // Actualizar el detalle de la venta con los items pagados
         foreach (var paidItem in paidItems)
         {
-            var orderItem = Model.PuntoVenta.OrderItems.FirstOrDefault(item => item.ProductId == paidItem.ProductId);
+            var orderItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.ProductId == paidItem.ProductId);
             if (orderItem is null)
             {
                 continue;
             }
 
-            orderItem.Quantity = NormalizeQuantity(orderItem.Quantity - paidItem.Quantity);
-            if (orderItem.Quantity <= 0)
+            orderItem.Cantidad = orderItem.Cantidad - paidItem.Cantidad;
+            orderItem.Cantidad.Redondear();
+            if (orderItem.Cantidad <= 0)
             {
-                Model.PuntoVenta.OrderItems.Remove(orderItem);
+                Model.PuntoVenta.DetalleItems.Remove(orderItem);
             }
+        }
+
+
+
+    }
+    #endregion
+
+    #region Event Handlers
+    private void AgregarItem(ProductosViewModel product)
+    {
+        var existingItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.ProductId == product.Id);
+        if (existingItem is not null)
+        {
+            existingItem.Cantidad = existingItem.Cantidad + 1;
+            existingItem.Cantidad.Redondear();
+            return;
+        }
+
+        Model.PuntoVenta.DetalleItems.Add(new ItemsViewModel
+        {
+            ProductId = product.Id,
+            Nombre = product.Nombre,
+            Cantidad = 1,
+            PrecioUnitario = product.Precio,
+        });
+    }
+
+    private void EliminarItem(long productId)
+    {
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.ProductId == productId);
+        if (item is not null)
+        {
+            Model.PuntoVenta.DetalleItems.Remove(item);
         }
     }
 
-    private void ChangeQuantity(string productId, decimal delta)
+    private void IncrementarCantidad(long productId)
+    {
+        CambiarCantidad(productId, 1);
+    }
+
+    private void ReducirCantidad(long productId)
+    {
+        CambiarCantidad(productId, -1);
+    }
+
+    private void SetearCantidad(CantidadModificada quantityChange)
+    {
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.ProductId == quantityChange.ProductId);
+        if (item is null)
+        {
+            return;
+        }
+
+        item.Cantidad = quantityChange.Cantidad;
+        item.Cantidad.Redondear();
+        if (item.Cantidad <= 0)
+        {
+            Model.PuntoVenta.DetalleItems.Remove(item);
+        }
+    }
+    #endregion
+
+    #region utils
+    private void LimpiarVenta()
+    {
+        Model.PuntoVenta.DetalleItems.Clear();
+        Model.PuntoVenta.SelectedPath.Clear();
+        Model.PuntoVenta.CurrentNode = null;
+        Model.PuntoVenta.ClienteSeleccionado = null;
+        Model.PuntoVenta.NotaVenta = string.Empty;
+        Model.PuntoVenta.DescuentoGlobal = 0;
+        Model.PuntoVenta.RecargoTotal = 0;
+    }
+
+    private void MostrarModalPagoHandler()
+    {
+        if (Model.PuntoVenta?.DetalleItems.Count > 0)
+        {
+            MostrarModalPago = true;
+        }
+    }
+    private void CambiarCantidad(long productId, decimal delta)
     {
         if (Model.PuntoVenta is null)
         {
             return;
         }
 
-        var item = Model.PuntoVenta.OrderItems.FirstOrDefault(orderItem => orderItem.ProductId == productId);
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.ProductId == productId);
         if (item is null)
         {
             return;
         }
 
-        item.Quantity = NormalizeQuantity(item.Quantity + delta);
-        if (item.Quantity <= 0)
+        item.Cantidad = item.Cantidad + delta;
+        item.Cantidad.Redondear();
+        if (item.Cantidad <= 0)
         {
-            Model.PuntoVenta.OrderItems.Remove(item);
+            Model.PuntoVenta.DetalleItems.Remove(item);
         }
     }
+    #endregion
 
-    private static ItemsViewModel CreateOrderItem(ProductosViewModel product)
-    {
-        return new ItemsViewModel
-        {
-            ProductId = product.Id,
-            Name = product.Name,
-            Detail = product.CategoryLabel,
-            Quantity = 1,
-            UnitPrice = product.Price,
-            IconCss = product.IconCss,
-            ToneClass = product.ToneClass
-        };
-    }
-
-    private static decimal NormalizeQuantity(decimal quantity)
-    {
-        return Math.Round(quantity, 2, MidpointRounding.AwayFromZero);
-    }
 }

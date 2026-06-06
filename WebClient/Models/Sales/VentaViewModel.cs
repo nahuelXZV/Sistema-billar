@@ -7,8 +7,8 @@ namespace WebClient.Models.Sales;
 public class VentaViewModel : MainViewModel
 {
     public VendedorDTO? Vendedor { get; set; }
-    public PuntoVentaViewModel? PuntoVenta { get; set; }
     public List<MesaDTO> Mesas { get; set; } = [];
+    public PuntoVentaViewModel PuntoVenta { get; set; } = new();
 
     public VentaViewModel() : base() { }
 }

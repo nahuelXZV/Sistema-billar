@@ -21,22 +21,22 @@ else
 		<div class="row g-3 align-items-start">
 			<div class="col-xl-9">
 				<SeleccionarProductoComponent PuntoVenta="Model.PuntoVenta"
-											  OnProductSelected="AddProduct" />
+											  OnProductoSeleccionado="AgregarItem" />
 			</div>
 
 			<div class="col-xl-3">
 				<ResumenVentaComponent PuntoVenta="Model.PuntoVenta"
-									   OnRemoveItem="RemoveItem"
-									   OnIncreaseQuantity="IncreaseQuantity"
-									   OnDecreaseQuantity="DecreaseQuantity"
-									   OnQuantityChanged="SetQuantity"
-									   OnClearSale="ClearSale"
-									   OnOpenPayment="OpenPaymentModal" />
+									   OnEliminarItem="EliminarItem"
+									   OnIncrementarCantidad="IncrementarCantidad"
+									   OnDecrementarCantidad="ReducirCantidad"
+									   OnCantidadModificada="SetearCantidad"
+									   OnLimpiarVenta="LimpiarVenta"
+									   OnAbrirPago="MostrarModalPagoHandler" />
 			</div>
 		</div>
 
 		<ModalPagoComponent PuntoVenta="Model.PuntoVenta"
-							@bind-Visible="IsPaymentModalOpen"
-							OnPaymentConfirmed="ApplyPayment" />
+							@bind-Visible="MostrarModalPago"
+							OnPaymentConfirmed="PagoConfirmado" />
 	</section>
 }

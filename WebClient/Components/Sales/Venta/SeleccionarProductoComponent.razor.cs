@@ -8,9 +8,9 @@ public partial class SeleccionarProductoComponent
 {
     [CascadingParameter] public IAppServices AppServices { get; set; } = default!;
     [Parameter] public PuntoVentaViewModel PuntoVenta { get; set; } = new();
-    [Parameter] public EventCallback<ProductosViewModel> OnProductSelected { get; set; }
+    [Parameter] public EventCallback<ProductosViewModel> OnProductoSeleccionado { get; set; }
 
-    private void GoToRootAsync()
+    private void IrRaiz()
     {
         PuntoVenta.CurrentNode = null;
         PuntoVenta.SelectedPath.Clear();
@@ -20,7 +20,7 @@ public partial class SeleccionarProductoComponent
     {
         if (index < 0 || index >= PuntoVenta.SelectedPath.Count)
         {
-            GoToRootAsync();
+            IrRaiz();
             return;
         }
 
@@ -52,7 +52,7 @@ public partial class SeleccionarProductoComponent
 
     private Task SelectProductAsync(ProductosViewModel product)
     {
-        return OnProductSelected.InvokeAsync(product);
+        return OnProductoSeleccionado.InvokeAsync(product);
     }
 
     private async Task LoadCategoryContentAsync(CategoriasViewModel category)
@@ -62,20 +62,17 @@ public partial class SeleccionarProductoComponent
             return;
         }
 
-        var subCategorias = await AppServices.CategoriaService.GetByCategoriaPadre(category.CategoriaId);
+        var subCategorias = await AppServices.CategoriaService.GetByCategoriaPadre(category.Id);
 
-        category.Children = subCategorias
-            .Select(PuntoVentaMapper.ToCategoria)
-            .ToList();
+        category.SubCategorias = subCategorias.Select(PuntoVentaUtils.ToCategoria).ToList();
 
-        if (category.Children.Count == 0)
+        if (category.SubCategorias.Count == 0)
         {
             var productos = PuntoVenta.IdVendedor > 0
-                ? await AppServices.ProductoService.GetByCategoria(category.CategoriaId, PuntoVenta.IdVendedor)
+                ? await AppServices.ProductoService.GetByCategoria(category.Id, PuntoVenta.IdVendedor)
                 : [];
 
-            category.Products = productos
-                .Select(producto => PuntoVentaMapper.ToProducto(producto, category.Name))
+            category.Productos = productos.Select(producto => PuntoVentaUtils.ToProducto(producto, category.Nombre))
                 .ToList();
         }
 

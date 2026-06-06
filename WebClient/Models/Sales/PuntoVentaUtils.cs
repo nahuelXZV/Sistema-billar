@@ -3,7 +3,7 @@ using Domain.DTOs.Sales;
 
 namespace WebClient.Models.Sales;
 
-public static class PuntoVentaMapper
+public static class PuntoVentaUtils
 {
     public static PuntoVentaViewModel Create(IEnumerable<CategoriaDTO> categoriasBase, VendedorDTO? vendedor = null)
     {
@@ -20,14 +20,12 @@ public static class PuntoVentaMapper
     {
         return new CategoriasViewModel
         {
-            Id = categoria.Id.ToString(),
-            CategoriaId = categoria.Id,
-            Name = categoria.Nombre ?? string.Empty,
-            Description = categoria.Descripcion ?? string.Empty,
+            Id = categoria.Id,
+            Nombre = categoria.Nombre ?? string.Empty,
+            Descripcion = categoria.Descripcion ?? string.Empty,
             ImageUrl = categoria.ImagenUrl ?? string.Empty,
             IconCss = "bi bi-grid-3x3-gap",
             ToneClass = "tone-success",
-            CardCaption = categoria.Nombre ?? string.Empty
         };
     }
 
@@ -35,16 +33,13 @@ public static class PuntoVentaMapper
     {
         return new ProductosViewModel
         {
-            Id = producto.Id.ToString(),
-            ProductoId = producto.Id,
-            Name = producto.Nombre,
-            Description = producto.Descripcion,
+            Id = producto.Id,
+            Nombre = producto.Nombre,
+            Descripcion = producto.Descripcion,
             ImageUrl = producto.UrlImagen ?? string.Empty,
-            Price = producto.Precio,
-            CategoryLabel = categoryLabel,
+            Precio = producto.Precio,
             IconCss = "bi bi-box-seam",
             ToneClass = "tone-primary",
-            MediaLabel = producto.Nombre
         };
     }
 }

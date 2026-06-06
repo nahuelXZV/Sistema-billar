@@ -1,3 +1,4 @@
+@using WebClient.Extensions
 @using WebClient.Models.Sales
 
 <aside class="venta-pos-summary-panel">
@@ -8,43 +9,43 @@
 			</div>
 			<div class="d-flex flex-column">
 				<strong>Venta actual</strong>
-				<span>@($"{PuntoVenta.OrderItems.Count} items cargados")</span>
+				<span>@($"{PuntoVenta.DetalleItems.Count} items cargados")</span>
 			</div>
 		</div>
 
-		<button type="button" class="venta-pos-clear-button" @onclick="ClearSaleAsync">
+		<button type="button" class="venta-pos-clear-button" @onclick="LimpiarVenta">
 			<i class="bi bi-arrow-counterclockwise"></i>
 			<span>Limpiar</span>
 		</button>
 	</div>
 
 	<div class="venta-pos-order-list d-flex flex-column m-0 mb-2">
-		@foreach (var item in PuntoVenta.OrderItems)
+		@foreach (var item in PuntoVenta.DetalleItems)
 		{
 			<article class="venta-pos-order-item">
 				<div class="venta-pos-order-content d-flex flex-column">
 					<div class="venta-pos-order-head d-flex justify-content-between align-items-center gap-2">
-						<strong>@item.Name</strong>
-						<button type="button" class="venta-pos-remove-button" @onclick="@(() => RemoveItemAsync(item.ProductId))">
+						<strong>@item.Nombre</strong>
+						<button type="button" class="venta-pos-remove-button" @onclick="@(() => EliminarItem(item.ProductId))">
 							<i class="bi bi-x-lg"></i>
 						</button>
 					</div>
 
 					<div class="venta-pos-order-row d-flex justify-content-between align-items-center gap-2">
 						<div class="venta-pos-stepper d-flex align-items-center">
-							<button type="button" @onclick="@(() => DecreaseQuantityAsync(item.ProductId))">
+							<button type="button" @onclick="@(() => DecrementarCantidad(item.ProductId))">
 								<i class="bi bi-dash"></i>
 							</button>
 							<input type="text"
 								   inputmode="decimal"
-								   value="@FormatQuantity(item.Quantity)"
-								   @onchange="@((args) => SetQuantityAsync(item, ParseQuantity(args.Value)))" />
-							<button type="button" @onclick="@(() => IncreaseQuantityAsync(item.ProductId))">
+								   value="@item.Cantidad.FormatearCantidad()"
+								   @onchange="@((args) => SetearCantidad(item, ParseQuantity(args.Value)))" />
+							<button type="button" @onclick="@(() => IncrementarCantidad(item.ProductId))">
 								<i class="bi bi-plus"></i>
 							</button>
 						</div>
 
-						<strong class="venta-pos-order-price">@FormatMoney(item.Total)</strong>
+						<strong class="venta-pos-order-price">@item.Total.FormatoDinero()</strong>
 					</div>
 				</div>
 			</article>
@@ -54,15 +55,15 @@
 	<div class="venta-pos-totals d-flex flex-column">
 		<div class="is-total">
 			<span>Total</span>
-			<strong>@FormatMoney(PuntoVenta.Subtotal)</strong>
+			<strong>@PuntoVenta.Subtotal.FormatoDinero()</strong>
 		</div>
 	</div>
 
 	<div class="venta-pos-payment-grid d-flex gap-2 mt-2">
 		<button type="button"
 				class="venta-pos-payment-button is-primary"
-				disabled="@(PuntoVenta.OrderItems.Count == 0)"
-				@onclick="OpenPaymentAsync">
+				disabled="@(PuntoVenta.DetalleItems.Count == 0)"
+				@onclick="AbrirModalPago">
 			<i class="bi bi-cash"></i>
 			<span>Pagar</span>
 		</button>

@@ -1,10 +1,11 @@
+@using WebClient.Extensions
 @using WebClient.Models.Sales
 
 <section class="venta-pos-catalog-panel">
 	<div class="venta-pos-pathbar d-flex align-items-center gap-2 flex-wrap">
 		<button type="button"
 				class="venta-pos-path-button @(PuntoVenta.CurrentNode is null ? "is-active" : string.Empty)"
-				@onclick="GoToRootAsync">
+				@onclick="IrRaiz">
 			Inicio
 		</button>
 
@@ -17,7 +18,7 @@
 			<button type="button"
 					class="venta-pos-path-button @(stepIndex == PuntoVenta.SelectedPath.Count - 1 ? "is-active" : string.Empty)"
 					@onclick="@(() => GoToPathAsync(stepIndex))">
-				@step.Name
+				@step.Nombre
 			</button>
 		}
 	</div>
@@ -30,13 +31,13 @@
 				<div class="col">
 					<button type="button"
 							class="venta-pos-card venta-pos-product-card venta-pos-click-card h-100 w-100"
-							aria-label="@($"Agregar {product.Name}")"
+							aria-label="@($"Agregar {product.Nombre}")"
 							@onclick="@(() => SelectProductAsync(product))">
 						<ProductImage Product="product" />
 
 						<div class="venta-pos-card-copy venta-pos-card-copy-compact d-flex flex-column">
-							<strong>@product.Name</strong>
-							<span>@FormatMoney(product.Price)</span>
+							<strong>@product.Nombre</strong>
+							<span>@product.Precio.FormatoDinero()</span>
 						</div>
 					</button>
 				</div>
@@ -51,12 +52,12 @@
 				<div class="col">
 					<button type="button"
 							class="venta-pos-card venta-pos-category-card venta-pos-click-card h-100 w-100"
-							aria-label="@($"Abrir categoria {category.Name}")"
+							aria-label="@($"Abrir categoria {category.Nombre}")"
 							@onclick="@(() => EnterCategoryAsync(category))">
 						<CategoryImage Category="category" />
 
 						<div class="venta-pos-card-copy venta-pos-card-copy-compact d-flex flex-column">
-							<strong>@category.Name</strong>
+							<strong>@category.Nombre</strong>
 						</div>
 					</button>
 				</div>
