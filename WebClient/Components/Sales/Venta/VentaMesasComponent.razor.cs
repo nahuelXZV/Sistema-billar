@@ -32,7 +32,7 @@ public partial class VentaMesasComponent
         return new VentaViewModel
         {
             Vendedor = Model.Vendedor,
-            IncluirBlazorComponents = Model.IncluirBlazorComponents
+            PuntoVenta = Model.PuntoVenta,
         };
     }
 

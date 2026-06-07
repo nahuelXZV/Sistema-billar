@@ -44,6 +44,11 @@ public class VentaController : MainController
         model.IncluirBlazorComponents = true;
         model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
         model.Mesas = await _appServices.MesasService.GetAll();
+
+        var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
+        model.PuntoVenta = PuntoVentaUtils.Create(categoriasBase, model.Vendedor);
+        var cliente = await _appServices.ClienteService.GetById(_adminConfig.Personalizaciones.IdClienteDefault);
+        model.PuntoVenta.ClienteSeleccionado = cliente;
         return View(model);
     }
 
