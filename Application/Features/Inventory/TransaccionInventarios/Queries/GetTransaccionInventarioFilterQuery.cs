@@ -42,7 +42,7 @@ public class GetTransaccionInventarioFilterHandler : ICommandHandler<GetTransacc
                      || p.IdTransaccion.ToString().Contains(request.Filter.Search)
                      || p.Producto.Nombre.ToLower().Contains(request.Filter.Search.ToLower())
                      || p.Almacen.Nombre.ToLower().Contains(request.Filter.Search.ToLower())
-                     || p.Lote.Codigo.ToLower().Contains(request.Filter.Search.ToLower())
+                     || (p.Lote != null && p.Lote.Codigo.ToLower().Contains(request.Filter.Search))
             );
 
         var listaInventario = await query.OrderByDescending(p => p.Id).ToListAsync(cancellationToken);

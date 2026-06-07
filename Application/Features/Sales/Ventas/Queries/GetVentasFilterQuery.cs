@@ -47,6 +47,8 @@ public class GetVentasFilterQueryHandler : ICommandHandler<GetVentasFilterQuery,
                      || (p.Vendedor != null && p.Vendedor.Nombre.ToLower().Contains(search.ToLower()))
             );
 
+        query = query.OrderByDescending(q => q.Id);
+
         var listaVentas = await query.ToListAsync(cancellationToken);
         var listaVentasDto = _mapper.Map<List<VentaDTO>>(listaVentas);
 

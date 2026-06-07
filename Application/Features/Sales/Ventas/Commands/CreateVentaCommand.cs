@@ -1,9 +1,14 @@
+using Application.Features.Inventory.TransaccionInventarios.Command;
+using Application.Features.Sales.Vendedores.Queries;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
+using Domain.DTOs.Inventory;
 using Domain.DTOs.Sales;
 using Domain.Entities.Sales;
 using Infraestructure.Interfaces;
+using MediatR;
+using static Domain.Constants.Constantes;
 
 namespace Application.Features.Sales.Ventas.Commands;
 
@@ -16,11 +21,13 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Venta> _repository;
+    private readonly IMediator _mediator;
 
-    public CreateVentaCommandHandler(IMapper mapper, IRepository<Venta> repository)
+    public CreateVentaCommandHandler(IMapper mapper, IRepository<Venta> repository, IMediator mediator)
     {
         _mapper = mapper;
         _repository = repository;
+        _mediator = mediator;
     }
 
     public async Task<Response<long>> Handle(CreateVentaCommand request, CancellationToken cancellationToken)
@@ -48,6 +55,29 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
 
         venta = await _repository.AddAsync(venta);
         await _repository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+
+
+        // Crear Movimiento Productos
+        var vendedor = (await _mediator.Send(new GetVendedorByIdQuery() { Id = request.VentaDTO.IdVendedor })).Data;
+        await _mediator.Send(new CreateTransaccionInventarioCommand()
+        {
+            TransaccionInventarioDTO = new()
+            {
+                IdTransaccionInicial = venta.Id,
+                Glosa = "Salida por venta",
+                Fecha = DateTime.Now,
+                IdUsuario = vendedor.IdUsuario,
+                Tipo = (short)TipoTransaccionInventario.Salida,
+                Detalles = request.VentaDTO.ListaDetalles?.Select(d => new TransaccionInventarioDetalleDTO()
+                {
+                    IdAlmacen = vendedor.ListaAlmacenes.FirstOrDefault()?.IdAlmacen ?? 0,
+                    IdProducto = d.IdProducto,
+                    Cantidad = (double)d.Cantidad,
+                }).ToList() ?? []
+            }
+        });
+
+
 
         return new Response<long>(venta.Id);
     }

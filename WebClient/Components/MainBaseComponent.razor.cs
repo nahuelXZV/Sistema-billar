@@ -15,6 +15,11 @@ public partial class MainBaseComponent : ComponentBase
     [CascadingParameter] public IAppServices AppServices { get; set; }
     protected ClaimsPrincipal User { get; set; } = new ClaimsPrincipal();
 
+    public bool _modalAlertaVisible { get; set; }
+    public string _modalAlertaTitulo { get; set; } = "Alerta";
+    public string _modalAlertaContenido { get; set; } = "Alerta";
+    public string _modalAlertaTipo { get; set; } = "info";
+
     private async Task<ClaimsPrincipal> GetAuth()
     {
         if (AuthenticationState is null) return null;

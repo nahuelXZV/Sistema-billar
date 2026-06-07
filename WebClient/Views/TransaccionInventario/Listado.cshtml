@@ -67,7 +67,7 @@
 			server: {
 			  url: urlWeb + "TransaccionInventario/GetAll",
 			  then: data => data.data.map(detalle => [
-				detalle.id,detalle.producto.nombre ,detalle.lote.codigo, detalle.almacen.nombre,
+				detalle.id,detalle.producto.nombre ,detalle.lote?.codigo, detalle.almacen.nombre,
 				detalle.transaccionInventario.tipo,detalle.transaccionInventario.glosa, detalle.transaccionInventario.idTransaccionInicial,
 				detalle.transaccionInventario.fecha ,detalle.cantidad
 			  ]),

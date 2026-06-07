@@ -1,0 +1,63 @@
+﻿@using WebClient.Components.Shared.Elements
+
+<IUModal Title="@Titulo" Visible="Visible" VisibleChanged="HandleVisibleChangedAsync">
+	<Body>
+		<div class="modal-alert-content">
+			<div class="modal-alert-icon">
+				@if (Tipo == "info")
+				{
+					<i class="bi bi-info-circle-fill"></i>
+				}
+				else if (Tipo == "warning")
+				{
+					<i class="bi bi-exclamation-triangle-fill"></i>
+				}
+				else if (Tipo == "error")
+				{
+					<i class="bi bi-x-circle-fill"></i>
+				}
+				else if (Tipo == "success")
+				{
+					<i class="bi bi-check-circle-fill"></i>
+				}
+			</div>
+			<div class="modal-alert-message">
+				<p>@Contenido</p>
+			</div>
+		</div>
+	</Body>
+	<Footer>
+		<button type="button" class="venta-pos-client-modal-button is-secondary" @onclick="CloseAsync">
+			Cerrar
+		</button>
+		<button type="button"
+				class="venta-pos-client-modal-button is-primary"
+				@onclick="CloseAsync">
+			<i class="bi bi-check2-circle"></i>
+			<span>Aceptar</span>
+		</button>
+	</Footer>
+</IUModal>
+
+@code {
+	[Parameter] public string Titulo { get; set; } = "Alerta";
+	[Parameter] public string Contenido { get; set; } = "Contenido de la alerta.";
+	[Parameter] public string Tipo { get; set; } = "info"; // info, warning, error, success
+
+	[Parameter] public bool Visible { get; set; }
+	[Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+
+
+	private async Task HandleVisibleChangedAsync(bool value)
+	{
+		if (!value)
+		{
+			await CloseAsync();
+		}
+	}
+
+	private async Task CloseAsync()
+	{
+		await VisibleChanged.InvokeAsync(false);
+	}
+}

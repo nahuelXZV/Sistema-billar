@@ -1,4 +1,5 @@
-﻿using Application.Features.Inventory.Inventarios.Commands;
+﻿using Application.Features.Configuration.TipoMesas.Queries;
+using Application.Features.Inventory.Inventarios.Commands;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
@@ -37,6 +38,9 @@ public class CreateTransaccionInventarioHandler : ICommandHandler<CreateTransacc
 
         foreach (var detalles in request.TransaccionInventarioDTO.Detalles)
         {
+            var esMesa = (await _mediator.Send(new VerificarMesaByIdProductoQuery() { IdProducto = detalles.IdProducto }, cancellationToken)).Data;
+            if (esMesa) continue;
+
             var detalle = _mapper.Map<TransaccionInventarioDetalleDTO, TransaccionInventarioDetalle>(detalles);
             detalle.IdTransaccion = transaccion.Id;
             await _rpDetalles.AddAsync(detalle);

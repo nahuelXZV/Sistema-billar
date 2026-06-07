@@ -38,7 +38,7 @@
 			server: {
 			  url: urlWeb + "Inventario/GetAll",
 			  then: data => data.data.map(inventario => [
-				inventario.id, inventario.producto.nombre ,inventario.lote.codigo, inventario.almacen.nombre, inventario.cantidad
+				inventario.id, inventario.producto.nombre ,inventario.lote?.codigo, inventario.almacen.nombre, inventario.cantidad
 			  ]),
 			  total: data => data.total
 			},

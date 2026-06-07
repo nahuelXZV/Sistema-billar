@@ -67,7 +67,7 @@ public partial class VendedorCreateComponent
         return $"{usuario.Username} - {usuario.Nombre} {usuario.Apellido}";
     }
 
-    private long? GetUsuarioValue(UsuarioDTO usuario)
+    private long GetUsuarioValue(UsuarioDTO usuario)
     {
         return usuario.Id;
     }

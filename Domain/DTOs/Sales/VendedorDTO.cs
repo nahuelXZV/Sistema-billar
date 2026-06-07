@@ -8,7 +8,7 @@ public class VendedorDTO
     public long Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string Documento { get; set; } = string.Empty;
-    public long? IdUsuario { get; set; }
+    public long IdUsuario { get; set; }
     public long? IdListaPrecio { get; set; }
     public bool Activo { get; set; }
 

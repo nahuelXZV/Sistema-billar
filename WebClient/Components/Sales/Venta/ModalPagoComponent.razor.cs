@@ -143,7 +143,6 @@ public partial class ModalPagoComponent
 
     private async Task ConfirmarPago()
     {
-        //await ShowAlerta("Alerta", "Debe seleccionar un cliente.", "warning");
         if (PuntoVenta.ClienteSeleccionado == null)
         {
             MostrarAlertaCliente = true;
