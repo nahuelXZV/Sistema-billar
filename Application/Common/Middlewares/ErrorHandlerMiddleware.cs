@@ -44,27 +44,31 @@ public class ErrorHandlerMiddleware
             errorMessage += $"{Environment.NewLine}{exception.InnerException.Message}";
         }
 
-        var clientErrorMessage = "Ocurrió un error inesperado";
+        var clientErrorMessage = "OcurriÃ³ un error inesperado";
         var stackTrace = exception.StackTrace ?? "Sin StackTrace para el error";
 
         var errorDetails = new Dictionary<string, MessageError>();
 
         switch (exception)
         {
+            case UnauthorizedAccessException:
+                clientErrorMessage = "No se pudo identificar al usuario autenticado";
+                response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                break;
             case TimeoutException ex:
-                clientErrorMessage = "El servidor no respondió a tiempo";
+                clientErrorMessage = "El servidor no respondiÃ³ a tiempo";
                 response.StatusCode = (int)HttpStatusCode.GatewayTimeout;
                 break;
             case SqlException ex:
                 errorMessage = $"{nameof(SqlException)}: {ex.Message} - Fuente: [{ex.Source}]";
-                clientErrorMessage = "Ocurrió un error al realizar una operación en la base de datos";
+                clientErrorMessage = "OcurriÃ³ un error al realizar una operaciÃ³n en la base de datos";
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;
             case AutoMapperMappingException ex:
                 errorMessage = $"{nameof(AutoMapperMappingException)}: {ex.Message} - Fuente: [{ex.Source}]";
                 break;
             case ValidationException ex:
-                clientErrorMessage = "Ocurrieron errores de validación";
+                clientErrorMessage = "Ocurrieron errores de validaciÃ³n";
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 errorMessage = $"{ex.Message}";
 

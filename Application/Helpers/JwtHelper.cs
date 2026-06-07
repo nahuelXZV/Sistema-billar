@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 using Domain.Config;
+using Domain.Constants;
 using Domain.DTOs.Security;
 
 namespace Application.Helpers;
@@ -14,10 +15,10 @@ public class JwtHelper
         var claims = new[] {
                         new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        //new Claim(ClaimTypes.Role, usuario.Rol),
-                        new Claim("Name", usuario.Nombre + " " + usuario.Apellido),
-                        new Claim("Email", usuario.Email),
-                        new Claim("Usuario", usuario.Username)
+                        new Claim(JwtClaimNames.IdUsuario, usuario.Id.ToString()),
+                        new Claim(JwtClaimNames.Nombre, usuario.Nombre + " " + usuario.Apellido),
+                        new Claim(JwtClaimNames.Email, usuario.Email),
+                        new Claim(JwtClaimNames.Usuario, usuario.Username)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key));
@@ -40,7 +41,7 @@ public class JwtHelper
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secret);
 
-            // Validar el token usando los parámetros de validación
+            // Validar el token usando los parÃ¡metros de validaciÃ³n
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -59,7 +60,7 @@ public class JwtHelper
         }
         catch
         {
-            return null; // Retorna null si hay algún problema
+            return null; // Retorna null si hay algÃºn problema
         }
     }
 }

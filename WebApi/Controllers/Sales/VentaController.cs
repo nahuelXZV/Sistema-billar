@@ -41,6 +41,10 @@ public class VentaController : MainController
     [HttpDelete("Delete/{idVenta}")]
     public async Task<IActionResult> Delete(long idVenta)
     {
-        return Ok(await Mediator.Send(new DeleteVentaCommand { VentaId = idVenta }));
+        return Ok(await Mediator.Send(new DeleteVentaCommand
+        {
+            IdVenta = idVenta,
+            IdUsuario = IdUsuarioActual
+        }));
     }
 }
