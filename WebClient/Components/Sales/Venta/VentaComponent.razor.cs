@@ -45,6 +45,7 @@ public partial class VentaComponent
         {
             var ventaDto = Model.PuntoVenta.GenerarDTOVenta();
             var response = await AppServices.VentaService.Create(ventaDto);
+            Model.PuntoVenta.IdempotencyKey = null;
 
             foreach (var paidItem in paidItems)
             {
@@ -72,6 +73,7 @@ public partial class VentaComponent
         catch (Exception ex)
         {
             await ShowErrorMessage(ex);
+            throw;
         }
 
 

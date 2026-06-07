@@ -5,6 +5,7 @@ namespace Domain.DTOs.Sales;
 public class VentaDTO
 {
     public long Id { get; set; }
+    public Guid? IdempotencyKey { get; set; }
     public string Numero { get; set; } = string.Empty;
     public long? IdOrdenVenta { get; set; }
     public long IdCliente { get; set; }
@@ -14,6 +15,7 @@ public class VentaDTO
     public decimal TotalPagado { get; set; }
     public decimal Cambio { get; set; }
     public decimal Descuento { get; set; }
+    public decimal Recargo { get; set; }
     public decimal SubTotal { get; set; }
     public decimal Total { get; set; }
     public string Observacion { get; set; } = string.Empty;

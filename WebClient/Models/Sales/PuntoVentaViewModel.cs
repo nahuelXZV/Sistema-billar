@@ -5,6 +5,7 @@ namespace WebClient.Models.Sales;
 
 public class PuntoVentaViewModel
 {
+    public Guid? IdempotencyKey { get; set; }
     public long IdVendedor { get; set; }
     public long? IdListaPrecio { get; set; }
     public string NombreVendedor { get; set; } = string.Empty;
@@ -38,9 +39,11 @@ public class PuntoVentaViewModel
     public VentaDTO GenerarDTOVenta()
     {
         this.VentaValida();
+        IdempotencyKey ??= Guid.NewGuid();
 
         var ventadto = new VentaDTO()
         {
+            IdempotencyKey = IdempotencyKey,
             Fecha = DateTime.Now,
             IdCliente = ClienteSeleccionado!.Id,
             IdOrdenVenta = 0,
@@ -48,6 +51,7 @@ public class PuntoVentaViewModel
             TotalPagado = TotalPagado,
             Cambio = Cambio,
             Descuento = DescuentoGlobal,
+            Recargo = RecargoGlobal,
             Observacion = NotaVenta,
             SubTotal = SubTotalSeleccionado,
             Total = MontoTotal,

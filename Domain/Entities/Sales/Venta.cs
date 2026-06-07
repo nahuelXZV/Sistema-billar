@@ -4,6 +4,7 @@ namespace Domain.Entities.Sales;
 
 public class Venta : Entity
 {
+    public Guid? IdempotencyKey { get; set; }
     public string Numero { get; set; } = string.Empty;
     public long? IdOrdenVenta { get; set; }
     public long IdCliente { get; set; }
@@ -13,6 +14,7 @@ public class Venta : Entity
     public decimal TotalPagado { get; set; }
     public decimal Cambio { get; set; }
     public decimal Descuento { get; set; }
+    public decimal Recargo { get; set; }
     public decimal SubTotal { get; set; }
     public decimal Total { get; set; }
     public string Observacion { get; set; } = string.Empty;

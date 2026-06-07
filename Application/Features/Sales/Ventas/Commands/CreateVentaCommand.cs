@@ -25,6 +25,7 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
     private readonly IRepository<Venta> _repository;
     private readonly IRepository<Producto> _productoRepository;
     private readonly IRepository<ProductoCompuesto> _productoCompuestoRepository;
+    private readonly IDbContext _dbContext;
     private readonly IMediator _mediator;
 
     public CreateVentaCommandHandler(
@@ -32,19 +33,36 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
         IRepository<Venta> repository,
         IRepository<Producto> productoRepository,
         IRepository<ProductoCompuesto> productoCompuestoRepository,
+        IDbContext dbContext,
         IMediator mediator)
     {
         _mapper = mapper;
         _repository = repository;
         _productoRepository = productoRepository;
         _productoCompuestoRepository = productoCompuestoRepository;
+        _dbContext = dbContext;
         _mediator = mediator;
     }
 
     public async Task<Response<long>> Handle(CreateVentaCommand request, CancellationToken cancellationToken)
     {
+        var idempotencyKey = request.VentaDTO.IdempotencyKey;
+        if (!idempotencyKey.HasValue || idempotencyKey == Guid.Empty)
+        {
+            throw new InvalidOperationException("La venta debe incluir una clave de idempotencia válida.");
+        }
+
+        var idVentaExistente = await ObtenerIdVentaPorIdempotenciaAsync(idempotencyKey.Value, cancellationToken);
+        if (idVentaExistente > 0)
+        {
+            return new Response<long>(idVentaExistente);
+        }
+
+        ValidarImportesVenta(request.VentaDTO);
+
         Venta venta = _mapper.Map<Venta>(request.VentaDTO);
         venta.Id = 0;
+        venta.IdempotencyKey = idempotencyKey.Value;
         venta.Numero = string.Empty;
         venta.ListaDetalles = _mapper.Map<List<VentaDetalle>>(request.VentaDTO.ListaDetalles ?? []);
         venta.ListaPagos = _mapper.Map<List<PagoVenta>>(request.VentaDTO.ListaPagos ?? []);
@@ -63,7 +81,22 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
         }
 
         venta = await _repository.AddAsync(venta);
-        await _repository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        try
+        {
+            await _repository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+            _dbContext.dbContext.ChangeTracker.Clear();
+
+            idVentaExistente = await ObtenerIdVentaPorIdempotenciaAsync(idempotencyKey.Value, cancellationToken);
+            if (idVentaExistente > 0)
+            {
+                return new Response<long>(idVentaExistente);
+            }
+
+            throw;
+        }
 
         venta.Numero = $"V-{venta.Fecha:yyyyMMdd}-{venta.Id:D8}";
         _repository.Update(venta);
@@ -97,6 +130,131 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
 
         return new Response<long>(venta.Id);
     }
+
+    private async Task<long> ObtenerIdVentaPorIdempotenciaAsync(
+        Guid idempotencyKey,
+        CancellationToken cancellationToken)
+    {
+        return await _repository.Query()
+            .Where(venta => venta.IdempotencyKey == idempotencyKey)
+            .Select(venta => venta.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    private static void ValidarImportesVenta(VentaDTO venta)
+    {
+        var detalles = venta.ListaDetalles ?? [];
+        var pagos = venta.ListaPagos ?? [];
+
+        if (detalles.Count == 0)
+        {
+            throw new InvalidOperationException("La venta debe contener al menos un detalle.");
+        }
+
+        if (venta.Descuento < 0 || venta.Recargo < 0)
+        {
+            throw new InvalidOperationException("El descuento y el recargo no pueden ser negativos.");
+        }
+
+        decimal subTotalCalculado = 0;
+        decimal totalDetallesCalculado = 0;
+
+        foreach (var detalle in detalles)
+        {
+            if (detalle.IdProducto <= 0)
+            {
+                throw new InvalidOperationException("Todos los detalles deben tener un producto válido.");
+            }
+
+            if (detalle.Cantidad <= 0 || detalle.PrecioUnitario < 0)
+            {
+                throw new InvalidOperationException(
+                    $"La cantidad y el precio del producto {detalle.IdProducto} no son válidos.");
+            }
+
+            var descuentoDetalle = detalle.Descuento ?? 0;
+            if (descuentoDetalle < 0)
+            {
+                throw new InvalidOperationException(
+                    $"El descuento del producto {detalle.IdProducto} no puede ser negativo.");
+            }
+
+            var subTotalDetalle = Redondear(detalle.Cantidad * detalle.PrecioUnitario);
+            if (descuentoDetalle > subTotalDetalle)
+            {
+                throw new InvalidOperationException(
+                    $"El descuento del producto {detalle.IdProducto} no puede superar su subtotal.");
+            }
+
+            var totalDetalle = Redondear(subTotalDetalle - descuentoDetalle);
+            if (!Coincide(detalle.SubTotal, subTotalDetalle) ||
+                !Coincide(detalle.Total, totalDetalle))
+            {
+                throw new InvalidOperationException(
+                    $"Los importes del producto {detalle.IdProducto} no coinciden con su cantidad, precio y descuento.");
+            }
+
+            subTotalCalculado += subTotalDetalle;
+            totalDetallesCalculado += totalDetalle;
+        }
+
+        subTotalCalculado = Redondear(subTotalCalculado);
+        totalDetallesCalculado = Redondear(totalDetallesCalculado);
+
+        if (venta.Descuento > totalDetallesCalculado)
+        {
+            throw new InvalidOperationException("El descuento de la venta no puede superar el total de sus detalles.");
+        }
+
+        var totalCalculado = Redondear(totalDetallesCalculado - venta.Descuento + venta.Recargo);
+        if (totalCalculado <= 0)
+        {
+            throw new InvalidOperationException("El total de la venta debe ser mayor a cero.");
+        }
+
+        if (!Coincide(venta.SubTotal, subTotalCalculado) ||
+            !Coincide(venta.Total, totalCalculado))
+        {
+            throw new InvalidOperationException(
+                "El subtotal o el total de la venta no coincide con sus detalles, descuento y recargo.");
+        }
+
+        if (pagos.Count == 0)
+        {
+            throw new InvalidOperationException("La venta debe contener al menos un pago.");
+        }
+
+        foreach (var pago in pagos)
+        {
+            if (pago.IdMetodoPago <= 0 || pago.MontoTotal <= 0)
+            {
+                throw new InvalidOperationException("Todos los pagos deben tener un método y un monto mayor a cero.");
+            }
+        }
+
+        var totalPagosCalculado = Redondear(pagos.Sum(pago => pago.MontoTotal));
+        if (!Coincide(venta.TotalPagado, totalPagosCalculado))
+        {
+            throw new InvalidOperationException("El total pagado no coincide con la suma de los pagos.");
+        }
+
+        if (totalPagosCalculado < totalCalculado)
+        {
+            throw new InvalidOperationException("El total pagado no cubre el total de la venta.");
+        }
+
+        var cambioCalculado = Redondear(totalPagosCalculado - totalCalculado);
+        if (!Coincide(venta.Cambio, cambioCalculado))
+        {
+            throw new InvalidOperationException("El cambio no coincide con el total pagado y el total de la venta.");
+        }
+    }
+
+    private static decimal Redondear(decimal valor) =>
+        Math.Round(valor, 2, MidpointRounding.AwayFromZero);
+
+    private static bool Coincide(decimal valorRecibido, decimal valorCalculado) =>
+        Redondear(valorRecibido) == Redondear(valorCalculado);
 
     private async Task<List<TransaccionInventarioDetalleDTO>> CrearDetallesInventarioAsync(
         IEnumerable<VentaDetalleDTO> detallesVenta,

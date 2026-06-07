@@ -15,6 +15,7 @@ public partial class ModalPagoComponent
 
     private List<MetodoPagoDTO> MetodosPago { get; set; } = [];
     private bool _wasVisible;
+    private bool IsSubmitting { get; set; }
     private bool IsNoteOpen { get; set; }
     private bool MostrarAlertaCliente { get; set; }
 
@@ -24,7 +25,11 @@ public partial class ModalPagoComponent
     private decimal MontoPendiente => Math.Max(0, PuntoVenta.MontoTotal - PuntoVenta.TotalPagado);
     private bool HasSelectedItems => PuntoVenta.ProductosPagar.Any(item => item.IsSelected && item.CantidadPagar > 0);
     private bool CanAddPaymentMethod => HasSelectedItems && PuntoVenta.MontoTotal > 0 && SelectedMetodoPagoId > 0 && MontoPagar > 0;
-    private bool CanConfirmPayment => HasSelectedItems && PuntoVenta.MontoTotal > 0 && PuntoVenta.TotalPagado >= PuntoVenta.MontoTotal;
+    private bool CanConfirmPayment =>
+        !IsSubmitting &&
+        HasSelectedItems &&
+        PuntoVenta.MontoTotal > 0 &&
+        PuntoVenta.TotalPagado >= PuntoVenta.MontoTotal;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -143,6 +148,11 @@ public partial class ModalPagoComponent
 
     private async Task ConfirmarPago()
     {
+        if (IsSubmitting)
+        {
+            return;
+        }
+
         if (PuntoVenta.ClienteSeleccionado == null)
         {
             MostrarAlertaCliente = true;
@@ -164,8 +174,20 @@ public partial class ModalPagoComponent
             return;
         }
 
-        await CloseAsync();
-        await OnPaymentConfirmed.InvokeAsync(paidItems);
+        IsSubmitting = true;
+        try
+        {
+            await OnPaymentConfirmed.InvokeAsync(paidItems);
+            await CloseAsync();
+        }
+        catch
+        {
+            // El componente padre muestra el error y la clave se conserva para reintentar.
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
     }
 
 
@@ -191,6 +213,11 @@ public partial class ModalPagoComponent
     }
     private async Task HandleVisibleChangedAsync(bool visible)
     {
+        if (IsSubmitting)
+        {
+            return;
+        }
+
         if (visible)
         {
             Visible = true;
