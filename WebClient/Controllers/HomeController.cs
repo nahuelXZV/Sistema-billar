@@ -6,7 +6,6 @@ using WebClient.Services;
 
 namespace WebClient.Controllers;
 
-[AllowAnonymous]
 public class HomeController : MainController
 {
     private readonly ILogger<HomeController> _logger;

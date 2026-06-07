@@ -59,6 +59,7 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
         }
 
         ValidarImportesVenta(request.VentaDTO);
+        await ValidarProductosVentaAsync(request.VentaDTO.ListaDetalles ?? [], cancellationToken);
 
         Venta venta = _mapper.Map<Venta>(request.VentaDTO);
         venta.Id = 0;
@@ -256,6 +257,34 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
     private static bool Coincide(decimal valorRecibido, decimal valorCalculado) =>
         Redondear(valorRecibido) == Redondear(valorCalculado);
 
+    private async Task ValidarProductosVentaAsync(
+        IEnumerable<VentaDetalleDTO> detalles,
+        CancellationToken cancellationToken)
+    {
+        var idsProductos = detalles
+            .Select(detalle => detalle.IdProducto)
+            .Distinct()
+            .ToList();
+
+        var productosValidos = await _productoRepository.Query()
+            .Where(producto =>
+                idsProductos.Contains(producto.Id) &&
+                producto.Activo &&
+                !producto.Eliminado)
+            .Select(producto => producto.Id)
+            .ToListAsync(cancellationToken);
+
+        var idsProductosInvalidos = idsProductos
+            .Except(productosValidos)
+            .ToList();
+
+        if (idsProductosInvalidos.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Los siguientes productos no existen o están inactivos: {string.Join(", ", idsProductosInvalidos)}.");
+        }
+    }
+
     private async Task<List<TransaccionInventarioDetalleDTO>> CrearDetallesInventarioAsync(
         IEnumerable<VentaDetalleDTO> detallesVenta,
         long idAlmacen,
@@ -313,8 +342,11 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
         {
             if (!productos.TryGetValue(idProducto, out var producto))
             {
-                producto = await _productoRepository.Query().Where(p => !p.Eliminado && p.Id == idProducto).FirstOrDefaultAsync(cancellationToken)
-                    ?? throw new InvalidOperationException($"No se encontró el producto {idProducto}.");
+                producto = await _productoRepository.Query()
+                    .Where(p => !p.Eliminado && p.Activo && p.Id == idProducto)
+                    .FirstOrDefaultAsync(cancellationToken)
+                    ?? throw new InvalidOperationException(
+                        $"No se encontró el producto activo {idProducto}.");
 
                 productos[idProducto] = producto;
             }

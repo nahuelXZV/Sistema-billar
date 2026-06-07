@@ -33,12 +33,16 @@ public class RevertirMovimientoByTransaccionInicialCommandHandler : ICommandHand
 
     public async Task<Response<long>> Handle(RevertirMovimientoByTransaccionInicialCommand request, CancellationToken cancellationToken)
     {
-        var transaccion = await _repository.Query().Where(m => m.IdTransaccionInicial == request.IdTransaccionInicial && !m.Eliminado)
-            .FirstOrDefaultAsync();
+        var transaccion = await _repository.Query()
+            .Where(m => m.IdTransaccionInicial == request.IdTransaccionInicial && !m.Eliminado)
+            .FirstOrDefaultAsync(cancellationToken);
+
         if (transaccion == null)
             throw new Exception("Movimiento de inventario no encontrado");
 
-        var detalles = await _rpDetalles.Query().Where(d => d.IdTransaccion == transaccion.Id && !d.Eliminado).ToListAsync();
+        var detalles = await _rpDetalles.Query()
+            .Where(d => d.IdTransaccion == transaccion.Id && !d.Eliminado)
+            .ToListAsync(cancellationToken);
 
         await _mediator.Send(new CreateTransaccionInventarioCommand()
         {
@@ -53,10 +57,11 @@ public class RevertirMovimientoByTransaccionInicialCommandHandler : ICommandHand
                 {
                     IdAlmacen = d.IdAlmacen,
                     IdProducto = d.IdProducto,
+                    IdLote = d.IdLote,
                     Cantidad = (double)d.Cantidad,
                 }).ToList() ?? []
             }
-        });
+        }, cancellationToken);
 
         return new Response<long>(transaccion.Id);
     }
