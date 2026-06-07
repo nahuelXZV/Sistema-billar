@@ -7,6 +7,13 @@
 	<Body>
 		<div class="venta-pos-payment-modal">
 			<BuscarClienteComponent PuntoVenta="PuntoVenta" />
+			@if (MostrarAlertaCliente)
+			{
+				<span class="venta-pos-payment-client-alert">
+					<i class="bi bi-exclamation-triangle-fill"></i>
+					Debe Seleccionar un cliente.
+				</span>
+			}
 
 			<div class="venta-pos-payment-modal-list">
 				@if (PuntoVenta.ProductosPagar.Count == 0)

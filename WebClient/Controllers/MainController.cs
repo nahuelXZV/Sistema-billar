@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebClient.Configs;
 using WebClient.Models;
 using WebClient.Services;
 
@@ -10,6 +11,7 @@ namespace WebClient.Controllers;
 public class MainController : Controller
 {
     protected ViewModelFactory _viewModelFactory { get; set; }
+    protected AdminConfig _adminConfig { get; set; }
     protected readonly IAppServices _appServices;
 
     public MainController(ViewModelFactory viewModelFactory, IAppServices services)

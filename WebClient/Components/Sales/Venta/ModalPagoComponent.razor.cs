@@ -16,6 +16,7 @@ public partial class ModalPagoComponent
     private List<MetodoPagoDTO> MetodosPago { get; set; } = [];
     private bool _wasVisible;
     private bool IsNoteOpen { get; set; }
+    private bool MostrarAlertaCliente { get; set; }
 
     private long SelectedMetodoPagoId { get; set; }
     private decimal MontoPagar { get; set; }
@@ -142,12 +143,14 @@ public partial class ModalPagoComponent
 
     private async Task ConfirmarPago()
     {
+        //await ShowAlerta("Alerta", "Debe seleccionar un cliente.", "warning");
         if (PuntoVenta.ClienteSeleccionado == null)
         {
+            MostrarAlertaCliente = true;
             return;
         }
-
-
+        
+        MostrarAlertaCliente = false;
         var paidItems = PuntoVenta.ProductosPagar.Where(item => item.IsSelected && item.CantidadPagar > 0)
             .Select(item => new ItemsViewModel
             {

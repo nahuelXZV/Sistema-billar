@@ -1,6 +1,9 @@
+using System.Security.AccessControl;
 using Domain.DTOs.Sales;
 using Domain.DTOs.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using WebClient.Configs;
 using WebClient.Extensions;
 using WebClient.Models;
 using WebClient.Models.Sales;
@@ -12,10 +15,36 @@ public class VentaController : MainController
 {
     private readonly ILogger<VentaController> _logger;
 
-    public VentaController(ViewModelFactory viewModelFactory, ILogger<VentaController> logger, IAppServices services)
+    public VentaController(ViewModelFactory viewModelFactory, ILogger<VentaController> logger, IAppServices services, IOptions<AdminConfig> adminConfig)
         : base(viewModelFactory, services)
     {
         _logger = logger;
+        _adminConfig = adminConfig.Value;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> VentaDirecta()
+    {
+        var model = _viewModelFactory.Create<VentaViewModel>();
+        model.IncluirBlazorComponents = true;
+        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
+        var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
+        model.PuntoVenta = PuntoVentaUtils.Create(categoriasBase, model.Vendedor);
+
+        var cliente = await _appServices.ClienteService.GetById(_adminConfig.Personalizaciones.IdClienteDefault);
+        model.PuntoVenta.ClienteSeleccionado = cliente;
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> VentaMesas()
+    {
+        var model = _viewModelFactory.Create<VentaViewModel>();
+        model.IncluirBlazorComponents = true;
+        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
+        model.Mesas = await _appServices.MesasService.GetAll();
+        return View(model);
     }
 
     [HttpGet]
@@ -26,10 +55,7 @@ public class VentaController : MainController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(
-        [FromQuery] string search = "",
-        [FromQuery] int limit = 10,
-        [FromQuery] int offset = 0)
+    public async Task<IActionResult> GetAll([FromQuery] string search = "", [FromQuery] int limit = 10, [FromQuery] int offset = 0)
     {
         try
         {
@@ -81,24 +107,5 @@ public class VentaController : MainController
         return RedirectToAction(nameof(Listado));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> VentaDirecta()
-    {
-        var model = _viewModelFactory.Create<VentaViewModel>();
-        model.IncluirBlazorComponents = true;
-        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
-        var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
-        model.PuntoVenta = PuntoVentaUtils.Create(categoriasBase, model.Vendedor);
-        return View(model);
-    }
 
-    [HttpGet]
-    public async Task<IActionResult> VentaMesas()
-    {
-        var model = _viewModelFactory.Create<VentaViewModel>();
-        model.IncluirBlazorComponents = true;
-        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
-        model.Mesas = await _appServices.MesasService.GetAll();
-        return View(model);
-    }
 }

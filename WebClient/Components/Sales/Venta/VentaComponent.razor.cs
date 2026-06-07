@@ -4,24 +4,37 @@ using WebClient.Extensions;
 using WebClient.Services;
 using Domain.DTOs.Sales;
 using System.Threading.Tasks;
+using Domain.DTOs.Contact;
 
 namespace WebClient.Components.Sales.Venta;
 
 public partial class VentaComponent
 {
     [Parameter] public VentaViewModel Model { get; set; } = new();
+    private ClienteDTO ClienteDefault { get; set; } = new();
     private bool MostrarModalPago { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        Model.PuntoVenta = await LoadPuntoVentaAsync();
+        if (Model.PuntoVenta is null)
+        {
+            Model.PuntoVenta = await LoadPuntoVentaAsync();
+        }
+        else
+        {
+            ClienteDefault = Model.PuntoVenta.ClienteSeleccionado!;
+        }
     }
 
     private async Task<PuntoVentaViewModel> LoadPuntoVentaAsync()
     {
         var categoriasBase = await AppServices.CategoriaService.GetCategoriasBase();
-        return PuntoVentaUtils.Create(categoriasBase, Model.Vendedor);
+        ClienteDefault = await AppServices.ClienteService.GetById(AdminConfig.Personalizaciones.IdClienteDefault);
+
+        var puntoVenta = PuntoVentaUtils.Create(categoriasBase, Model.Vendedor);
+        puntoVenta.ClienteSeleccionado = ClienteDefault;
+        return puntoVenta;
     }
 
 
@@ -127,7 +140,7 @@ public partial class VentaComponent
         Model.PuntoVenta.DetalleItems.Clear();
         Model.PuntoVenta.SelectedPath.Clear();
         Model.PuntoVenta.CurrentNode = null;
-        Model.PuntoVenta.ClienteSeleccionado = null;
+        Model.PuntoVenta.ClienteSeleccionado = ClienteDefault;
         Model.PuntoVenta.NotaVenta = string.Empty;
         Model.PuntoVenta.DescuentoGlobal = 0;
         Model.PuntoVenta.RecargoGlobal = 0;
