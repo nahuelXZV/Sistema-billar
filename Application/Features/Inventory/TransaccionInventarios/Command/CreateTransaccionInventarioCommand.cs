@@ -4,9 +4,12 @@ using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
+using Domain.Entities.Configuration;
 using Domain.Entities.Inventory;
 using Infraestructure.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using static Domain.Constants.Constantes;
 
 namespace Application.Features.Inventory.TransaccionInventarios.Command;
 
@@ -32,16 +35,25 @@ public class CreateTransaccionInventarioHandler : ICommandHandler<CreateTransacc
 
     public async Task<Response<long>> Handle(CreateTransaccionInventarioCommand request, CancellationToken cancellationToken)
     {
+        var detallesInventario = await ObtenerDetallesInventarioAsync(
+            request.TransaccionInventarioDTO.Detalles,
+            cancellationToken);
+
+        if (detallesInventario.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "El movimiento no contiene productos físicos que afecten inventario.");
+        }
+
+        request.TransaccionInventarioDTO.Detalles = detallesInventario;
+
         TransaccionInventario transaccion = _mapper.Map<TransaccionInventario>(request.TransaccionInventarioDTO);
         transaccion = await _repository.AddAsync(transaccion);
         await _repository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
 
-        foreach (var detalles in request.TransaccionInventarioDTO.Detalles)
+        foreach (var detalleDto in detallesInventario)
         {
-            var esMesa = (await _mediator.Send(new VerificarMesaByIdProductoQuery() { IdProducto = detalles.IdProducto }, cancellationToken)).Data;
-            if (esMesa) continue;
-
-            var detalle = _mapper.Map<TransaccionInventarioDetalleDTO, TransaccionInventarioDetalle>(detalles);
+            var detalle = _mapper.Map<TransaccionInventarioDetalleDTO, TransaccionInventarioDetalle>(detalleDto);
             detalle.IdTransaccion = transaccion.Id;
             await _rpDetalles.AddAsync(detalle);
         }
@@ -50,5 +62,36 @@ public class CreateTransaccionInventarioHandler : ICommandHandler<CreateTransacc
         await _mediator.Send(new UpdateStockCommand() { Transaccion = request.TransaccionInventarioDTO });
 
         return new Response<long>(transaccion.Id);
+    }
+
+    private async Task<List<TransaccionInventarioDetalleDTO>> ObtenerDetallesInventarioAsync(
+        IEnumerable<TransaccionInventarioDetalleDTO> detalles,
+        CancellationToken cancellationToken)
+    {
+        var listaDetalles = detalles.ToList();
+        var idsProductos = listaDetalles
+            .Select(d => d.IdProducto)
+            .Distinct()
+            .ToList();
+
+        var productosFisicosIds = await _repository.Query<Producto>()
+            .Where(p => idsProductos.Contains(p.Id)
+                && !p.Eliminado
+                && p.Tipo == (short)TipoProducto.Producto)
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
+
+        var productosMesaIds = await _repository.Query<TipoMesa>()
+            .Where(t => !t.Eliminado
+                && t.IdProducto.HasValue
+                && idsProductos.Contains(t.IdProducto.Value))
+            .Select(t => t.IdProducto!.Value)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        return listaDetalles
+            .Where(d => productosFisicosIds.Contains(d.IdProducto)
+                && !productosMesaIds.Contains(d.IdProducto))
+            .ToList();
     }
 }

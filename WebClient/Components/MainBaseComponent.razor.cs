@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
 using Microsoft.JSInterop;
 using WebClient.Configs;
+using WebClient.Exceptions;
 using WebClient.Services;
 
 namespace WebClient.Components;
@@ -62,38 +63,22 @@ public partial class MainBaseComponent : ComponentBase
 
     public async Task ShowErrorMessage(Exception ex)
     {
-        string message = $"<p>{ex.Message}</p>";
-        string errorDetails = "";
-
-        if (ex != null)
+        if (ex is ApiResponseException apiException)
         {
-            //string clientDetails = "";
-            string diagnosticDetails = "";
-
-            string details =
-                @$"
-                    <div class='card full-details collapsed-card'>
-                        <div class='card-header'>
-                            <p class='card-title'>Detalles del error</p>
-                            <button type='button' class='btn btn-tool' data-card-widget='collapse'>
-                                <i class='fas fa-plus'></i>
-                            </button>
-                        </div>
-                        <div class='card-body'>
-                            <p><label>Mensaje: </label> {ex.Message}</p>
-                            <p><label>Diagnostico: </label> {ex.Message}</p>
-                            </br>
-                            <p><label>Detalle: </label></p>
-                            </br>
-                            {diagnosticDetails}
-                            <p><label>Pila de Error: </label></p>
-                            <p>{ex.StackTrace}</p>
-                        </div>
-                    </div>";
-
-            errorDetails += $"<div class='col-12'>{details}</div>";
+            await JSRuntime.InvokeVoidAsync(
+                "window.showDetailedErrorMessage",
+                apiException.Message,
+                apiException.Error?.DiagnosticMessage,
+                apiException.Error?.ServiceStackTrace,
+                apiException.Error?.ErrorDetails);
+            return;
         }
 
-        await JSRuntime.InvokeVoidAsync("window.showErrorMessage", message + errorDetails);
+        await JSRuntime.InvokeVoidAsync(
+            "window.showDetailedErrorMessage",
+            ex.Message,
+            ex.InnerException?.Message,
+            ex.StackTrace,
+            null);
     }
 }

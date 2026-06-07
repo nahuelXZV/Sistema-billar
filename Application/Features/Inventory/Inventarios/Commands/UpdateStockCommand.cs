@@ -36,10 +36,17 @@ public class UpdateStockHandler : ICommandHandler<UpdateStockCommand, Response<b
                 .Where(i => i.IdProducto == detalle.IdProducto)
                 .Where(i => i.IdAlmacen == detalle.IdAlmacen)
                 .Where(i => i.IdLote == detalle.IdLote)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (inventario == null)
             {
+                if (request.Transaccion.Tipo != (short)TipoTransaccionInventario.Ingreso)
+                {
+                    throw new InvalidOperationException(
+                        $"No existe inventario para el producto {detalle.IdProducto} " +
+                        $"en el almacén {detalle.IdAlmacen}.");
+                }
+
                 var inventarioNuevo = new Inventario()
                 {
                     IdAlmacen = detalle.IdAlmacen,
@@ -62,7 +69,10 @@ public class UpdateStockHandler : ICommandHandler<UpdateStockCommand, Response<b
             {
                 if (inventario.Cantidad < detalle.Cantidad)
                 {
-                    return new Response<bool> { Succeded = false };
+                    throw new InvalidOperationException(
+                        $"Stock insuficiente para el producto {detalle.IdProducto} " +
+                        $"en el almacén {detalle.IdAlmacen}. " +
+                        $"Disponible: {inventario.Cantidad}; solicitado: {detalle.Cantidad}.");
                 }
                 inventario.Cantidad -= detalle.Cantidad;
             }

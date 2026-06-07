@@ -4,6 +4,7 @@ using Domain.Common;
 using Domain.Entities.Sales;
 using Infraestructure.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.Ventas.Commands;
 
@@ -28,7 +29,7 @@ public class DeleteVentaCommandHandler : ICommandHandler<DeleteVentaCommand, Res
 
     public async Task<Response<bool>> Handle(DeleteVentaCommand request, CancellationToken cancellationToken)
     {
-        var venta = await _repository.GetByIdAsync(request.IdVenta);
+        var venta = await _repository.Query().Where(v => v.Id == request.IdVenta && !v.Eliminado).FirstOrDefaultAsync();
         if (venta == null) throw new ArgumentException("La venta no existe.");
 
         _repository.Delete(venta);

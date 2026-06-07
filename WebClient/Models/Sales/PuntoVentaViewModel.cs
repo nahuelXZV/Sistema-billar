@@ -41,7 +41,6 @@ public class PuntoVentaViewModel
 
         var ventadto = new VentaDTO()
         {
-            Numero = DateTime.Now.ToString("HHmmss"),
             Fecha = DateTime.Now,
             IdCliente = ClienteSeleccionado!.Id,
             IdOrdenVenta = 0,

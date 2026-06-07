@@ -89,10 +89,13 @@ const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
 const titleEl = document.getElementById('modal-title');
 const bodyEl = document.getElementById('modal-content');
+const dialogEl = document.getElementById('modal-alert-dialog');
 
 function clearModal() {
     titleEl.innerHTML = '';
     bodyEl.innerHTML = '';
+    dialogEl?.classList.remove('modal-lg');
+    dialogEl?.classList.add('modal-md');
 }
 
 function showModalAlert(title, message, iconClass) {
@@ -110,6 +113,100 @@ function showModalAlert(title, message, iconClass) {
 		`;
 
     modal.show();
+}
+
+function showModalErrorDetails(
+    title,
+    message,
+    iconClass,
+    diagnosticMessage,
+    serviceStackTrace,
+    errorDetails) {
+    clearModal();
+    dialogEl?.classList.remove('modal-md');
+    dialogEl?.classList.add('modal-lg');
+
+    const titleIcon = document.createElement('i');
+    titleIcon.className = iconClass;
+
+    const titleText = document.createElement('span');
+    titleText.textContent = title;
+
+    titleEl.append(titleIcon, titleText);
+
+    const messageElement = document.createElement('p');
+    messageElement.className = 'mb-0 fw-semibold';
+    messageElement.textContent = message;
+    bodyEl.appendChild(messageElement);
+
+    const hasErrorDetails = errorDetails && Object.keys(errorDetails).length > 0;
+    if (!diagnosticMessage && !serviceStackTrace && !hasErrorDetails) {
+        modal.show();
+        return;
+    }
+
+    const detailsElement = document.createElement('details');
+    detailsElement.className = 'error-details mt-3';
+
+    const summaryElement = document.createElement('summary');
+    summaryElement.className = 'error-details-summary';
+
+    const summaryContent = document.createElement('span');
+    summaryContent.className = 'd-flex align-items-center gap-2';
+
+    const summaryIcon = document.createElement('i');
+    summaryIcon.className = 'bi bi-code-square';
+
+    const summaryText = document.createElement('span');
+    summaryText.textContent = 'Detalles del error';
+
+    summaryContent.append(summaryIcon, summaryText);
+
+    const chevron = document.createElement('i');
+    chevron.className = 'bi bi-chevron-down error-details-chevron';
+
+    summaryElement.append(summaryContent, chevron);
+    detailsElement.appendChild(summaryElement);
+
+    const contentElement = document.createElement('div');
+    contentElement.className = 'error-details-content';
+
+    appendErrorDetail(contentElement, 'Diagnóstico', diagnosticMessage);
+
+    if (hasErrorDetails) {
+        Object.entries(errorDetails).forEach(([field, detail]) => {
+            appendErrorDetail(
+                contentElement,
+                field,
+                detail?.clientMessage ?? detail?.diagnosticMessage);
+        });
+    }
+
+    appendErrorDetail(contentElement, 'Pila del error', serviceStackTrace, true);
+    detailsElement.appendChild(contentElement);
+    bodyEl.appendChild(detailsElement);
+
+    modal.show();
+}
+
+function appendErrorDetail(container, label, value, preserveWhitespace = false) {
+    if (!value) return;
+
+    const item = document.createElement('div');
+    item.className = 'error-details-item';
+
+    const labelElement = document.createElement('span');
+    labelElement.className = 'error-details-label';
+    labelElement.textContent = label;
+
+    const valueElement = document.createElement(preserveWhitespace ? 'pre' : 'p');
+    valueElement.className = preserveWhitespace
+        ? 'error-details-stack'
+        : 'error-details-value';
+    valueElement.textContent = value;
+
+    item.append(labelElement, valueElement);
+    container.appendChild(item);
 }
 
 

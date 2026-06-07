@@ -79,6 +79,10 @@ public class ErrorHandlerMiddleware
                     errorDetails.Add(errorKey, new MessageError(errorValue));
                 });
                 break;
+            case InvalidOperationException ex:
+                clientErrorMessage = ex.Message;
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                break;
             default:
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;

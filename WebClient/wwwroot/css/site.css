@@ -65,6 +65,81 @@ body.modal-open,
     color: #0d6efd;
 }
 
+.error-details {
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.75rem;
+    background: var(--bs-tertiary-bg);
+}
+
+.error-details-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    color: var(--bs-body-color);
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+}
+
+.error-details-summary::-webkit-details-marker {
+    display: none;
+}
+
+.error-details-summary:hover {
+    background: rgba(var(--bs-danger-rgb), 0.06);
+}
+
+.error-details-chevron {
+    transition: transform 0.2s ease;
+}
+
+.error-details[open] .error-details-chevron {
+    transform: rotate(180deg);
+}
+
+.error-details-content {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1rem;
+    border-top: 1px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+}
+
+.error-details-item {
+    min-width: 0;
+}
+
+.error-details-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.error-details-value,
+.error-details-stack {
+    margin: 0;
+    color: var(--bs-body-color);
+    font-size: 0.85rem;
+}
+
+.error-details-stack {
+    max-height: 15rem;
+    padding: 0.75rem;
+    overflow: auto;
+    border-radius: 0.5rem;
+    background: var(--bs-dark-bg-subtle);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .tree,
 .tree ul {
     list-style: none;

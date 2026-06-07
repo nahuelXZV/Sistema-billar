@@ -44,7 +44,7 @@ public class RevertirMovimientoByTransaccionInicialCommandHandler : ICommandHand
         {
             TransaccionInventarioDTO = new()
             {
-                IdTransaccionInicial = transaccion.Id,
+                IdTransaccionInicial = request.IdTransaccionInicial,
                 Glosa = $"Revertido - {transaccion.Glosa}",
                 Fecha = DateTime.Now,
                 IdUsuario = request.IdUsuario,

@@ -4,6 +4,8 @@ using Domain.Constants;
 using Domain.Extensions;
 using Domain.Common;
 using Domain.DTOs.Shared;
+using Domain.Interfaces.Shared;
+using WebClient.Exceptions;
 
 namespace WebClient.Services.Implementacion;
 
@@ -104,19 +106,31 @@ public class AppBaseServices
 
     private void ValidateResponse<TResult>(Response<TResult> response)
     {
-        if (response == null || !response.Succeded)
+        if (response == null)
         {
-            //throw new ResponseError($"Error en la respuesta del servicio Cinema CMS: {response.Error.ClientMessage}", response.Error);
+            throw new InvalidOperationException("La API no devolvi√≥ una respuesta v√°lida.");
         }
-    }
 
-    private Response<TData> CreateCinemaDefaultResponse<TData>(Response<dynamic> cmsResponse)
-    {
-        return new Response<TData>
+        if (response.Succeded) return;
+
+        var clientMessage = response.Errors?.ClientMessage;
+        if (string.IsNullOrWhiteSpace(clientMessage))
         {
-            //Error = new IDictionary<string, string[]>() { },
-            Data = cmsResponse.Succeded ? (TData)cmsResponse.Data : default,
-        };
+            clientMessage = !string.IsNullOrWhiteSpace(response.ClientMessage)
+                ? response.ClientMessage
+                : response.Message;
+        }
+
+        _logger.LogError(
+            "La API devolvi√≥ una respuesta fallida. Mensaje: {Message}. Diagn√≥stico: {DiagnosticMessage}",
+            clientMessage,
+            response.Errors?.DiagnosticMessage);
+
+        throw new ApiResponseException(
+            string.IsNullOrWhiteSpace(clientMessage)
+                ? "La operaci√≥n no pudo completarse."
+                : clientMessage,
+            response.Errors);
     }
 
     private async Task<TResult> ProcessResponse<TResult>(HttpResponseMessage response) where TResult : new()
@@ -129,11 +143,11 @@ public class AppBaseServices
             if (jsonResponse == "" && (int)response.StatusCode != StatusCodes.Status200OK || response.Content.Headers.ContentType.MediaType != "application/json")
             {
                 jsonResponse = "";
-                //throw new Exception($"OcurriÛ un error en la solicitud con el siguiente cÛdigo: {response.StatusCode}");
+                //throw new Exception($"Ocurri√≥ un error en la solicitud con el siguiente c√≥digo: {response.StatusCode}");
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: No se encontrÛ el recurso para la url solicitada, {response.RequestMessage.RequestUri}");
+                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: No se encontr√≥ el recurso para la url solicitada, {response.RequestMessage.RequestUri}");
                     case HttpStatusCode.BadRequest:
                         throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: Hay un Error en la Solicitud realizada");
                     case HttpStatusCode.Unauthorized:
@@ -141,11 +155,11 @@ public class AppBaseServices
                     case HttpStatusCode.Forbidden:
                         throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: La solicitud no tiene acceso al contenido");
                     case HttpStatusCode.RequestTimeout:
-                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: Se expirÛ el tiempo de espera para la solicitud");
+                        throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: Se expir√≥ el tiempo de espera para la solicitud");
                     case HttpStatusCode.ServiceUnavailable:
                         throw new Exception($"Status: {(int)response.StatusCode}, Status Text: {response.StatusCode}, Message: El servicio no esta disponible");
                     default:
-                        throw new Exception($"OcurriÛ un error en la solicitud con el siguiente cÛdigo: {response.StatusCode}");
+                        throw new Exception($"Ocurri√≥ un error en la solicitud con el siguiente c√≥digo: {response.StatusCode}");
                 }
             }
 
@@ -158,43 +172,17 @@ public class AppBaseServices
 
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Response<>))
             {
-                var result = jsonResponse.Deserialize<Response<dynamic>>();
-                dynamic responseResult = null;
-                var typeResponseData = type.GetGenericArguments()[0];
+                var apiResponse = jsonResponse.Deserialize<Response<object>>();
+                var responseResult = new TResult();
 
-                if (typeResponseData == typeof(bool))
+                if (responseResult is IResponse typedResponse)
                 {
-                    responseResult = CreateCinemaDefaultResponse<bool>(result);
+                    typedResponse.Succeded = apiResponse.Succeded;
+                    typedResponse.Message = apiResponse.Message;
+                    typedResponse.ClientMessage = apiResponse.ClientMessage;
+                    typedResponse.Errors = apiResponse.Errors;
+                    return responseResult;
                 }
-
-                if (typeResponseData == typeof(long))
-                {
-                    responseResult = CreateCinemaDefaultResponse<long>(result);
-                }
-
-                if (typeResponseData == typeof(short))
-                {
-                    responseResult = CreateCinemaDefaultResponse<short>(result);
-                }
-
-                if (typeResponseData == typeof(float))
-                {
-                    responseResult = CreateCinemaDefaultResponse<float>(result);
-                }
-
-                if (typeResponseData == typeof(double))
-                {
-                    responseResult = CreateCinemaDefaultResponse<double>(result);
-                }
-
-                if (typeResponseData == typeof(int))
-                {
-                    responseResult = CreateCinemaDefaultResponse<int>(result);
-                }
-
-                responseResult.Error.DiagnosticMessage += $", [CinemaCmsService] El tipo de dato para el contenido Data de la respuesta no se pudo castear automaticamente";
-
-                return (TResult)responseResult;
             }
 
             var error = $"{(int)response.StatusCode} {response.ReasonPhrase} {response.RequestMessage.RequestUri}";

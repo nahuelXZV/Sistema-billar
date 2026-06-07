@@ -37,7 +37,9 @@ public class UpdateVentaCommandHandler : ICommandHandler<UpdateVentaCommand, Res
         var venta = await _repository.GetByIdAsync(request.VentaDTO.Id);
         if (venta == null) throw new ArgumentException("La venta no existe.");
 
+        var numeroVenta = venta.Numero;
         _mapper.Map(request.VentaDTO, venta);
+        venta.Numero = numeroVenta;
         if (venta.IdOrdenVenta == 0) venta.IdOrdenVenta = null;
         _repository.Update(venta);
 
