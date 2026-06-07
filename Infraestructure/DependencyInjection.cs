@@ -16,6 +16,7 @@ public static class DependencyInjection
             options.UseSqlServer(configuration.GetConnectionString("ApplicationDbContext"));
         });
         services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
-        services.AddScoped<IDbContext, AppDbContext>();
+        services.AddScoped<IDbContext>(provider =>
+            provider.GetRequiredService<AppDbContext>());
     }
 }

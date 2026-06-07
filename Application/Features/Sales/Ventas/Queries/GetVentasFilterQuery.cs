@@ -36,18 +36,22 @@ public class GetVentasFilterQueryHandler : ICommandHandler<GetVentasFilterQuery,
 
         var search = request.Filter?.Search;
 
-        var total = await baseQuery.CountAsync(cancellationToken);
+        var query = baseQuery;
 
-        var query = baseQuery.ApplyFilter(
-                request.Filter,
-                p => string.IsNullOrEmpty(search)
-                     || p.Numero.ToLower().Contains(search.ToLower())
-                     || p.Observacion.ToLower().Contains(search.ToLower())
-                     || (p.Cliente != null && p.Cliente.Nombre.ToLower().Contains(search.ToLower()))
-                     || (p.Vendedor != null && p.Vendedor.Nombre.ToLower().Contains(search.ToLower()))
-            );
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(p =>
+                p.Numero.ToLower().Contains(search.ToLower())
+                || p.Observacion.ToLower().Contains(search.ToLower())
+                || (p.Cliente != null && p.Cliente.Nombre.ToLower().Contains(search.ToLower()))
+                || (p.Vendedor != null && p.Vendedor.Nombre.ToLower().Contains(search.ToLower())));
+        }
 
-        query = query.OrderByDescending(q => q.Id);
+        var total = await query.CountAsync(cancellationToken);
+
+        query = query
+            .OrderByDescending(q => q.Id)
+            .ApplyFilter(request.Filter);
 
         var listaVentas = await query.ToListAsync(cancellationToken);
         var listaVentasDto = _mapper.Map<List<VentaDTO>>(listaVentas);
