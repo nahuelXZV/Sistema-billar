@@ -1,8 +1,9 @@
 using Domain.DTOs.Configuration;
 using Domain.DTOs.Inventory;
+using Domain.DTOs.Sales;
 using Microsoft.AspNetCore.Components;
-using System.Diagnostics;
 using WebClient.Models.Sales;
+using static Domain.Constants.Constantes;
 
 namespace WebClient.Components.Sales.Venta;
 
@@ -10,36 +11,62 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
 {
     [Parameter, EditorRequired] public MesaDTO Mesa { get; set; } = new();
     [Parameter, EditorRequired] public VentaViewModel Venta { get; set; } = new();
-    [Parameter] public EventCallback OnTiempoFinalizado { get; set; }
+    [Parameter] public EventCallback OnGuardarOrden { get; set; }
+    [Parameter] public EventCallback<OrdenMesaDTO> OnOrdenActualizada { get; set; }
 
-    private readonly Stopwatch _stopwatch = new();
-    private CancellationTokenSource? _timerCancellation;
-    private ProductoDTO? TimedProduct { get; set; }
-    private string TimerMessage { get; set; } = string.Empty;
-    private bool IsTimerFinished { get; set; }
-    private long _configuredMesaId;
+    private CancellationTokenSource? _cancelacionTemporizador;
+    private ProductoDTO? ProductoTiempo { get; set; }
+    private string MensajeTemporizador { get; set; } = string.Empty;
+    private long _idMesaConfigurada;
+    private DateTime _ahora = DateTime.Now;
+    private bool Iniciando { get; set; }
+    private bool Finalizando { get; set; }
+    private bool CronometroPendiente => Venta.OrdenMesa?.EstadoUsoMesa == (short)EstadoUsoMesa.Pendiente;
+    private bool CronometroIniciado => Venta.OrdenMesa?.EstadoUsoMesa == (short)EstadoUsoMesa.EnCurso;
 
-    private bool IsTimerRunning => _stopwatch.IsRunning;
-    private string ElapsedTimeText => FormatElapsedTime(_stopwatch.Elapsed);
-    private decimal CurrentTimeAmount => TimedProduct is null
-        ? 0
-        : Math.Round((decimal)_stopwatch.Elapsed.TotalHours * TimedProduct.Precio, 2, MidpointRounding.AwayFromZero);
+    private TimeSpan TiempoTranscurrido
+    {
+        get
+        {
+            var ordenMesa = Venta.OrdenMesa;
+            if (ordenMesa is null || ordenMesa.EstadoUsoMesa == (short)EstadoUsoMesa.Pendiente)
+            {
+                return TimeSpan.Zero;
+            }
+
+            if (ordenMesa.EstadoUsoMesa == (short)EstadoUsoMesa.EnCurso)
+            {
+                return _ahora > ordenMesa.FechaInicio
+                    ? _ahora - ordenMesa.FechaInicio
+                    : TimeSpan.Zero;
+            }
+
+            return TimeSpan.FromMinutes(Math.Max(0, ordenMesa.MinutosConsumidos));
+        }
+    }
+
+    private decimal ImporteTiempoActual => ProductoTiempo is null
+        ? 0 : Math.Round((decimal)TiempoTranscurrido.TotalHours * ProductoTiempo.Precio, 2, MidpointRounding.AwayFromZero);
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
-        if (_configuredMesaId == Mesa.Id)
+        if (_idMesaConfigurada != Mesa.Id)
         {
-            return;
+            ReiniciarComponente();
+            _idMesaConfigurada = Mesa.Id;
+            await ConfigurarTemporizadorAsync();
         }
 
-        ResetTimer();
-        _configuredMesaId = Mesa.Id;
-        await ConfigureTimerAsync();
+        if (CronometroIniciado)
+        {
+            IniciarActualizacionVisual();
+            SincronizarDetalleTiempo();
+        }
     }
 
-    private async Task ConfigureTimerAsync()
+    private async Task ConfigurarTemporizadorAsync()
     {
         var tipoMesa = Mesa.TipoMesa;
         if (tipoMesa?.CobroPorTiempo != true || tipoMesa.IdProducto is null)
@@ -50,43 +77,140 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
         var idVendedor = Venta.Vendedor?.Id ?? 0;
         if (idVendedor <= 0)
         {
-            TimerMessage = "No se encontro un vendedor para calcular la tarifa.";
+            MensajeTemporizador = "No se encontró un vendedor para calcular la tarifa.";
             return;
         }
 
         var producto = await AppServices.ProductoService.GetById(tipoMesa.IdProducto.Value, idVendedor);
         if (!producto.Activo)
         {
-            TimerMessage = "El producto configurado para esta mesa esta inactivo.";
+            MensajeTemporizador = "El producto configurado para esta mesa está inactivo.";
             return;
         }
 
         if (producto.Precio <= 0)
         {
-            TimerMessage = "El producto de la mesa no tiene precio para este vendedor.";
+            MensajeTemporizador = "El producto de la mesa no tiene precio para este vendedor.";
             return;
         }
 
-        TimedProduct = producto;
-        StartTimer();
+        ProductoTiempo = producto;
+        Venta.OrdenMesa ??= new OrdenMesaDTO();
+        Venta.OrdenMesa.TarifaAplicada = producto.Precio;
     }
 
-    private void StartTimer()
+    private async Task IniciarCronometroAsync()
     {
-        _timerCancellation = new CancellationTokenSource();
-        _stopwatch.Restart();
-        IsTimerFinished = false;
-        _ = RefreshTimerAsync(_timerCancellation.Token);
+        if (ProductoTiempo is null || CronometroIniciado || Iniciando)
+        {
+            return;
+        }
+
+        Iniciando = true;
+        try
+        {
+            if (OnGuardarOrden.HasDelegate)
+            {
+                await OnGuardarOrden.InvokeAsync();
+            }
+
+            var idOrdenVenta = Venta.OrdenMesa?.IdOrdenVenta ?? 0;
+            if (idOrdenVenta <= 0)
+            {
+                throw new InvalidOperationException("Primero debe guardarse la orden de mesa.");
+            }
+
+            var ordenActualizada = await AppServices.OrdenMesaService.IniciarCronometro(idOrdenVenta);
+            ordenActualizada.TarifaAplicada = ProductoTiempo.Precio;
+            Venta.OrdenMesa = ordenActualizada;
+            Venta.PuntoVenta.IdOrdenVenta = ordenActualizada.IdOrdenVenta;
+            Venta.PuntoVenta.IdUsoMesa = ordenActualizada.IdUsoMesa;
+            _ahora = DateTime.Now;
+
+            SincronizarDetalleTiempo();
+            IniciarActualizacionVisual();
+
+            if (OnOrdenActualizada.HasDelegate)
+            {
+                await OnOrdenActualizada.InvokeAsync(ordenActualizada);
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorMessage(ex);
+        }
+        finally
+        {
+            Iniciando = false;
+        }
     }
 
-    private async Task RefreshTimerAsync(CancellationToken cancellationToken)
+    private async Task FinalizarCronometroAsync()
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        if (!CronometroIniciado || Finalizando)
+        {
+            return;
+        }
+
+        Finalizando = true;
+        try
+        {
+            _ahora = DateTime.Now;
+            SincronizarDetalleTiempo();
+
+            if (OnGuardarOrden.HasDelegate)
+            {
+                await OnGuardarOrden.InvokeAsync();
+            }
+
+            var idOrdenVenta = Venta.OrdenMesa?.IdOrdenVenta ?? 0;
+            if (idOrdenVenta <= 0)
+            {
+                throw new InvalidOperationException("Primero debe guardarse la orden de mesa.");
+            }
+
+            var ordenActualizada = await AppServices.OrdenMesaService.FinalizarCronometro(idOrdenVenta);
+            Venta.OrdenMesa = ordenActualizada;
+            Venta.PuntoVenta.IdOrdenVenta = ordenActualizada.IdOrdenVenta;
+            Venta.PuntoVenta.IdUsoMesa = ordenActualizada.IdUsoMesa;
+            DetenerActualizacionVisual();
+
+            if (OnOrdenActualizada.HasDelegate)
+            {
+                await OnOrdenActualizada.InvokeAsync(ordenActualizada);
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorMessage(ex);
+        }
+        finally
+        {
+            Finalizando = false;
+        }
+    }
+
+    private void IniciarActualizacionVisual()
+    {
+        if (_cancelacionTemporizador is not null)
+        {
+            return;
+        }
+
+        _cancelacionTemporizador = new CancellationTokenSource();
+        _ = ActualizarTemporizadorAsync(_cancelacionTemporizador.Token);
+    }
+
+    private async Task ActualizarTemporizadorAsync(CancellationToken tokenCancelacion)
+    {
+        using var temporizador = new PeriodicTimer(TimeSpan.FromSeconds(1));
 
         try
         {
-            while (await timer.WaitForNextTickAsync(cancellationToken))
+            while (await temporizador.WaitForNextTickAsync(tokenCancelacion))
             {
+                _ahora = DateTime.Now;
+                SincronizarDetalleTiempo();
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -95,98 +219,56 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
         }
     }
 
-    private void ToggleTimer()
+    private void SincronizarDetalleTiempo()
     {
-        if (IsTimerFinished || TimedProduct is null)
+        if (!CronometroIniciado || ProductoTiempo is null || Venta.PagoEnProceso)
         {
             return;
         }
 
-        if (_stopwatch.IsRunning)
-        {
-            _stopwatch.Stop();
-            return;
-        }
+        var horasFacturadas = Math.Max(0.01m, Math.Round((decimal)TiempoTranscurrido.TotalHours, 2, MidpointRounding.AwayFromZero));
 
-        _stopwatch.Start();
-    }
+        var detalleTiempo = Venta.PuntoVenta.DetalleItems.FirstOrDefault(detalle => detalle.EsTiempoMesa);
 
-    private async Task FinishTimerAsync()
-    {
-        if (TimedProduct is null || IsTimerFinished)
-        {
-            return;
-        }
-
-        if (Venta.PuntoVenta is null)
-        {
-            TimerMessage = "La venta aun esta cargando.";
-            return;
-        }
-
-        _stopwatch.Stop();
-        IsTimerFinished = true;
-        _timerCancellation?.Cancel();
-
-        var billedHours = Math.Round(
-            (decimal)_stopwatch.Elapsed.TotalHours,
-            2,
-            MidpointRounding.AwayFromZero);
-
-        billedHours = Math.Max(0.01m, billedHours);
-
-        var existingItem = Venta.PuntoVenta.DetalleItems
-            .FirstOrDefault(item => item.IdProducto == TimedProduct.Id);
-
-        if (existingItem is null)
+        if (detalleTiempo is null)
         {
             Venta.PuntoVenta.DetalleItems.Add(new ItemsViewModel
             {
-                IdProducto = TimedProduct.Id,
-                Nombre = $"{TimedProduct.Nombre} ({ElapsedTimeText})",
-                Cantidad = billedHours,
-                PrecioUnitario = TimedProduct.Precio
+                IdProducto = ProductoTiempo.Id,
+                Nombre = ProductoTiempo.Nombre,
+                Cantidad = horasFacturadas,
+                PrecioUnitario = ProductoTiempo.Precio,
+                EsTiempoMesa = true
             });
-        }
-        else
-        {
-            existingItem.Nombre = $"{TimedProduct.Nombre} ({ElapsedTimeText})";
-            existingItem.Cantidad = Math.Round(
-                existingItem.Cantidad + billedHours,
-                2,
-                MidpointRounding.AwayFromZero);
-            existingItem.PrecioUnitario = TimedProduct.Precio;
+            return;
         }
 
-        TimerMessage = $"{billedHours:0.00} hrs agregadas a la venta.";
-        await OnTiempoFinalizado.InvokeAsync();
+        detalleTiempo.IdProducto = ProductoTiempo.Id;
+        detalleTiempo.Nombre = ProductoTiempo.Nombre;
+        detalleTiempo.Cantidad = horasFacturadas;
+        detalleTiempo.PrecioUnitario = ProductoTiempo.Precio;
     }
 
-    private void ResetTimer()
+    private void DetenerActualizacionVisual()
     {
-        _timerCancellation?.Cancel();
-        _timerCancellation?.Dispose();
-        _timerCancellation = null;
-        _stopwatch.Reset();
-        TimedProduct = null;
-        TimerMessage = string.Empty;
-        IsTimerFinished = false;
+        _cancelacionTemporizador?.Cancel();
+        _cancelacionTemporizador?.Dispose();
+        _cancelacionTemporizador = null;
     }
 
-    private static string FormatElapsedTime(TimeSpan elapsed)
+    private void ReiniciarComponente()
     {
-        return $"{(int)elapsed.TotalHours:00}:{elapsed.Minutes:00}:{elapsed.Seconds:00}";
-    }
-
-    private static string FormatMoney(decimal amount)
-    {
-        return $"Bs {amount:N2}";
+        DetenerActualizacionVisual();
+        ProductoTiempo = null;
+        MensajeTemporizador = string.Empty;
+        _ahora = DateTime.Now;
+        Iniciando = false;
+        Finalizando = false;
     }
 
     public ValueTask DisposeAsync()
     {
-        ResetTimer();
+        ReiniciarComponente();
         return ValueTask.CompletedTask;
     }
 }
-

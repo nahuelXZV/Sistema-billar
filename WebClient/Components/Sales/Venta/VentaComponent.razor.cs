@@ -5,14 +5,21 @@ using WebClient.Services;
 using Domain.DTOs.Sales;
 using System.Threading.Tasks;
 using Domain.DTOs.Contact;
+using static Domain.Constants.Constantes;
 
 namespace WebClient.Components.Sales.Venta;
 
 public partial class VentaComponent
 {
     [Parameter] public VentaViewModel Model { get; set; } = new();
+    [Parameter] public bool EsVentaMesa { get; set; }
+    [Parameter] public bool GuardandoOrden { get; set; }
+    [Parameter] public EventCallback OnGuardarOrden { get; set; }
+    [Parameter] public EventCallback OnPrepararPago { get; set; }
+    [Parameter] public EventCallback<long> OnVentaFinalizada { get; set; }
     private ClienteDTO ClienteDefault { get; set; } = new();
     private bool MostrarModalPago { get; set; }
+    private bool BloquearPagoTiempo => EsVentaMesa && Model.OrdenMesa?.EstadoUsoMesa == (short)EstadoUsoMesa.EnCurso;
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,13 +50,22 @@ public partial class VentaComponent
     {
         try
         {
+            Model.PagoEnProceso = true;
+
+            if (OnPrepararPago.HasDelegate)
+            {
+                await OnPrepararPago.InvokeAsync();
+            }
+
             var ventaDto = Model.PuntoVenta.GenerarDTOVenta();
             var response = await AppServices.VentaService.Create(ventaDto);
             Model.PuntoVenta.IdempotencyKey = null;
 
             foreach (var paidItem in paidItems)
             {
-                var orderItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.IdProducto == paidItem.IdProducto);
+                var orderItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item =>
+                    item.IdProducto == paidItem.IdProducto &&
+                    item.EsTiempoMesa == paidItem.EsTiempoMesa);
                 if (orderItem is null)
                 {
                     continue;
@@ -68,10 +84,18 @@ public partial class VentaComponent
                 LimpiarVenta();
             }
 
-            await ShowSuccessMessage("Venta finalizada.");
+            if (OnVentaFinalizada.HasDelegate)
+            {
+                await OnVentaFinalizada.InvokeAsync(response);
+            }
+
+            Model.PagoEnProceso = false;
+            await ShowSuccessMessage(EsVentaMesa ? "Pago registrado." : "Venta finalizada.");
         }
         catch (Exception ex)
         {
+            Model.PagoEnProceso = false;
+
             await ShowErrorMessage(ex);
             throw;
         }
@@ -81,9 +105,28 @@ public partial class VentaComponent
     #endregion
 
     #region Event Handlers
-    private void AgregarItem(ProductosViewModel product)
+    private async Task GuardarOrdenAsync()
     {
-        var existingItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.IdProducto == product.Id);
+        if (!OnGuardarOrden.HasDelegate)
+        {
+            return;
+        }
+
+        try
+        {
+            await OnGuardarOrden.InvokeAsync();
+            await ShowSuccessMessage("Orden de mesa guardada.");
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorMessage(ex);
+        }
+    }
+
+    private void AgregarItem(Productos product)
+    {
+        var existingItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item =>
+            item.IdProducto == product.Id && !item.EsTiempoMesa);
         if (existingItem is not null)
         {
             existingItem.Cantidad = existingItem.Cantidad + 1;
@@ -102,7 +145,8 @@ public partial class VentaComponent
 
     private void EliminarItem(long productId)
     {
-        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.IdProducto == productId);
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(
+            orderItem => orderItem.IdProducto == productId && !orderItem.EsTiempoMesa);
         if (item is not null)
         {
             Model.PuntoVenta.DetalleItems.Remove(item);
@@ -162,7 +206,8 @@ public partial class VentaComponent
             return;
         }
 
-        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.IdProducto == productId);
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(
+            orderItem => orderItem.IdProducto == productId && !orderItem.EsTiempoMesa);
         if (item is null)
         {
             return;

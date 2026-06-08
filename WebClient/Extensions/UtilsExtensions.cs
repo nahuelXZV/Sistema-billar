@@ -18,4 +18,9 @@ public static class UtilsExtensions
     {
         return $"Bs {cantidad:N2}";
     }
+
+    public static string FormatoTiempo(this TimeSpan tiempo)
+    {
+        return $"{(int)tiempo.TotalHours:00}:{tiempo.Minutes:00}:{tiempo.Seconds:00}";
+    }
 }

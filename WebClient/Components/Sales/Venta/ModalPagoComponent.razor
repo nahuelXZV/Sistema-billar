@@ -26,9 +26,19 @@
 					{
 						<article class="venta-pos-payment-line @(item.IsSelected ? "is-selected" : string.Empty)">
 							<label class="venta-pos-payment-check">
-								<input type="checkbox" @bind="item.IsSelected" />
+								<input type="checkbox"
+									   disabled="@(BloquearPagoTiempo && item.EsTiempoMesa)"
+									   checked="@item.IsSelected"
+									   @onchange="@((args) => CambiarSeleccion(item, args.Value))" />
 								<span>@item.Nombre</span>
 							</label>
+
+							@if (BloquearPagoTiempo && item.EsTiempoMesa)
+							{
+								<small class="venta-pos-payment-time-warning">
+									Finaliza el cronómetro para cobrar este tiempo.
+								</small>
+							}
 
 							<div class="venta-pos-payment-line-meta">
 								<small>@($"{item.CantidadDisponible.FormatearCantidad()} disponibles")</small>

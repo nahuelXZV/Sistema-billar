@@ -10,6 +10,8 @@ public class VentaViewModel : MainViewModel
     public VendedorDTO? Vendedor { get; set; }
     public List<MesaDTO> Mesas { get; set; } = [];
     public PuntoVentaViewModel PuntoVenta { get; set; } = new();
+    public OrdenMesaDTO? OrdenMesa { get; set; }
+    public bool PagoEnProceso { get; set; }
 
     public VentaViewModel() : base() { }
 }

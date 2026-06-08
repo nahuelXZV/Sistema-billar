@@ -79,6 +79,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IMetodoPagoService, MetodoPagoService>();
         services.AddScoped<IUsoMesaService, UsoMesaService>();
         services.AddScoped<IOrdenVentaService, OrdenVentaService>();
+        services.AddScoped<IOrdenMesaService, OrdenMesaService>();
         services.AddScoped<IVentaService, VentaService>();
         services.AddScoped<IArchivoService, ArchivoService>();
         #endregion

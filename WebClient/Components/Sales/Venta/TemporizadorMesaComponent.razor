@@ -1,40 +1,70 @@
 @using Domain.DTOs.Configuration
+@using WebClient.Extensions
 @using WebClient.Models.Sales
 @inherits Components.MainBaseComponent
 
-@if (TimedProduct is not null)
+@if (ProductoTiempo is not null)
 {
 	<div class="venta-table-timer">
 		<div class="venta-table-timer-value">
 			<span>Tiempo</span>
-			<strong>@ElapsedTimeText</strong>
+			<strong>@TiempoTranscurrido.FormatoTiempo()</strong>
 		</div>
 		<div class="venta-table-timer-value">
 			<span>Tarifa/h</span>
-			<strong>@FormatMoney(TimedProduct.Precio)</strong>
+			<strong>@ProductoTiempo.Precio.FormatoDinero()</strong>
 		</div>
 		<div class="venta-table-timer-value">
 			<span>Importe</span>
-			<strong>@FormatMoney(CurrentTimeAmount)</strong>
+			<strong>@ImporteTiempoActual.FormatoDinero()</strong>
 		</div>
 
-		@if (!IsTimerFinished)
+		@if (CronometroPendiente)
 		{
-			<button type="button" class="venta-table-timer-button is-pause" @onclick="ToggleTimer">
-				<i class="bi @(IsTimerRunning ? "bi-pause-fill" : "bi-play-fill")"></i>
-				<span>@(IsTimerRunning ? "Detener" : "Continuar")</span>
+			<button type="button"
+					class="venta-table-timer-button is-pause"
+					disabled="@Iniciando"
+					@onclick="IniciarCronometroAsync">
+				@if (Iniciando)
+				{
+					<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+					<span>Iniciando...</span>
+				}
+				else
+				{
+					<i class="bi bi-play-fill"></i>
+					<span>Iniciar cronómetro</span>
+				}
 			</button>
-			<button type="button" class="venta-table-timer-button is-finish" @onclick="FinishTimerAsync">
-				<i class="bi bi-stop-fill"></i>
-				<span>Finalizar</span>
+		}
+		else if (CronometroIniciado)
+		{
+			<button type="button"
+					class="venta-table-timer-button is-finish"
+					disabled="@Finalizando"
+					@onclick="FinalizarCronometroAsync">
+				@if (Finalizando)
+				{
+					<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+					<span>Finalizando...</span>
+				}
+				else
+				{
+					<i class="bi bi-stop-fill"></i>
+					<span>Finalizar cronómetro</span>
+				}
 			</button>
 		}
 		else
 		{
 			<span class="venta-table-timer-finished">
 				<i class="bi bi-check2-circle"></i>
-				Finalizado
+				Cronómetro finalizado
 			</span>
 		}
 	</div>
+}
+else if (!string.IsNullOrWhiteSpace(MensajeTemporizador))
+{
+	<span class="venta-table-timer-finished">@MensajeTemporizador</span>
 }

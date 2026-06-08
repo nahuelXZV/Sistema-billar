@@ -12,6 +12,7 @@ public partial class ModalPagoComponent
     [Parameter] public bool Visible { get; set; }
     [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
     [Parameter] public EventCallback<IReadOnlyList<ItemsViewModel>> OnPaymentConfirmed { get; set; }
+    [Parameter] public bool BloquearPagoTiempo { get; set; }
 
     private List<MetodoPagoDTO> MetodosPago { get; set; } = [];
     private bool _wasVisible;
@@ -44,24 +45,35 @@ public partial class ModalPagoComponent
 
     private void LoadPaymentItems()
     {
-        PuntoVenta.NotaVenta = string.Empty;
-        PuntoVenta.DescuentoGlobal = 0;
-        PuntoVenta.RecargoGlobal = 0;
         SelectedMetodoPagoId = MetodosPago.FirstOrDefault()?.Id ?? 0;
         PuntoVenta.DetallePagos.Clear();
         IsNoteOpen = false;
 
         PuntoVenta.ProductosPagar = PuntoVenta.DetalleItems.Select(item => new ProductosPagar
         {
+            IdOrdenVentaDetalle = item.IdOrdenVentaDetalle,
             IdProducto = item.IdProducto,
             Nombre = item.Nombre,
             CantidadDisponible = item.Cantidad,
             CantidadPagar = item.Cantidad,
             PrecioUnitario = item.PrecioUnitario,
-            IsSelected = true
+            EsTiempoMesa = item.EsTiempoMesa,
+            IsSelected = !(BloquearPagoTiempo && item.EsTiempoMesa)
         }).ToList();
 
         MontoPagar = PuntoVenta.MontoTotal;
+    }
+
+    private void CambiarSeleccion(ProductosPagar item, object? valor)
+    {
+        if (BloquearPagoTiempo && item.EsTiempoMesa)
+        {
+            item.IsSelected = false;
+            return;
+        }
+
+        item.IsSelected = valor is bool seleccionado && seleccionado;
+        ResetSuggestedPaymentAmountIfEmpty();
     }
 
     private async Task LoadMetodosPagoAsync()
@@ -158,15 +170,17 @@ public partial class ModalPagoComponent
             MostrarAlertaCliente = true;
             return;
         }
-        
+
         MostrarAlertaCliente = false;
         var paidItems = PuntoVenta.ProductosPagar.Where(item => item.IsSelected && item.CantidadPagar > 0)
             .Select(item => new ItemsViewModel
             {
+                IdOrdenVentaDetalle = item.IdOrdenVentaDetalle,
                 IdProducto = item.IdProducto,
                 Nombre = item.Nombre,
                 Cantidad = Math.Min(item.CantidadPagar, item.CantidadDisponible),
-                PrecioUnitario = item.PrecioUnitario
+                PrecioUnitario = item.PrecioUnitario,
+                EsTiempoMesa = item.EsTiempoMesa
             }).ToList();
 
         if (paidItems.Count == 0 || !CanConfirmPayment)

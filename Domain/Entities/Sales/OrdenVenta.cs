@@ -19,4 +19,6 @@ public class OrdenVenta : Entity
     public string? Observacion { get; set; }
 
     public Cliente? Cliente { get; set; }
+    public List<OrdenVentaDetalle> ListaDetalles { get; set; } = [];
+    public List<UsoMesa> ListaUsoMesas { get; set; } = [];
 }

@@ -36,6 +36,7 @@ public class AppServices : IAppServices
     private IMetodoPagoService _metodoPagoService;
     private IUsoMesaService _usoMesaService;
     private IOrdenVentaService _ordenVentaService;
+    private IOrdenMesaService _ordenMesaService;
     private IVentaService _ventaService;
     private IArchivoService _archivoService;
 
@@ -76,6 +77,7 @@ public class AppServices : IAppServices
     public IMetodoPagoService MetodoPagoService => _metodoPagoService ??= _serviceProvider.GetService<IMetodoPagoService>();
     public IUsoMesaService UsoMesaService => _usoMesaService ??= _serviceProvider.GetService<IUsoMesaService>();
     public IOrdenVentaService OrdenVentaService => _ordenVentaService ??= _serviceProvider.GetService<IOrdenVentaService>();
+    public IOrdenMesaService OrdenMesaService => _ordenMesaService ??= _serviceProvider.GetService<IOrdenMesaService>();
     public IVentaService VentaService => _ventaService ??= _serviceProvider.GetService<IVentaService>();
     #endregion
 

@@ -13,7 +13,7 @@ public class UsoMesaConfiguration : IEntityTypeConfiguration<UsoMesa>
         builder.HasKey(a => a.Id);
 
         builder.HasOne(a => a.OrdenVenta)
-            .WithMany()
+            .WithMany(a => a.ListaUsoMesas)
             .HasForeignKey(a => a.IdOrdenVenta);
 
         builder.HasOne(a => a.Mesa)

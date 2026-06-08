@@ -31,11 +31,15 @@ else
 									   OnDecrementarCantidad="ReducirCantidad"
 									   OnCantidadModificada="SetearCantidad"
 									   OnLimpiarVenta="LimpiarVenta"
+									   MostrarGuardar="EsVentaMesa"
+									   Guardando="GuardandoOrden"
+									   OnGuardar="GuardarOrdenAsync"
 									   OnAbrirPago="MostrarModalPagoHandler" />
 			</div>
 		</div>
 
 		<ModalPagoComponent PuntoVenta="Model.PuntoVenta"
+							BloquearPagoTiempo="BloquearPagoTiempo"
 							@bind-Visible="MostrarModalPago"
 							OnPaymentConfirmed="PagoConfirmado" />
 	</section>

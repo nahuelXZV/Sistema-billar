@@ -16,9 +16,9 @@ public static class PuntoVentaUtils
         };
     }
 
-    public static CategoriasViewModel ToCategoria(CategoriaDTO categoria)
+    public static Categorias ToCategoria(CategoriaDTO categoria)
     {
-        return new CategoriasViewModel
+        return new Categorias
         {
             Id = categoria.Id,
             Nombre = categoria.Nombre ?? string.Empty,
@@ -29,9 +29,9 @@ public static class PuntoVentaUtils
         };
     }
 
-    public static ProductosViewModel ToProducto(ProductoDTO producto, string categoryLabel = "")
+    public static Productos ToProducto(ProductoDTO producto, string categoryLabel = "")
     {
-        return new ProductosViewModel
+        return new Productos
         {
             Id = producto.Id,
             Nombre = producto.Nombre,

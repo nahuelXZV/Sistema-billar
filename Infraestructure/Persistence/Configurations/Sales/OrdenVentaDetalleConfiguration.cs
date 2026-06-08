@@ -28,7 +28,7 @@ public class OrdenVentaDetalleConfiguration : IEntityTypeConfiguration<OrdenVent
             .HasPrecision(18, 2);
 
         builder.HasOne(a => a.OrdenVenta)
-            .WithMany()
+            .WithMany(a => a.ListaDetalles)
             .HasForeignKey(a => a.IdOrdenVenta);
 
         builder.HasOne(a => a.Producto)

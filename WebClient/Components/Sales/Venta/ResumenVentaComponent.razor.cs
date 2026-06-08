@@ -13,6 +13,9 @@ public partial class ResumenVentaComponent
     [Parameter] public EventCallback<CantidadModificada> OnCantidadModificada { get; set; }
     [Parameter] public EventCallback OnLimpiarVenta { get; set; }
     [Parameter] public EventCallback OnAbrirPago { get; set; }
+    [Parameter] public EventCallback OnGuardar { get; set; }
+    [Parameter] public bool MostrarGuardar { get; set; }
+    [Parameter] public bool Guardando { get; set; }
 
     private Task EliminarItem(long productId)
     {
@@ -47,6 +50,11 @@ public partial class ResumenVentaComponent
     private Task AbrirModalPago()
     {
         return OnAbrirPago.InvokeAsync();
+    }
+
+    private Task Guardar()
+    {
+        return OnGuardar.InvokeAsync();
     }
 
     private static decimal ParseQuantity(object? value)

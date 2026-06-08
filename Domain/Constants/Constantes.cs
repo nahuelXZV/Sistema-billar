@@ -34,4 +34,17 @@ public static class Constantes
         Producto = 1,
         Servicio = 2
     }
+
+    public enum EstadoOrdenVenta
+    {
+        Abierta = 1,
+        Cerrada = 2
+    }
+
+    public enum EstadoUsoMesa
+    {
+        Pendiente = 1,
+        EnCurso = 2,
+        Finalizado = 3
+    }
 }

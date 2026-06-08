@@ -6,6 +6,9 @@ namespace WebClient.Models.Sales;
 public class PuntoVentaViewModel
 {
     public Guid? IdempotencyKey { get; set; }
+    public long? IdOrdenVenta { get; set; }
+    public long? IdUsoMesa { get; set; }
+    public long? IdMesa { get; set; }
     public long IdVendedor { get; set; }
     public long? IdListaPrecio { get; set; }
     public string NombreVendedor { get; set; } = string.Empty;
@@ -27,11 +30,11 @@ public class PuntoVentaViewModel
     #endregion
 
     #region Navigation State
-    public List<CategoriasViewModel> RootCategories { get; set; } = [];
-    public CategoriasViewModel? CurrentNode { get; set; }
-    public List<CategoriasViewModel> SelectedPath { get; set; } = [];
-    public IReadOnlyList<CategoriasViewModel> VisibleCategories => CurrentNode is null ? RootCategories : CurrentNode.SubCategorias;
-    public IReadOnlyList<ProductosViewModel> VisibleProducts => ShowingProducts && CurrentNode is not null ? CurrentNode.Productos : [];
+    public List<Categorias> RootCategories { get; set; } = [];
+    public Categorias? CurrentNode { get; set; }
+    public List<Categorias> SelectedPath { get; set; } = [];
+    public IReadOnlyList<Categorias> VisibleCategories => CurrentNode is null ? RootCategories : CurrentNode.SubCategorias;
+    public IReadOnlyList<Productos> VisibleProducts => ShowingProducts && CurrentNode is not null ? CurrentNode.Productos : [];
     public bool ShowingProducts => CurrentNode is not null && CurrentNode.SubCategorias.Count == 0;
     #endregion
 
@@ -46,7 +49,7 @@ public class PuntoVentaViewModel
             IdempotencyKey = IdempotencyKey,
             Fecha = DateTime.Now,
             IdCliente = ClienteSeleccionado!.Id,
-            IdOrdenVenta = 0,
+            IdOrdenVenta = IdOrdenVenta,
             IdVendedor = IdVendedor,
             TotalPagado = TotalPagado,
             Cambio = Cambio,
@@ -57,7 +60,7 @@ public class PuntoVentaViewModel
             Total = MontoTotal,
             ListaDetalles = ProductosPagar.Where(d => d.IsSelected).Select(d => new VentaDetalleDTO()
             {
-                IdOrdenVentaDetalle = 0,
+                IdOrdenVentaDetalle = d.IdOrdenVentaDetalle,
                 IdProducto = d.IdProducto,
                 Cantidad = d.CantidadPagar,
                 Descuento = 0,
@@ -84,11 +87,10 @@ public class PuntoVentaViewModel
         {
             throw new Exception("Debe seleccionar un cliente");
         }
-
     }
 }
 
-public class CategoriasViewModel
+public class Categorias
 {
     public long Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
@@ -97,11 +99,11 @@ public class CategoriasViewModel
     public string IconCss { get; set; } = string.Empty;
     public string ToneClass { get; set; } = string.Empty;
     public bool ContentLoaded { get; set; }
-    public List<CategoriasViewModel> SubCategorias { get; set; } = [];
-    public List<ProductosViewModel> Productos { get; set; } = [];
+    public List<Categorias> SubCategorias { get; set; } = [];
+    public List<Productos> Productos { get; set; } = [];
 }
 
-public class ProductosViewModel
+public class Productos
 {
     public long Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
@@ -114,10 +116,12 @@ public class ProductosViewModel
 
 public class ItemsViewModel
 {
+    public long? IdOrdenVentaDetalle { get; set; }
     public long IdProducto { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public decimal Cantidad { get; set; }
     public decimal PrecioUnitario { get; set; }
+    public bool EsTiempoMesa { get; set; }
     public decimal Total => Cantidad * PrecioUnitario;
 }
 
@@ -140,11 +144,13 @@ public class DetallesPago
 
 public class ProductosPagar
 {
+    public long? IdOrdenVentaDetalle { get; set; }
     public long IdProducto { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public decimal CantidadDisponible { get; set; }
     public decimal CantidadPagar { get; set; }
     public decimal PrecioUnitario { get; set; }
+    public bool EsTiempoMesa { get; set; }
     public bool IsSelected { get; set; }
     public decimal Total => CantidadPagar * PrecioUnitario;
 }

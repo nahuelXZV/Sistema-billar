@@ -26,24 +26,34 @@
 				<div class="venta-pos-order-content d-flex flex-column">
 					<div class="venta-pos-order-head d-flex justify-content-between align-items-center gap-2">
 						<strong>@item.Nombre</strong>
-						<button type="button" class="venta-pos-remove-button" @onclick="@(() => EliminarItem(item.IdProducto))">
-							<i class="bi bi-x-lg"></i>
-						</button>
+						@if (!item.EsTiempoMesa)
+						{
+							<button type="button" class="venta-pos-remove-button" @onclick="@(() => EliminarItem(item.IdProducto))">
+								<i class="bi bi-x-lg"></i>
+							</button>
+						}
 					</div>
 
 					<div class="venta-pos-order-row d-flex justify-content-between align-items-center gap-2">
-						<div class="venta-pos-stepper d-flex align-items-center">
-							<button type="button" @onclick="@(() => DecrementarCantidad(item.IdProducto))">
-								<i class="bi bi-dash"></i>
-							</button>
-							<input type="text"
-								   inputmode="decimal"
-								   value="@item.Cantidad.FormatearCantidad()"
-								   @onchange="@((args) => SetearCantidad(item, ParseQuantity(args.Value)))" />
-							<button type="button" @onclick="@(() => IncrementarCantidad(item.IdProducto))">
-								<i class="bi bi-plus"></i>
-							</button>
-						</div>
+						@if (item.EsTiempoMesa)
+						{
+							<span>@($"{item.Cantidad:0.00} horas")</span>
+						}
+						else
+						{
+							<div class="venta-pos-stepper d-flex align-items-center">
+								<button type="button" @onclick="@(() => DecrementarCantidad(item.IdProducto))">
+									<i class="bi bi-dash"></i>
+								</button>
+								<input type="text"
+									   inputmode="decimal"
+									   value="@item.Cantidad.FormatearCantidad()"
+									   @onchange="@((args) => SetearCantidad(item, ParseQuantity(args.Value)))" />
+								<button type="button" @onclick="@(() => IncrementarCantidad(item.IdProducto))">
+									<i class="bi bi-plus"></i>
+								</button>
+							</div>
+						}
 
 						<strong class="venta-pos-order-price">@item.Total.FormatoDinero()</strong>
 					</div>
@@ -60,9 +70,28 @@
 	</div>
 
 	<div class="venta-pos-payment-grid d-flex gap-2 mt-2">
+		@if (MostrarGuardar)
+		{
+			<button type="button"
+					class="venta-pos-payment-button"
+					disabled="@Guardando"
+					@onclick="Guardar">
+				@if (Guardando)
+				{
+					<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+					<span>Guardando...</span>
+				}
+				else
+				{
+					<i class="bi bi-floppy"></i>
+					<span>Guardar</span>
+				}
+			</button>
+		}
+
 		<button type="button"
 				class="venta-pos-payment-button is-primary"
-				disabled="@(PuntoVenta.DetalleItems.Count == 0)"
+				disabled="@(Guardando || PuntoVenta.DetalleItems.Count == 0)"
 				@onclick="AbrirModalPago">
 			<i class="bi bi-cash"></i>
 			<span>Pagar</span>

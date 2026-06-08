@@ -1,7 +1,9 @@
 @using Domain.DTOs.Configuration
+@using WebClient.Components.Shared.Elements
 @using WebClient.Models.Sales
+@inherits Components.MainBaseComponent
 
-@if (SelectedVentaModel is null)
+@if (ModeloVentaSeleccionada is null)
 {
 	<section class="venta-pos-app venta-tables-app">
 		<div class="venta-tables-header">
@@ -11,18 +13,18 @@
 			</div>
 
 			<div class="venta-tables-actions">
-				<button type="button" class="venta-table-direct-button" @onclick="OpenDirectSale">
+				<button type="button" class="venta-table-direct-button" @onclick="AbrirVentaDirecta">
 					<i class="bi bi-cash-register"></i>
 					<span>Venta directa</span>
 				</button>
 
 				<div class="venta-tables-stats">
 					<div>
-						<strong>@ActiveTablesCount</strong>
+						<strong>@CantidadMesasActivas</strong>
 						<span>Activas</span>
 					</div>
 					<div>
-						<strong>@InactiveTablesCount</strong>
+						<strong>@CantidadMesasInactivas</strong>
 						<span>Inactivas</span>
 					</div>
 				</div>
@@ -43,13 +45,14 @@
 				@foreach (var mesa in Model.Mesas)
 				{
 					<button type="button"
-							class="venta-table-card @(mesa.Activo ? "is-free" : "is-disabled")"
-							@onclick="@(() => SelectMesa(mesa))">
+							class="venta-table-card @ObtenerClaseMesa(mesa)"
+							disabled="@(!mesa.Activo)"
+							@onclick="@(() => SeleccionarMesaAsync(mesa))">
 						<div class="venta-table-card-head">
 							<div class="venta-table-icon">
 								<i class="bi bi-bounding-box-circles"></i>
 							</div>
-							<span class="venta-table-status">@GetMesaEstado(mesa)</span>
+							<span class="venta-table-status">@ObtenerEstadoMesa(mesa)</span>
 						</div>
 
 						<div class="venta-table-copy">
@@ -58,7 +61,7 @@
 						</div>
 
 						<div class="venta-table-card-foot">
-							<span>@GetMesaAccion(mesa)</span>
+							<span>@ObtenerAccionMesa(mesa)</span>
 							<i class="bi bi-arrow-right"></i>
 						</div>
 					</button>
@@ -71,24 +74,54 @@ else
 {
 	<section class="venta-pos-app">
 		<nav class="venta-table-sale-nav">
-			<button type="button" class="venta-pos-back-button" @onclick="BackToTables">
+			<button type="button" class="venta-pos-back-button" @onclick="SolicitarVolverAMesas">
 				<i class="bi bi-arrow-left"></i>
 				<span>Volver a mesas</span>
 			</button>
 
-			@if (SelectedMesa is not null)
+			@if (MesaSeleccionada is not null)
 			{
-				<TemporizadorMesaComponent Mesa="SelectedMesa"
-										   Venta="SelectedVentaModel"
-										   OnTiempoFinalizado="TiempoFinalizado" />
+				<TemporizadorMesaComponent Mesa="MesaSeleccionada"
+										   Venta="ModeloVentaSeleccionada"
+										   OnGuardarOrden="GuardarOrdenMesaAsync"
+										   OnOrdenActualizada="OrdenActualizada" />
 			}
 
 			<div class="venta-table-sale-title">
-				<span>@SaleContextLabel</span>
-				<strong>@SaleContextTitle</strong>
+				<span>@EtiquetaContextoVenta</span>
+				<strong>@TituloContextoVenta</strong>
 			</div>
 		</nav>
 
-		<VentaComponent Model="SelectedVentaModel" />
+		<VentaComponent Model="ModeloVentaSeleccionada"
+						EsVentaMesa="@(MesaSeleccionada is not null)"
+						GuardandoOrden="GuardandoOrden"
+						OnGuardarOrden="GuardarOrdenMesaAsync"
+						OnPrepararPago="PrepararPagoAsync"
+						OnVentaFinalizada="VentaFinalizadaAsync" />
 	</section>
 }
+
+<IUModal Title="Cambios sin guardar" @bind-Visible="MostrarConfirmacionVolver">
+	<Body>
+		<div class="venta-table-exit-confirmation">
+			<i class="bi bi-exclamation-triangle"></i>
+			<div>
+				<strong>Hay cambios que todavía no fueron guardados.</strong>
+				<span>Si vuelves a las mesas ahora, esos cambios se perderán.</span>
+			</div>
+		</div>
+	</Body>
+	<Footer>
+		<button type="button"
+				class="venta-pos-client-modal-button is-secondary"
+				@onclick="CancelarVolverAMesas">
+			Seguir editando
+		</button>
+		<button type="button"
+				class="venta-pos-client-modal-button is-primary"
+				@onclick="ConfirmarVolverAMesas">
+			Volver sin guardar
+		</button>
+	</Footer>
+</IUModal>
