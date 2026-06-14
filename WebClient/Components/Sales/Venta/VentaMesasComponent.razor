@@ -47,7 +47,7 @@
 					<button type="button"
 							class="venta-table-card @ObtenerClaseMesa(mesa)"
 							disabled="@(!mesa.Activo)"
-							@onclick="@(() => SeleccionarMesaAsync(mesa))">
+							@onclick="@(() => SeleccionarMesaHandler(mesa))">
 						<div class="venta-table-card-head">
 							<div class="venta-table-icon">
 								<i class="bi bi-bounding-box-circles"></i>

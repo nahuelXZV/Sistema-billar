@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Domain.Common;
 using Domain.DTOs.Sales;
 using Domain.Entities.Inventory;
+using Domain.Utils;
 using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,13 +66,13 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
                 throw new InvalidOperationException($"El descuento del producto {detalle.IdProducto} no puede ser negativo.");
             }
 
-            var subtotalDetalle = Redondear(detalle.Cantidad * detalle.PrecioUnitario);
+            var subtotalDetalle = Utils.Redondear(detalle.Cantidad * detalle.PrecioUnitario);
             if (descuentoDetalle > subtotalDetalle)
             {
                 throw new InvalidOperationException($"El descuento del producto {detalle.IdProducto} no puede superar su subtotal.");
             }
 
-            var totalDetalle = Redondear(subtotalDetalle - descuentoDetalle);
+            var totalDetalle = Utils.Redondear(subtotalDetalle - descuentoDetalle);
             if (!Coincide(detalle.SubTotal, subtotalDetalle) || !Coincide(detalle.Total, totalDetalle))
             {
                 throw new InvalidOperationException($"Los importes del producto {detalle.IdProducto} no coinciden con su cantidad, precio y descuento.");
@@ -81,15 +82,15 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
             totalDetallesCalculado += totalDetalle;
         }
 
-        subtotalCalculado = Redondear(subtotalCalculado);
-        totalDetallesCalculado = Redondear(totalDetallesCalculado);
+        subtotalCalculado = Utils.Redondear(subtotalCalculado);
+        totalDetallesCalculado = Utils.Redondear(totalDetallesCalculado);
 
         if (venta.Descuento > totalDetallesCalculado)
         {
             throw new InvalidOperationException("El descuento de la venta no puede superar el total de sus detalles.");
         }
 
-        var totalCalculado = Redondear(totalDetallesCalculado - venta.Descuento + venta.Recargo);
+        var totalCalculado = Utils.Redondear(totalDetallesCalculado - venta.Descuento + venta.Recargo);
 
         if (totalCalculado <= 0)
         {
@@ -114,7 +115,7 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
             }
         }
 
-        var totalPagosCalculado = Redondear(pagos.Sum(pago => pago.MontoTotal));
+        var totalPagosCalculado = Utils.Redondear(pagos.Sum(pago => pago.MontoTotal));
         if (!Coincide(venta.TotalPagado, totalPagosCalculado))
         {
             throw new InvalidOperationException("El total pagado no coincide con la suma de los pagos.");
@@ -125,7 +126,7 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
             throw new InvalidOperationException("El total pagado no cubre el total de la venta.");
         }
 
-        var cambioCalculado = Redondear(totalPagosCalculado - totalCalculado);
+        var cambioCalculado = Utils.Redondear(totalPagosCalculado - totalCalculado);
         if (!Coincide(venta.Cambio, cambioCalculado))
         {
             throw new InvalidOperationException("El cambio no coincide con el total pagado y el total de la venta.");
@@ -140,10 +141,7 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
             .ToList();
 
         var productosValidos = await _productoRepository.Query()
-            .Where(producto =>
-                idsProductos.Contains(producto.Id) &&
-                producto.Activo &&
-                !producto.Eliminado)
+            .Where(producto => idsProductos.Contains(producto.Id) && producto.Activo && !producto.Eliminado)
             .Select(producto => producto.Id)
             .ToListAsync(tokenCancelacion);
 
@@ -157,9 +155,5 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
         }
     }
 
-    private static decimal Redondear(decimal valor) =>
-        Math.Round(valor, 2, MidpointRounding.AwayFromZero);
-
-    private static bool Coincide(decimal valorRecibido, decimal valorCalculado) =>
-        Redondear(valorRecibido) == Redondear(valorCalculado);
+    private static bool Coincide(decimal valorRecibido, decimal valorCalculado) => Utils.Redondear(valorRecibido) == Utils.Redondear(valorCalculado);
 }

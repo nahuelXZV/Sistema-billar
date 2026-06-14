@@ -34,7 +34,9 @@ public partial class VentaMesasComponent
         }
     }
 
-    private async Task SeleccionarMesaAsync(MesaDTO mesa)
+
+    #region Seleccionar Mesa
+    private async Task SeleccionarMesaHandler(MesaDTO mesa)
     {
         if (!mesa.Activo)
         {
@@ -42,7 +44,7 @@ public partial class VentaMesasComponent
         }
 
         MesaSeleccionada = mesa;
-        var modelo = CrearModeloVenta();
+        var modelo = CrearVentaViewModel();
 
         if (!_ordenesPorMesa.TryGetValue(mesa.Id, out var ordenMesa))
         {
@@ -61,7 +63,7 @@ public partial class VentaMesasComponent
 
         modelo.OrdenMesa = ordenMesa;
         modelo.PuntoVenta.IdMesa = mesa.Id;
-        modelo.PuntoVenta.IdOrdenVenta = ordenMesa.IdOrdenVenta > 0 ? ordenMesa.IdOrdenVenta : null;
+        modelo.PuntoVenta.IdOrdenVenta = ordenMesa.Id > 0 ? ordenMesa.Id : null;
         modelo.PuntoVenta.IdUsoMesa = ordenMesa.IdUsoMesa > 0 ? ordenMesa.IdUsoMesa : null;
         ModeloVentaSeleccionada = modelo;
         _firmaOrdenGuardada = CrearFirmaOrden(modelo);
@@ -70,11 +72,11 @@ public partial class VentaMesasComponent
     private void AbrirVentaDirecta()
     {
         MesaSeleccionada = null;
-        ModeloVentaSeleccionada = CrearModeloVenta();
+        ModeloVentaSeleccionada = CrearVentaViewModel();
         _firmaOrdenGuardada = CrearFirmaOrden(ModeloVentaSeleccionada);
     }
 
-    private VentaViewModel CrearModeloVenta()
+    private VentaViewModel CrearVentaViewModel()
     {
         var puntoVentaBase = Model.PuntoVenta;
         var puntoVenta = new PuntoVentaViewModel
@@ -111,7 +113,7 @@ public partial class VentaMesasComponent
     private async Task RestaurarOrdenAsync(VentaViewModel modelo, OrdenMesaDTO ordenMesa)
     {
         var puntoVenta = modelo.PuntoVenta;
-        puntoVenta.IdOrdenVenta = ordenMesa.IdOrdenVenta;
+        puntoVenta.IdOrdenVenta = ordenMesa.Id;
         puntoVenta.IdUsoMesa = ordenMesa.IdUsoMesa;
         puntoVenta.IdMesa = ordenMesa.IdMesa;
         puntoVenta.DescuentoGlobal = ordenMesa.DescuentoGlobal;
@@ -133,7 +135,9 @@ public partial class VentaMesasComponent
             EsTiempoMesa = detalle.EsTiempoMesa
         }).ToList();
     }
+    #endregion
 
+    #region Guardar orden y preparar pago
     private async Task GuardarOrdenMesaAsync()
     {
         if (MesaSeleccionada is null || ModeloVentaSeleccionada is null || GuardandoOrden)
@@ -148,7 +152,7 @@ public partial class VentaMesasComponent
             var ordenGuardada = await AppServices.OrdenMesaService.Guardar(solicitud);
 
             ModeloVentaSeleccionada.OrdenMesa = ordenGuardada;
-            ModeloVentaSeleccionada.PuntoVenta.IdOrdenVenta = ordenGuardada.IdOrdenVenta;
+            ModeloVentaSeleccionada.PuntoVenta.IdOrdenVenta = ordenGuardada.Id;
             ModeloVentaSeleccionada.PuntoVenta.IdUsoMesa = ordenGuardada.IdUsoMesa;
             ActualizarIdsDetalles(ordenGuardada);
             _ordenesPorMesa[MesaSeleccionada.Id] = ordenGuardada;
@@ -169,7 +173,7 @@ public partial class VentaMesasComponent
 
         return new OrdenMesaDTO
         {
-            IdOrdenVenta = ordenActual.IdOrdenVenta,
+            Id = ordenActual.Id,
             IdUsoMesa = ordenActual.IdUsoMesa,
             IdMesa = mesa.Id,
             IdCliente = puntoVenta.ClienteSeleccionado?.Id,
@@ -275,15 +279,14 @@ public partial class VentaMesasComponent
 
     private void OrdenActualizada(OrdenMesaDTO ordenMesa)
     {
-        if (ModeloVentaSeleccionada is null)
-        {
-            return;
-        }
+        if (ModeloVentaSeleccionada is null) return;
 
         ModeloVentaSeleccionada.OrdenMesa = ordenMesa;
         _ordenesPorMesa[ordenMesa.IdMesa] = ordenMesa;
     }
+    #endregion
 
+    #region Volver a mesas
     private void SolicitarVolverAMesas()
     {
         if (HayCambiosSinGuardar())
@@ -312,7 +315,9 @@ public partial class VentaMesasComponent
         ModeloVentaSeleccionada = null;
         _firmaOrdenGuardada = string.Empty;
     }
+    #endregion
 
+    #region Firma de cambios
     private bool HayCambiosSinGuardar()
     {
         return ModeloVentaSeleccionada is not null && _firmaOrdenGuardada != CrearFirmaOrden(ModeloVentaSeleccionada);
@@ -348,7 +353,9 @@ public partial class VentaMesasComponent
 
         return JsonSerializer.Serialize(estado);
     }
+    #endregion
 
+    #region Utils
     private string ObtenerEstadoMesa(MesaDTO mesa)
     {
         if (!mesa.Activo)
@@ -378,4 +385,6 @@ public partial class VentaMesasComponent
 
         return _ordenesPorMesa.ContainsKey(mesa.Id) ? "is-busy" : "is-free";
     }
+    #endregion
 }
+

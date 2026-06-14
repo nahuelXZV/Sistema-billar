@@ -2,7 +2,7 @@ namespace Domain.DTOs.Sales;
 
 public class OrdenMesaDTO
 {
-    public long IdOrdenVenta { get; set; }
+    public long Id { get; set; }
     public long IdUsoMesa { get; set; }
     public long IdMesa { get; set; }
     public long? IdCliente { get; set; }
@@ -13,7 +13,7 @@ public class OrdenMesaDTO
     public DateTime FechaApertura { get; set; }
     public DateTime FechaInicio { get; set; }
     public DateTime? FechaFin { get; set; }
-    public double MinutosConsumidos { get; set; }
+    public decimal MinutosConsumidos { get; set; }
     public decimal TarifaAplicada { get; set; }
     public decimal MontoCalculado { get; set; }
     public decimal DescuentoGlobal { get; set; }

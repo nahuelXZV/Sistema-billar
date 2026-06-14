@@ -5,7 +5,7 @@ using Domain.Entities.Sales;
 using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static Domain.Constants.Constantes;
-using Application.Helpers;
+using Application.Common.Utils;
 
 namespace Application.Features.Sales.OrdenMesas.Queries;
 
@@ -20,10 +20,7 @@ public class GetOrdenMesaByMesaQueryHandler : ICommandHandler<GetOrdenMesaByMesa
     private readonly IRepository<OrdenVentaDetalle> _detalleRepository;
     private readonly IRepository<UsoMesa> _usoMesaRepository;
 
-    public GetOrdenMesaByMesaQueryHandler(
-        IRepository<OrdenVenta> ordenRepository,
-        IRepository<OrdenVentaDetalle> detalleRepository,
-        IRepository<UsoMesa> usoMesaRepository)
+    public GetOrdenMesaByMesaQueryHandler(IRepository<OrdenVenta> ordenRepository, IRepository<OrdenVentaDetalle> detalleRepository, IRepository<UsoMesa> usoMesaRepository)
     {
         _ordenRepository = ordenRepository;
         _detalleRepository = detalleRepository;
@@ -32,33 +29,25 @@ public class GetOrdenMesaByMesaQueryHandler : ICommandHandler<GetOrdenMesaByMesa
 
     public async Task<Response<OrdenMesaDTO?>> Handle(GetOrdenMesaByMesaQuery request, CancellationToken tokenCancelacion)
     {
-        var usoMesa = await (
-            from uso in _usoMesaRepository.Query()
-            join ordenActual in _ordenRepository.Query()
-                on uso.IdOrdenVenta equals ordenActual.Id
-            where !uso.Eliminado &&
-                  uso.IdMesa == request.IdMesa &&
-                  !ordenActual.Eliminado &&
-                  ordenActual.Estado == (short)EstadoOrdenVenta.Abierta
-            select uso)
-            .FirstOrDefaultAsync(tokenCancelacion);
+        var usoMesa = await (from uso in _usoMesaRepository.Query()
+                             join ordenActual in _ordenRepository.Query()
+                                 on uso.IdOrdenVenta equals ordenActual.Id
+                             where !uso.Eliminado && uso.IdMesa == request.IdMesa &&
+                                   !ordenActual.Eliminado && ordenActual.Estado == (short)EstadoOrdenVenta.Abierta
+                             select uso).FirstOrDefaultAsync(tokenCancelacion);
 
         if (usoMesa is null) return CrearRespuestaVacia();
 
         var orden = await _ordenRepository.Query()
-            .FirstOrDefaultAsync(
-                ordenActual => !ordenActual.Eliminado &&
-                               ordenActual.Id == usoMesa.IdOrdenVenta &&
-                               ordenActual.Estado == (short)EstadoOrdenVenta.Abierta,
-                tokenCancelacion);
+            .FirstOrDefaultAsync(oa => !oa.Eliminado && oa.Id == usoMesa.IdOrdenVenta && oa.Estado == (short)EstadoOrdenVenta.Abierta, tokenCancelacion);
 
         if (orden is null) return CrearRespuestaVacia();
 
-        var detalles = await _detalleRepository.Query()
-            .Where(detalle => !detalle.Eliminado && detalle.IdOrdenVenta == orden.Id)
+        var detalles = await _detalleRepository.Query().Where(detalle => !detalle.Eliminado && detalle.IdOrdenVenta == orden.Id)
             .ToListAsync(tokenCancelacion);
 
-        return new Response<OrdenMesaDTO?>(OrdenMesaMapeo.Crear(orden, usoMesa, detalles));
+        var ordenMesaResponse = OrdenMesaUtils.Mapear(orden, usoMesa, detalles);
+        return new Response<OrdenMesaDTO?>(ordenMesaResponse);
     }
 
     private static Response<OrdenMesaDTO?> CrearRespuestaVacia() => new()

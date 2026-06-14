@@ -8,9 +8,9 @@ public class UsoMesa : Entity
     public long IdMesa { get; set; }
     public DateTime FechaInicio { get; set; }
     public DateTime? FechaFin { get; set; }
-    public double MinutosConsumidos { get; set; }
-    public double TarifaAplicada { get; set; }
-    public double MontoCalculado { get; set; }
+    public decimal MinutosConsumidos { get; set; }
+    public decimal TarifaAplicada { get; set; }
+    public decimal MontoCalculado { get; set; }
     public short Estado { get; set; }
     public string Observacion { get; set; } = string.Empty;
 

@@ -171,8 +171,7 @@ public partial class BuscarClienteComponent : IDisposable
 
     private static string GetClienteDetail(ClienteDTO cliente)
     {
-        var values = new[] { cliente.Documento, cliente.Telefono }
-            .Where(value => !string.IsNullOrWhiteSpace(value));
+        var values = new[] { cliente.Documento, cliente.Telefono }.Where(value => !string.IsNullOrWhiteSpace(value));
 
         return string.Join(" | ", values);
     }

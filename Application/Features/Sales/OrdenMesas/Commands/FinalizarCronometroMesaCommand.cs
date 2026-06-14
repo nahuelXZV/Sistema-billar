@@ -1,8 +1,9 @@
-using Application.Helpers;
+using Application.Common.Utils;
 using Application.Interfaces;
 using Domain.Common;
 using Domain.DTOs.Sales;
 using Domain.Entities.Sales;
+using Domain.Utils;
 using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static Domain.Constants.Constantes;
@@ -20,10 +21,7 @@ public class FinalizarCronometroMesaCommandHandler : ICommandHandler<FinalizarCr
     private readonly IRepository<OrdenVentaDetalle> _detalleRepository;
     private readonly IRepository<UsoMesa> _usoMesaRepository;
 
-    public FinalizarCronometroMesaCommandHandler(
-        IRepository<OrdenVenta> ordenRepository,
-        IRepository<OrdenVentaDetalle> detalleRepository,
-        IRepository<UsoMesa> usoMesaRepository)
+    public FinalizarCronometroMesaCommandHandler(IRepository<OrdenVenta> ordenRepository, IRepository<OrdenVentaDetalle> detalleRepository, IRepository<UsoMesa> usoMesaRepository)
     {
         _ordenRepository = ordenRepository;
         _detalleRepository = detalleRepository;
@@ -33,17 +31,11 @@ public class FinalizarCronometroMesaCommandHandler : ICommandHandler<FinalizarCr
     public async Task<Response<OrdenMesaDTO>> Handle(FinalizarCronometroMesaCommand request, CancellationToken tokenCancelacion)
     {
         var orden = await _ordenRepository.Query()
-            .FirstOrDefaultAsync(
-                ordenActual => !ordenActual.Eliminado &&
-                               ordenActual.Id == request.IdOrdenVenta &&
-                               ordenActual.Estado == (short)EstadoOrdenVenta.Abierta,
-                tokenCancelacion)
+            .FirstOrDefaultAsync(oa => !oa.Eliminado && oa.Id == request.IdOrdenVenta && oa.Estado == (short)EstadoOrdenVenta.Abierta, tokenCancelacion)
             ?? throw new InvalidOperationException("La orden de mesa no existe o ya fue cerrada.");
 
         var usoMesa = await _usoMesaRepository.Query()
-            .FirstOrDefaultAsync(
-                uso => !uso.Eliminado && uso.IdOrdenVenta == orden.Id,
-                tokenCancelacion)
+            .FirstOrDefaultAsync(uso => !uso.Eliminado && uso.IdOrdenVenta == orden.Id, tokenCancelacion)
             ?? throw new InvalidOperationException("El uso asociado a la mesa no existe.");
 
         if (usoMesa.Estado != (short)EstadoUsoMesa.EnCurso)
@@ -52,7 +44,7 @@ public class FinalizarCronometroMesaCommandHandler : ICommandHandler<FinalizarCr
         }
 
         var ahora = DateTime.Now;
-        usoMesa.MinutosConsumidos = Math.Max(0, (ahora - usoMesa.FechaInicio).TotalMinutes);
+        usoMesa.MinutosConsumidos = (decimal)Math.Max(0, (ahora - usoMesa.FechaInicio).TotalMinutes);
         usoMesa.MontoCalculado = usoMesa.MinutosConsumidos / 60 * usoMesa.TarifaAplicada;
         usoMesa.FechaFin = ahora;
         usoMesa.Estado = (short)EstadoUsoMesa.Finalizado;
@@ -70,33 +62,21 @@ public class FinalizarCronometroMesaCommandHandler : ICommandHandler<FinalizarCr
 
         if (detalleTiempo is not null)
         {
-            detalleTiempo.Cantidad = Math.Max(
-                0.01m,
-                Redondear((decimal)usoMesa.MinutosConsumidos / 60));
-            detalleTiempo.SubTotal = Redondear(
-                detalleTiempo.Cantidad * detalleTiempo.PrecioUnitario);
+            detalleTiempo.Cantidad = Math.Max(0.01m, Utils.Redondear((decimal)usoMesa.MinutosConsumidos / 60));
+            detalleTiempo.SubTotal = Utils.Redondear(detalleTiempo.Cantidad * detalleTiempo.PrecioUnitario);
             detalleTiempo.Descuento = Math.Min(detalleTiempo.Descuento, detalleTiempo.SubTotal);
-            detalleTiempo.Total = Redondear(detalleTiempo.SubTotal - detalleTiempo.Descuento);
+            detalleTiempo.Total = Utils.Redondear(detalleTiempo.SubTotal - detalleTiempo.Descuento);
             _detalleRepository.Update(detalleTiempo);
         }
 
-        orden.SubTotalProductos = Redondear(detalles
-            .Where(detalle => !detalle.IdUsoMesa.HasValue)
-            .Sum(detalle => detalle.Total));
-        orden.SubTotalTiempo = Redondear(detalles
-            .Where(detalle => detalle.IdUsoMesa.HasValue)
-            .Sum(detalle => detalle.Total));
-        orden.Total = Redondear(
-            orden.SubTotalProductos +
-            orden.SubTotalTiempo -
-            orden.DescuentoGlobal +
-            orden.RecargoGlobal);
+        orden.SubTotalProductos = Utils.Redondear(detalles.Where(detalle => !detalle.IdUsoMesa.HasValue).Sum(detalle => detalle.Total));
+        orden.SubTotalTiempo = Utils.Redondear(detalles.Where(detalle => detalle.IdUsoMesa.HasValue).Sum(detalle => detalle.Total));
+        orden.Total = Utils.Redondear(orden.SubTotalProductos + orden.SubTotalTiempo - orden.DescuentoGlobal + orden.RecargoGlobal);
         orden.SaldoPendiente = orden.Total;
         _ordenRepository.Update(orden);
 
         await _usoMesaRepository.UnitOfWork.SaveEntitiesAsync(tokenCancelacion);
-        return new Response<OrdenMesaDTO>(OrdenMesaMapeo.Crear(orden, usoMesa, detalles));
+        var ordenMesaResponse = OrdenMesaUtils.Mapear(orden, usoMesa, detalles);
+        return new Response<OrdenMesaDTO>(ordenMesaResponse);
     }
-
-    private static decimal Redondear(decimal valor) => Math.Round(valor, 2, MidpointRounding.AwayFromZero);
 }

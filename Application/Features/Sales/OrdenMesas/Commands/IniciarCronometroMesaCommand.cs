@@ -5,7 +5,7 @@ using Domain.Entities.Sales;
 using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static Domain.Constants.Constantes;
-using Application.Helpers;
+using Application.Common.Utils;
 
 namespace Application.Features.Sales.OrdenMesas.Commands;
 
@@ -20,10 +20,7 @@ public class IniciarCronometroMesaCommandHandler : ICommandHandler<IniciarCronom
     private readonly IRepository<OrdenVentaDetalle> _detalleRepository;
     private readonly IRepository<UsoMesa> _usoMesaRepository;
 
-    public IniciarCronometroMesaCommandHandler(
-        IRepository<OrdenVenta> ordenRepository,
-        IRepository<OrdenVentaDetalle> detalleRepository,
-        IRepository<UsoMesa> usoMesaRepository)
+    public IniciarCronometroMesaCommandHandler(IRepository<OrdenVenta> ordenRepository, IRepository<OrdenVentaDetalle> detalleRepository, IRepository<UsoMesa> usoMesaRepository)
     {
         _ordenRepository = ordenRepository;
         _detalleRepository = detalleRepository;
@@ -32,21 +29,13 @@ public class IniciarCronometroMesaCommandHandler : ICommandHandler<IniciarCronom
 
     public async Task<Response<OrdenMesaDTO>> Handle(IniciarCronometroMesaCommand request, CancellationToken tokenCancelacion)
     {
-        var orden = await _ordenRepository.Query()
-            .FirstOrDefaultAsync(
-                ordenActual => !ordenActual.Eliminado && ordenActual.Id == request.IdOrdenVenta,
-                tokenCancelacion)
+        var orden = await _ordenRepository.Query().FirstOrDefaultAsync(ordenActual => !ordenActual.Eliminado && ordenActual.Id == request.IdOrdenVenta, tokenCancelacion)
             ?? throw new InvalidOperationException("La orden de mesa no existe.");
 
-        if (orden.Estado != (short)EstadoOrdenVenta.Abierta)
-            throw new InvalidOperationException("La orden de mesa ya está cerrada.");
+        if (orden.Estado != (short)EstadoOrdenVenta.Abierta) throw new InvalidOperationException("La orden de mesa ya está cerrada.");
 
         var usoMesa = await _usoMesaRepository.Query()
-            .FirstOrDefaultAsync(
-                uso => !uso.Eliminado &&
-                       uso.IdOrdenVenta == orden.Id &&
-                       uso.Estado != (short)EstadoUsoMesa.Finalizado,
-                tokenCancelacion)
+            .FirstOrDefaultAsync(uso => !uso.Eliminado && uso.IdOrdenVenta == orden.Id && uso.Estado != (short)EstadoUsoMesa.Finalizado, tokenCancelacion)
             ?? throw new InvalidOperationException("El uso activo de la mesa no existe.");
 
         if (usoMesa.Estado == (short)EstadoUsoMesa.Pendiente)
@@ -59,10 +48,10 @@ public class IniciarCronometroMesaCommandHandler : ICommandHandler<IniciarCronom
             await _usoMesaRepository.UnitOfWork.SaveEntitiesAsync(tokenCancelacion);
         }
 
-        var detalles = await _detalleRepository.Query()
-            .Where(detalle => !detalle.Eliminado && detalle.IdOrdenVenta == orden.Id)
+        var detalles = await _detalleRepository.Query().Where(detalle => !detalle.Eliminado && detalle.IdOrdenVenta == orden.Id)
             .ToListAsync(tokenCancelacion);
 
-        return new Response<OrdenMesaDTO>(OrdenMesaMapeo.Crear(orden, usoMesa, detalles));
+        var ordenMesaResponse = OrdenMesaUtils.Mapear(orden, usoMesa, detalles);
+        return new Response<OrdenMesaDTO>(ordenMesaResponse);
     }
 }

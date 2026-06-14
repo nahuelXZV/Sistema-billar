@@ -1,19 +1,17 @@
 using Microsoft.AspNetCore.Components;
 using WebClient.Models.Sales;
 using WebClient.Extensions;
-using WebClient.Services;
-using Domain.DTOs.Sales;
-using System.Threading.Tasks;
 using Domain.DTOs.Contact;
 using static Domain.Constants.Constantes;
+using WebClient.Common.Utils;
 
 namespace WebClient.Components.Sales.Venta;
 
 public partial class VentaComponent
 {
     [Parameter] public VentaViewModel Model { get; set; } = new();
-    [Parameter] public bool EsVentaMesa { get; set; }
-    [Parameter] public bool GuardandoOrden { get; set; }
+    [Parameter] public bool EsVentaMesa { get; set; } = false;
+    [Parameter] public bool GuardandoOrden { get; set; } = false;
     [Parameter] public EventCallback OnGuardarOrden { get; set; }
     [Parameter] public EventCallback OnPrepararPago { get; set; }
     [Parameter] public EventCallback<long> OnVentaFinalizada { get; set; }
@@ -43,7 +41,6 @@ public partial class VentaComponent
         puntoVenta.ClienteSeleccionado = ClienteDefault;
         return puntoVenta;
     }
-
 
     #region Venta Confirmada
     private async Task PagoConfirmado(IReadOnlyList<ItemsViewModel> paidItems)
@@ -180,7 +177,7 @@ public partial class VentaComponent
     }
     #endregion
 
-    #region utils
+    #region Utils
     private void LimpiarVenta()
     {
         Model.PuntoVenta.DetalleItems.Clear();
@@ -221,5 +218,4 @@ public partial class VentaComponent
         }
     }
     #endregion
-
 }

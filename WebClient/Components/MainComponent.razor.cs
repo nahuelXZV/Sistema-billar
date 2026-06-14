@@ -34,11 +34,13 @@ public partial class MainComponent
         {
             var parameterName = parameter.Name;
 
-            dynamic parameterValue = Parameters[parameterName];
-
-            if (parameterValue is JsonElement)
+            if (Parameters is null || !Parameters.TryGetValue(parameterName, out var parameterValue))
             {
-                JsonElement json = parameterValue;
+                continue;
+            }
+
+            if (parameterValue is JsonElement json)
+            {
                 var parameterType = parameter.PropertyType;
 
                 parameterValue = json.GetRawText().Deserialize(parameterType);

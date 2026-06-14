@@ -1,7 +1,8 @@
 using Domain.DTOs.Inventory;
 using Domain.DTOs.Sales;
+using WebClient.Models.Sales;
 
-namespace WebClient.Models.Sales;
+namespace WebClient.Common.Utils;
 
 public static class PuntoVentaUtils
 {

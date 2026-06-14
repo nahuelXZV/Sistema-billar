@@ -41,7 +41,7 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
                     : TimeSpan.Zero;
             }
 
-            return TimeSpan.FromMinutes(Math.Max(0, ordenMesa.MinutosConsumidos));
+            return TimeSpan.FromMinutes((double)Math.Max(0, ordenMesa.MinutosConsumidos));
         }
     }
 
@@ -114,7 +114,7 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
                 await OnGuardarOrden.InvokeAsync();
             }
 
-            var idOrdenVenta = Venta.OrdenMesa?.IdOrdenVenta ?? 0;
+            var idOrdenVenta = Venta.OrdenMesa?.Id ?? 0;
             if (idOrdenVenta <= 0)
             {
                 throw new InvalidOperationException("Primero debe guardarse la orden de mesa.");
@@ -123,7 +123,7 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
             var ordenActualizada = await AppServices.OrdenMesaService.IniciarCronometro(idOrdenVenta);
             ordenActualizada.TarifaAplicada = ProductoTiempo.Precio;
             Venta.OrdenMesa = ordenActualizada;
-            Venta.PuntoVenta.IdOrdenVenta = ordenActualizada.IdOrdenVenta;
+            Venta.PuntoVenta.IdOrdenVenta = ordenActualizada.Id;
             Venta.PuntoVenta.IdUsoMesa = ordenActualizada.IdUsoMesa;
             _ahora = DateTime.Now;
 
@@ -163,7 +163,7 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
                 await OnGuardarOrden.InvokeAsync();
             }
 
-            var idOrdenVenta = Venta.OrdenMesa?.IdOrdenVenta ?? 0;
+            var idOrdenVenta = Venta.OrdenMesa?.Id ?? 0;
             if (idOrdenVenta <= 0)
             {
                 throw new InvalidOperationException("Primero debe guardarse la orden de mesa.");
@@ -171,7 +171,7 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
 
             var ordenActualizada = await AppServices.OrdenMesaService.FinalizarCronometro(idOrdenVenta);
             Venta.OrdenMesa = ordenActualizada;
-            Venta.PuntoVenta.IdOrdenVenta = ordenActualizada.IdOrdenVenta;
+            Venta.PuntoVenta.IdOrdenVenta = ordenActualizada.Id;
             Venta.PuntoVenta.IdUsoMesa = ordenActualizada.IdUsoMesa;
             DetenerActualizacionVisual();
 

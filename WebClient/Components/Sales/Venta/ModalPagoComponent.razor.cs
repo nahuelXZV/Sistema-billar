@@ -26,11 +26,7 @@ public partial class ModalPagoComponent
     private decimal MontoPendiente => Math.Max(0, PuntoVenta.MontoTotal - PuntoVenta.TotalPagado);
     private bool HasSelectedItems => PuntoVenta.ProductosPagar.Any(item => item.IsSelected && item.CantidadPagar > 0);
     private bool CanAddPaymentMethod => HasSelectedItems && PuntoVenta.MontoTotal > 0 && SelectedMetodoPagoId > 0 && MontoPagar > 0;
-    private bool CanConfirmPayment =>
-        !IsSubmitting &&
-        HasSelectedItems &&
-        PuntoVenta.MontoTotal > 0 &&
-        PuntoVenta.TotalPagado >= PuntoVenta.MontoTotal;
+    private bool CanConfirmPayment => !IsSubmitting && HasSelectedItems && PuntoVenta.MontoTotal > 0 && PuntoVenta.TotalPagado >= PuntoVenta.MontoTotal;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -87,6 +83,7 @@ public partial class ModalPagoComponent
         }
     }
 
+    #region Cantidades Handlers
     private void IncrementarCantidad(ProductosPagar item)
     {
         if (!item.IsSelected || item.CantidadPagar >= item.CantidadDisponible)
@@ -122,7 +119,9 @@ public partial class ModalPagoComponent
         item.CantidadPagar.Redondear();
         ResetSuggestedPaymentAmountIfEmpty();
     }
+    #endregion
 
+    #region Métodos de pago
     private void AgregarMetodoPago()
     {
         var metodoPago = MetodosPago.FirstOrDefault(metodo => metodo.Id == SelectedMetodoPagoId);
@@ -203,7 +202,7 @@ public partial class ModalPagoComponent
             IsSubmitting = false;
         }
     }
-
+    #endregion
 
     #region Utils
     private void ResetSuggestedPaymentAmountIfEmpty()

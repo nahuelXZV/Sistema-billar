@@ -21,11 +21,7 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
     private readonly IDbContext _dbContext;
     private readonly IMediator _mediator;
 
-    public CreateVentaCommandHandler(
-        IMapper mapper,
-        IRepository<Venta> ventaRepository,
-        IDbContext dbContext,
-        IMediator mediator)
+    public CreateVentaCommandHandler(IMapper mapper, IRepository<Venta> ventaRepository, IDbContext dbContext, IMediator mediator)
     {
         _mapper = mapper;
         _ventaRepository = ventaRepository;
