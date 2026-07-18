@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Application.Features.Security.Profile.Queries;
 using Domain.Common;
 using Domain.DTOs.Security;
@@ -8,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Usuarios.Queries;
 
-public class GetUserByUsernameQuery : IRequest<Response<UsuarioDTO>>
+public class GetUserByUsernameQuery : IQuery<Response<UsuarioDTO>>
 {
     public string Username { get; set; }
 }
 
-public class GetUserByUsernameQueryHandler : IRequestHandler<GetUserByUsernameQuery, Response<UsuarioDTO>>
+public class GetUserByUsernameQueryHandler : IQueryHandler<GetUserByUsernameQuery, Response<UsuarioDTO>>
 {
     private readonly IDbContext _appCnx;
     private readonly IMediator _mediator;

@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Lotes.Queries;
 
-public class GetLoteByProductoQuery : ICommand<Response<List<LoteDTO>>>
+public class GetLoteByProductoQuery : IQuery<Response<List<LoteDTO>>>
 {
     public required long IdProducto { get; set; }
 }
 
-public class GetLoteByProductoHandler : ICommandHandler<GetLoteByProductoQuery, Response<List<LoteDTO>>>
+public class GetLoteByProductoHandler : IQueryHandler<GetLoteByProductoQuery, Response<List<LoteDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Lote> _repository;

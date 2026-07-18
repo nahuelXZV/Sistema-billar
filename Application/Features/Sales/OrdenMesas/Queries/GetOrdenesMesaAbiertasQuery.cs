@@ -9,11 +9,11 @@ using Application.Common.Utils;
 
 namespace Application.Features.Sales.OrdenMesas.Queries;
 
-public class GetOrdenesMesaAbiertasQuery : ICommand<Response<List<OrdenMesaDTO>>>
+public class GetOrdenesMesaAbiertasQuery : IQuery<Response<List<OrdenMesaDTO>>>
 {
 }
 
-public class GetOrdenesMesaAbiertasQueryHandler : ICommandHandler<GetOrdenesMesaAbiertasQuery, Response<List<OrdenMesaDTO>>>
+public class GetOrdenesMesaAbiertasQueryHandler : IQueryHandler<GetOrdenesMesaAbiertasQuery, Response<List<OrdenMesaDTO>>>
 {
     private readonly IRepository<OrdenVenta> _ordenRepository;
     private readonly IRepository<OrdenVentaDetalle> _detalleRepository;

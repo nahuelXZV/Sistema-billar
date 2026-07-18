@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.OrdenVentas.Queries;
 
-public class GetOrdenVentaByIdQuery : ICommand<Response<OrdenVentaDTO>>
+public class GetOrdenVentaByIdQuery : IQuery<Response<OrdenVentaDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetOrdenVentaByIdQueryHandler : ICommandHandler<GetOrdenVentaByIdQuery, Response<OrdenVentaDTO>>
+public class GetOrdenVentaByIdQueryHandler : IQueryHandler<GetOrdenVentaByIdQuery, Response<OrdenVentaDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<OrdenVenta> _repository;

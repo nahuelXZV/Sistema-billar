@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.UsoMesas.Queries;
 
-public class GetUsoMesasFilterQuery : ICommand<Response<ResponseFilterDTO<UsoMesaDTO>>>
+public class GetUsoMesasFilterQuery : IQuery<Response<ResponseFilterDTO<UsoMesaDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetUsoMesasFilterQueryHandler : ICommandHandler<GetUsoMesasFilterQuery, Response<ResponseFilterDTO<UsoMesaDTO>>>
+public class GetUsoMesasFilterQueryHandler : IQueryHandler<GetUsoMesasFilterQuery, Response<ResponseFilterDTO<UsoMesaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<UsoMesa> _repository;

@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Inventarios.Queries;
 
-public class GetInventarioByProductoQuery : ICommand<Response<List<InventarioDTO>>>
+public class GetInventarioByProductoQuery : IQuery<Response<List<InventarioDTO>>>
 {
     public required long IdProducto { get; set; }
 }
 
-public class GetInventarioByProductoHandler : ICommandHandler<GetInventarioByProductoQuery, Response<List<InventarioDTO>>>
+public class GetInventarioByProductoHandler : IQueryHandler<GetInventarioByProductoQuery, Response<List<InventarioDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Inventario> _repository;

@@ -9,13 +9,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Productos.Queries;
 
-public class GetProductoByIdVendedorQuery : ICommand<Response<ProductoDTO>>
+public class GetProductoByIdVendedorQuery : IQuery<Response<ProductoDTO>>
 {
     public long IdProducto { get; set; }
     public long IdVendedor { get; set; }
 }
 
-public class GetProductoByIdVendedorQueryHandler : ICommandHandler<GetProductoByIdVendedorQuery, Response<ProductoDTO>>
+public class GetProductoByIdVendedorQueryHandler : IQueryHandler<GetProductoByIdVendedorQuery, Response<ProductoDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Producto> _repository;

@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Configuration.Mesas.Queries;
 
-public class GetMesasFilterQuery : ICommand<Response<ResponseFilterDTO<MesaDTO>>>
+public class GetMesasFilterQuery : IQuery<Response<ResponseFilterDTO<MesaDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetMesasFilterQueryHandler : ICommandHandler<GetMesasFilterQuery, Response<ResponseFilterDTO<MesaDTO>>>
+public class GetMesasFilterQueryHandler : IQueryHandler<GetMesasFilterQuery, Response<ResponseFilterDTO<MesaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Mesa> _repository;

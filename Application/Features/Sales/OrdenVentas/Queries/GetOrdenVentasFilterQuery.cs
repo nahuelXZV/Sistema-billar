@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.OrdenVentas.Queries;
 
-public class GetOrdenVentasFilterQuery : ICommand<Response<ResponseFilterDTO<OrdenVentaDTO>>>
+public class GetOrdenVentasFilterQuery : IQuery<Response<ResponseFilterDTO<OrdenVentaDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetOrdenVentasFilterQueryHandler : ICommandHandler<GetOrdenVentasFilterQuery, Response<ResponseFilterDTO<OrdenVentaDTO>>>
+public class GetOrdenVentasFilterQueryHandler : IQueryHandler<GetOrdenVentasFilterQuery, Response<ResponseFilterDTO<OrdenVentaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<OrdenVenta> _repository;

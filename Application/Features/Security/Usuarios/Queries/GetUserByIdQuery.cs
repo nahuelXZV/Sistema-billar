@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Usuarios.Queries;
 
-public class GetUserByIdQuery : ICommand<Response<UsuarioDTO>>
+public class GetUserByIdQuery : IQuery<Response<UsuarioDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetUserByIdQueryHandler : ICommandHandler<GetUserByIdQuery, Response<UsuarioDTO>>
+public class GetUserByIdQueryHandler : IQueryHandler<GetUserByIdQuery, Response<UsuarioDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Usuario> _repository;

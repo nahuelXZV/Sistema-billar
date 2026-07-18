@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Domain.Common;
@@ -7,12 +8,12 @@ using Infraestructure.Interfaces;
 
 namespace Application.Features.Security.Usuarios.Queries;
 
-public class GetUsuarioByEmailQuery : IRequest<Response<UsuarioDTO>>
+public class GetUsuarioByEmailQuery : IQuery<Response<UsuarioDTO>>
 {
     public string Email { get; set; }
 }
 
-public class GetUsuarioByEmailQueryHandler : IRequestHandler<GetUsuarioByEmailQuery, Response<UsuarioDTO>>
+public class GetUsuarioByEmailQueryHandler : IQueryHandler<GetUsuarioByEmailQuery, Response<UsuarioDTO>>
 {
     private readonly IDbContext _appCnx;
     private readonly IMediator _mediator;

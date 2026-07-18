@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Contact.Clientes.Queries;
 
-public class GetClientesFilterQuery : ICommand<Response<ResponseFilterDTO<ClienteDTO>>>
+public class GetClientesFilterQuery : IQuery<Response<ResponseFilterDTO<ClienteDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetClientesFilterQueryHandler : ICommandHandler<GetClientesFilterQuery, Response<ResponseFilterDTO<ClienteDTO>>>
+public class GetClientesFilterQueryHandler : IQueryHandler<GetClientesFilterQuery, Response<ResponseFilterDTO<ClienteDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Cliente> _repository;

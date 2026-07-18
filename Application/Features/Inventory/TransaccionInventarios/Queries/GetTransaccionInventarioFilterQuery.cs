@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.TransaccionInventarios.Queries;
 
-public class GetTransaccionInventarioFilterQuery : ICommand<Response<ResponseFilterDTO<TransaccionInventarioDetalleDTO>>>
+public class GetTransaccionInventarioFilterQuery : IQuery<Response<ResponseFilterDTO<TransaccionInventarioDetalleDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetTransaccionInventarioFilterHandler : ICommandHandler<GetTransaccionInventarioFilterQuery, Response<ResponseFilterDTO<TransaccionInventarioDetalleDTO>>>
+public class GetTransaccionInventarioFilterHandler : IQueryHandler<GetTransaccionInventarioFilterQuery, Response<ResponseFilterDTO<TransaccionInventarioDetalleDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<TransaccionInventarioDetalle> _repository;

@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.UsoMesas.Queries;
 
-public class GetUsoMesasQuery : ICommand<Response<List<UsoMesaDTO>>>
+public class GetUsoMesasQuery : IQuery<Response<List<UsoMesaDTO>>>
 {
 }
 
-public class GetUsoMesasQueryHandler : ICommandHandler<GetUsoMesasQuery, Response<List<UsoMesaDTO>>>
+public class GetUsoMesasQueryHandler : IQueryHandler<GetUsoMesasQuery, Response<List<UsoMesaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<UsoMesa> _repository;

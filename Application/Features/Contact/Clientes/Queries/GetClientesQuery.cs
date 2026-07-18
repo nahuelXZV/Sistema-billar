@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Contact.Clientes.Queries;
 
-public class GetClientesQuery : ICommand<Response<List<ClienteDTO>>>
+public class GetClientesQuery : IQuery<Response<List<ClienteDTO>>>
 {
 }
 
-public class GetClientesQueryHandler : ICommandHandler<GetClientesQuery, Response<List<ClienteDTO>>>
+public class GetClientesQueryHandler : IQueryHandler<GetClientesQuery, Response<List<ClienteDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Cliente> _repository;

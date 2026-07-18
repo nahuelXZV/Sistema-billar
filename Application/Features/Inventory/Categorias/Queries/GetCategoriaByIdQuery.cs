@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Categorias.Queries;
 
-public class GetCategoriaByIdQuery : ICommand<Response<CategoriaDTO>>
+public class GetCategoriaByIdQuery : IQuery<Response<CategoriaDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetCategoriaByIdHandler : ICommandHandler<GetCategoriaByIdQuery, Response<CategoriaDTO>>
+public class GetCategoriaByIdHandler : IQueryHandler<GetCategoriaByIdQuery, Response<CategoriaDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Categoria> _repository;

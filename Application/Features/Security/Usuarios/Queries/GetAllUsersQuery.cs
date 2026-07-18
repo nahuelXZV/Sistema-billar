@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Usuarios.Queries;
 
-public class GetAllUsersQuery : ICommand<Response<ResponseFilterDTO<UsuarioDTO>>>
+public class GetAllUsersQuery : IQuery<Response<ResponseFilterDTO<UsuarioDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetAllUsersQueryHandler : ICommandHandler<GetAllUsersQuery, Response<ResponseFilterDTO<UsuarioDTO>>>
+public class GetAllUsersQueryHandler : IQueryHandler<GetAllUsersQuery, Response<ResponseFilterDTO<UsuarioDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Usuario> _repository;

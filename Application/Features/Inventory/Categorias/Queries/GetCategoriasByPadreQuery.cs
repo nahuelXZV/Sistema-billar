@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Categorias.Queries;
 
-public class GetCategoriasByPadreQuery : ICommand<Response<List<CategoriaDTO>>>
+public class GetCategoriasByPadreQuery : IQuery<Response<List<CategoriaDTO>>>
 {
     public long? IdCategoriaPadre { get; set; }
 }
 
-public class GetCategoriasByPadreHandler : ICommandHandler<GetCategoriasByPadreQuery, Response<List<CategoriaDTO>>>
+public class GetCategoriasByPadreHandler : IQueryHandler<GetCategoriasByPadreQuery, Response<List<CategoriaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Categoria> _repository;

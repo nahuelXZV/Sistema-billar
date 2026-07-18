@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Profile.Queries;
 
-public class GetProfileByIdQuery : ICommand<Response<PerfilDTO>>
+public class GetProfileByIdQuery : IQuery<Response<PerfilDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetProfileByIdQueryHandler : ICommandHandler<GetProfileByIdQuery, Response<PerfilDTO>>
+public class GetProfileByIdQueryHandler : IQueryHandler<GetProfileByIdQuery, Response<PerfilDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Perfil> _repository;

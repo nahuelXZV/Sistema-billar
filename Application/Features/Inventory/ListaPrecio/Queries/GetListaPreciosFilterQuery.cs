@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -11,12 +11,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.ListaPrecio.Queries;
 
-public class GetListaPreciosFilterQuery : ICommand<Response<ResponseFilterDTO<ListaPrecioDTO>>>
+public class GetListaPreciosFilterQuery : IQuery<Response<ResponseFilterDTO<ListaPrecioDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetListaPreciosFilterHandler : ICommandHandler<GetListaPreciosFilterQuery, Response<ResponseFilterDTO<ListaPrecioDTO>>>
+public class GetListaPreciosFilterHandler : IQueryHandler<GetListaPreciosFilterQuery, Response<ResponseFilterDTO<ListaPrecioDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<ListaPrecios> _repository;

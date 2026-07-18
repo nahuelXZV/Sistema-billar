@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Contact.Clientes.Queries;
 
-public class GetClienteByIdQuery : ICommand<Response<ClienteDTO>>
+public class GetClienteByIdQuery : IQuery<Response<ClienteDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetClienteByIdQueryHandler : ICommandHandler<GetClienteByIdQuery, Response<ClienteDTO>>
+public class GetClienteByIdQueryHandler : IQueryHandler<GetClienteByIdQuery, Response<ClienteDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Cliente> _repository;

@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.UsoMesas.Queries;
 
-public class GetUsoMesaByIdQuery : ICommand<Response<UsoMesaDTO>>
+public class GetUsoMesaByIdQuery : IQuery<Response<UsoMesaDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetUsoMesaByIdQueryHandler : ICommandHandler<GetUsoMesaByIdQuery, Response<UsoMesaDTO>>
+public class GetUsoMesaByIdQueryHandler : IQueryHandler<GetUsoMesaByIdQuery, Response<UsoMesaDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<UsoMesa> _repository;

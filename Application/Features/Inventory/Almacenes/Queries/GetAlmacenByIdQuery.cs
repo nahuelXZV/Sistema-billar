@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Almacenes.Queries;
 
-public class GetAlmacenByIdQuery : ICommand<Response<AlmacenDTO>>
+public class GetAlmacenByIdQuery : IQuery<Response<AlmacenDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetAlmacenByIdHandler : ICommandHandler<GetAlmacenByIdQuery, Response<AlmacenDTO>>
+public class GetAlmacenByIdHandler : IQueryHandler<GetAlmacenByIdQuery, Response<AlmacenDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Almacen> _repository;

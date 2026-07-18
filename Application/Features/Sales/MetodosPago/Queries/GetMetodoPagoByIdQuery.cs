@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.MetodosPago.Queries;
 
-public class GetMetodoPagoByIdQuery : ICommand<Response<MetodoPagoDTO>>
+public class GetMetodoPagoByIdQuery : IQuery<Response<MetodoPagoDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetMetodoPagoByIdQueryHandler : ICommandHandler<GetMetodoPagoByIdQuery, Response<MetodoPagoDTO>>
+public class GetMetodoPagoByIdQueryHandler : IQueryHandler<GetMetodoPagoByIdQuery, Response<MetodoPagoDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<MetodoPago> _repository;

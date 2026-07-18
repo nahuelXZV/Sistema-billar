@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.UnidadesMedidas.Queries;
 
-public class GetUnidadesMedidasFilterQuery : ICommand<Response<ResponseFilterDTO<UnidadMedidaDTO>>>
+public class GetUnidadesMedidasFilterQuery : IQuery<Response<ResponseFilterDTO<UnidadMedidaDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetUnidadesMedidasFilterQueryHandler : ICommandHandler<GetUnidadesMedidasFilterQuery, Response<ResponseFilterDTO<UnidadMedidaDTO>>>
+public class GetUnidadesMedidasFilterQueryHandler : IQueryHandler<GetUnidadesMedidasFilterQuery, Response<ResponseFilterDTO<UnidadMedidaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<UnidadMedida> _repository;

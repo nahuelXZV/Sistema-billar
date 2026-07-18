@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Configuration;
@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Configuration.TipoMesas.Queries;
 
-public class GetTipoMesasQuery : ICommand<Response<List<TipoMesaDTO>>>
+public class GetTipoMesasQuery : IQuery<Response<List<TipoMesaDTO>>>
 {
 }
 
-public class GetTipoMesasQueryHandler : ICommandHandler<GetTipoMesasQuery, Response<List<TipoMesaDTO>>>
+public class GetTipoMesasQueryHandler : IQueryHandler<GetTipoMesasQuery, Response<List<TipoMesaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<TipoMesa> _repository;

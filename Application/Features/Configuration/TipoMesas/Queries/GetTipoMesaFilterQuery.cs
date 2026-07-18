@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Configuration;
@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Configuration.TipoMesas.Queries;
 
-public class GetTipoMesaFilterQuery : ICommand<Response<ResponseFilterDTO<TipoMesaDTO>>>
+public class GetTipoMesaFilterQuery : IQuery<Response<ResponseFilterDTO<TipoMesaDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetTipoMesaFilterQueryHandler : ICommandHandler<GetTipoMesaFilterQuery, Response<ResponseFilterDTO<TipoMesaDTO>>>
+public class GetTipoMesaFilterQueryHandler : IQueryHandler<GetTipoMesaFilterQuery, Response<ResponseFilterDTO<TipoMesaDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<TipoMesa> _repository;

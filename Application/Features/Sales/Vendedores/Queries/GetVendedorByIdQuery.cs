@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.Vendedores.Queries;
 
-public class GetVendedorByIdQuery : ICommand<Response<VendedorDTO>>
+public class GetVendedorByIdQuery : IQuery<Response<VendedorDTO>>
 {
     public required long Id { get; set; }
 }
 
-public class GetVendedorByIdQueryHandler : ICommandHandler<GetVendedorByIdQuery, Response<VendedorDTO>>
+public class GetVendedorByIdQueryHandler : IQueryHandler<GetVendedorByIdQuery, Response<VendedorDTO>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Vendedor> _repository;

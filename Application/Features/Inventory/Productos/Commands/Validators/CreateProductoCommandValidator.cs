@@ -8,7 +8,7 @@ public class CreateProductoCommandValidator : AbstractValidator<CreateProductoCo
     public CreateProductoCommandValidator()
     {
         RuleFor(command => command.ProductoDTO)
-        .SetValidator(new CreateProductoDTOValidartor());
+        .SetValidator(new CreateProductoDTOValidator());
     }
 }
 

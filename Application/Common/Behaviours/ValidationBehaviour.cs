@@ -3,11 +3,11 @@ using FluentValidation.Results;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Application.Interfaces;
 
 namespace Application.Common.Behaviours;
 
-public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : ICommand<TResponse>
+public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : notnull
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
     private readonly ILogger<ValidationBehaviour<TRequest, TResponse>> _logger;
@@ -22,7 +22,7 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
     {
         var typeName = request.GetGenericTypeName();
 
-        _logger.LogInformation("----- Validating command {CommandType}", typeName);
+        _logger.LogInformation("----- Validating request {RequestType}", typeName);
 
         var validationContext = new ValidationContext<TRequest>(request);
 
@@ -35,8 +35,8 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
 
         if (failures.Any())
         {
-            _logger.LogWarning("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, request, failures);
-            throw new ValidationException($"Errores de validacion para el comando: {typeName}", failures);
+            _logger.LogWarning("Validation errors - {RequestType} - Request: {@Request} - Errors: {@ValidationErrors}", typeName, request, failures);
+            throw new ValidationException($"Errores de validacion para la solicitud: {typeName}", failures);
         }
 
         return await next();

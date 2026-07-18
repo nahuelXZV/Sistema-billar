@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.Vendedores.Queries;
 
-public class GetVendedoresQuery : ICommand<Response<List<VendedorDTO>>>
+public class GetVendedoresQuery : IQuery<Response<List<VendedorDTO>>>
 {
 }
 
-public class GetVendedoresQueryHandler : ICommandHandler<GetVendedoresQuery, Response<List<VendedorDTO>>>
+public class GetVendedoresQueryHandler : IQueryHandler<GetVendedoresQuery, Response<List<VendedorDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Vendedor> _repository;

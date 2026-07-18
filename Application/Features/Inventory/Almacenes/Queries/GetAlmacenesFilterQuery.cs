@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.DTOs.Inventory;
@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Inventory.Almacenes.Queries;
 
-public class GetAlmacenesFilterQuery : ICommand<Response<ResponseFilterDTO<AlmacenDTO>>>
+public class GetAlmacenesFilterQuery : IQuery<Response<ResponseFilterDTO<AlmacenDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetAlmacenesFilterHandler : ICommandHandler<GetAlmacenesFilterQuery, Response<ResponseFilterDTO<AlmacenDTO>>>
+public class GetAlmacenesFilterHandler : IQueryHandler<GetAlmacenesFilterQuery, Response<ResponseFilterDTO<AlmacenDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Almacen> _repository;

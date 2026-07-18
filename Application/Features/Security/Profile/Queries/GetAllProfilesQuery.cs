@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Profile.Queries;
 
-public class GetAllProfilesQuery : ICommand<Response<ResponseFilterDTO<PerfilDTO>>>
+public class GetAllProfilesQuery : IQuery<Response<ResponseFilterDTO<PerfilDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetAllProfilesQueryHandler : ICommandHandler<GetAllProfilesQuery, Response<ResponseFilterDTO<PerfilDTO>>>
+public class GetAllProfilesQueryHandler : IQueryHandler<GetAllProfilesQuery, Response<ResponseFilterDTO<PerfilDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Perfil> _repository;

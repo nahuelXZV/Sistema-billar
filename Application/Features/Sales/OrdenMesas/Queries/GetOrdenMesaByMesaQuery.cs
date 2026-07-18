@@ -9,12 +9,12 @@ using Application.Common.Utils;
 
 namespace Application.Features.Sales.OrdenMesas.Queries;
 
-public class GetOrdenMesaByMesaQuery : ICommand<Response<OrdenMesaDTO?>>
+public class GetOrdenMesaByMesaQuery : IQuery<Response<OrdenMesaDTO?>>
 {
     public long IdMesa { get; set; }
 }
 
-public class GetOrdenMesaByMesaQueryHandler : ICommandHandler<GetOrdenMesaByMesaQuery, Response<OrdenMesaDTO?>>
+public class GetOrdenMesaByMesaQueryHandler : IQueryHandler<GetOrdenMesaByMesaQuery, Response<OrdenMesaDTO?>>
 {
     private readonly IRepository<OrdenVenta> _ordenRepository;
     private readonly IRepository<OrdenVentaDetalle> _detalleRepository;

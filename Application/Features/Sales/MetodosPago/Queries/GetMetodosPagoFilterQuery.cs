@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Sales.MetodosPago.Queries;
 
-public class GetMetodosPagoFilterQuery : ICommand<Response<ResponseFilterDTO<MetodoPagoDTO>>>
+public class GetMetodosPagoFilterQuery : IQuery<Response<ResponseFilterDTO<MetodoPagoDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetMetodosPagoFilterQueryHandler : ICommandHandler<GetMetodosPagoFilterQuery, Response<ResponseFilterDTO<MetodoPagoDTO>>>
+public class GetMetodosPagoFilterQueryHandler : IQueryHandler<GetMetodosPagoFilterQuery, Response<ResponseFilterDTO<MetodoPagoDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<MetodoPago> _repository;

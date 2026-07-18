@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Domain.Common;
@@ -7,13 +8,13 @@ using Infraestructure.Interfaces;
 
 namespace Application.Features.Security.Usuarios.Queries;
 
-public class GetUsuarioByLoginQuery : IRequest<Response<UsuarioDTO>>
+public class GetUsuarioByLoginQuery : IQuery<Response<UsuarioDTO>>
 {
     public string Email { get; set; }
     public string Password { get; set; }
 }
 
-public class GetUsuarioByLoginQueryHandler : IRequestHandler<GetUsuarioByLoginQuery, Response<UsuarioDTO>>
+public class GetUsuarioByLoginQueryHandler : IQueryHandler<GetUsuarioByLoginQuery, Response<UsuarioDTO>>
 {
     private readonly IDbContext _appCnx;
     private readonly IMediator _mediator;

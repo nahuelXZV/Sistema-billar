@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
 using Domain.Entities.Configuration;
@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Configuration.TipoMesas.Queries;
 
-public class VerificarMesaByIdProductoQuery : ICommand<Response<bool>>
+public class VerificarMesaByIdProductoQuery : IQuery<Response<bool>>
 {
     public required long IdProducto { get; set; }
 }
 
-public class VerificarMesaByIdProductoQueryHandler : ICommandHandler<VerificarMesaByIdProductoQuery, Response<bool>>
+public class VerificarMesaByIdProductoQueryHandler : IQueryHandler<VerificarMesaByIdProductoQuery, Response<bool>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<TipoMesa> _repository;

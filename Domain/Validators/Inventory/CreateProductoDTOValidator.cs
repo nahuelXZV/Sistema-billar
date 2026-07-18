@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Domain.Validators.Inventory;
 
-public class CreateProductoDTOValidartor : AbstractValidator<ProductoDTO>
+public class CreateProductoDTOValidator : AbstractValidator<ProductoDTO>
 {
-    public CreateProductoDTOValidartor()
+    public CreateProductoDTOValidator()
     {
         RuleFor(p => p.Nombre)
             .NotEmpty().WithMessage("{PropertyName} es requerido.")

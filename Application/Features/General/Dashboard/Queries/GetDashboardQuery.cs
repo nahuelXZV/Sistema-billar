@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.General.Dashboard.Queries;
 
-public class GetDashboardQuery : ICommand<Response<DashboardDTO>>
+public class GetDashboardQuery : IQuery<Response<DashboardDTO>>
 {
 }
 
-public class GetDashboardQueryHandler : ICommandHandler<GetDashboardQuery, Response<DashboardDTO>>
+public class GetDashboardQueryHandler : IQueryHandler<GetDashboardQuery, Response<DashboardDTO>>
 {
     private const int MonthsToShow = 12;
     private const int WeeksToShow = 8;

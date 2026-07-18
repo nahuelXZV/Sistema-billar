@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Security.Modulos.Queries;
 
-public class GetAllModulesQuery : ICommand<Response<ResponseFilterDTO<ModuloDTO>>>
+public class GetAllModulesQuery : IQuery<Response<ResponseFilterDTO<ModuloDTO>>>
 {
     public FilterDTO? Filter { get; set; }
 }
 
-public class GetAllModulesQueryHandler : ICommandHandler<GetAllModulesQuery, Response<ResponseFilterDTO<ModuloDTO>>>
+public class GetAllModulesQueryHandler : IQueryHandler<GetAllModulesQuery, Response<ResponseFilterDTO<ModuloDTO>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Modulo> _repository;
