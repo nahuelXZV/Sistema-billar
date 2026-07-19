@@ -36,6 +36,7 @@ public class MainViewModel : IMainViewModel
     public bool SesionUsuarioValida { get; private set; }
     public long IdUsuarioLoggedIn { get; set; }
     public long IdPerfil { get; set; }
+    public bool EsSuperAdministrador { get; set; }
     public string NombreUsuarioLoggedIn { get; set; }
     public string ApellidoUsuarioLoggedIn { get; set; }
     public string NombreCompletoUsuarioLoggedIn { get; set; }
@@ -93,6 +94,9 @@ public class MainViewModel : IMainViewModel
 
         IdUsuarioLoggedIn = idUsuario;
         IdPerfil = idPerfil;
+        EsSuperAdministrador = bool.TryParse(
+            userClaims.GetClaimValue(Constantes.ClaimTypes.EsSuperAdmin),
+            out var esSuperAdministrador) && esSuperAdministrador;
         NombreUsuarioLoggedIn = userClaims.GetClaimValue(Constantes.ClaimTypes.NombreUsuario);
         ApellidoUsuarioLoggedIn = userClaims.GetClaimValue(Constantes.ClaimTypes.ApellidoUsuario);
         NombreCompletoUsuarioLoggedIn = userClaims.GetClaimValue(Constantes.ClaimTypes.NombreCompleto);
@@ -105,6 +109,7 @@ public class MainViewModel : IMainViewModel
     {
         IdUsuarioLoggedIn = 0;
         IdPerfil = 0;
+        EsSuperAdministrador = false;
         NombreUsuarioLoggedIn = string.Empty;
         ApellidoUsuarioLoggedIn = string.Empty;
         NombreCompletoUsuarioLoggedIn = string.Empty;

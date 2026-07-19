@@ -8,6 +8,7 @@ public class VentaDTO
     public Guid? IdempotencyKey { get; set; }
     public string Numero { get; set; } = string.Empty;
     public long? IdOrdenVenta { get; set; }
+    public long? IdTurnoCaja { get; set; }
     public long IdCliente { get; set; }
     public long IdVendedor { get; set; }
     public DateTime Fecha { get; set; }

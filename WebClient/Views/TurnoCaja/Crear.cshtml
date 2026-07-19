@@ -1,0 +1,70 @@
+@using WebClient.Components
+@using WebClient.Components.Sales.TurnoCaja
+@using WebClient.Models.Sales
+@model TurnoCajaViewModel
+
+@{
+    ViewData["Title"] = "Turno de caja";
+    ViewData["Module"] = "Ventas";
+    ViewData["Action"] = Model.EsCierreCaja
+        ? "Cerrar caja"
+        : Model.TurnoCaja.Id > 0 ? "Editar" : "Crear";
+    ViewData["Url"] = Url.Action("Listado", "TurnoCaja");
+
+    var componentName = nameof(TurnoCajaCreateComponent);
+    var componentParameters = new Dictionary<string, object>
+    {
+        { nameof(TurnoCajaCreateComponent.TurnoCaja), Model.TurnoCaja },
+        { nameof(TurnoCajaCreateComponent.MontoVendidoVendedor), Model.MontoVendidoVendedor },
+        { nameof(TurnoCajaCreateComponent.EsSuperAdministrador), Model.EsSuperAdministrador },
+        { nameof(TurnoCajaCreateComponent.EsCierreCaja), Model.EsCierreCaja },
+        { nameof(TurnoCajaCreateComponent.ListaVendedores), Model.ListaVendedores },
+        { nameof(TurnoCajaCreateComponent.ListaMetodosPago), Model.ListaMetodosPago }
+    };
+}
+
+<script>
+    class @componentName {
+        componentInstance;
+
+        constructor(componentInstance) {
+            this.componentInstance = componentInstance;
+            document.getElementById('btn-save')?.addEventListener('click', () => this.validar());
+        }
+
+        async validar() {
+            await this.componentInstance.invokeMethodAsync('Validar');
+        }
+
+        static init(componentInstance) {
+            window.@componentName = new @(componentName)(componentInstance);
+        }
+    }
+
+    window.@componentName = @componentName;
+</script>
+
+@section ActionBar {
+    <div class="iu-tools">
+        <div class="iu-tools-actions">
+            <button type="button" class="iu-btn iu-btn-secondary" onclick="history.back()">
+                <i class="bi bi-arrow-left"></i>
+                Volver
+            </button>
+            @if (!(Model.TurnoCaja.Estado == 2 && Model.TurnoCaja.FechaCierre.HasValue))
+            {
+                <button id="btn-save" type="button" class="iu-btn iu-btn-primary">
+                    <i class="bi bi-floppy"></i>
+                    @(Model.EsCierreCaja ? "Cerrar caja" : "Guardar")
+                </button>
+            }
+        </div>
+    </div>
+}
+
+<section class="iu-show">
+    <component type="typeof(MainComponent)"
+               param-ComponentTypeName="typeof(TurnoCajaCreateComponent).FullName"
+               param-Parameters="@componentParameters"
+               render-mode="ServerPrerendered" />
+</section>

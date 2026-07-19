@@ -6,6 +6,7 @@ using Domain.Entities.Sales;
 using Infraestructure.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static Domain.Constants.Constantes;
 
 namespace Application.Features.Sales.Ventas.Commands;
 
@@ -18,13 +19,20 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
 {
     private readonly IMapper _mapper;
     private readonly IRepository<Venta> _ventaRepository;
+    private readonly IRepository<TurnoCaja> _turnoCajaRepository;
     private readonly IDbContext _dbContext;
     private readonly IMediator _mediator;
 
-    public CreateVentaCommandHandler(IMapper mapper, IRepository<Venta> ventaRepository, IDbContext dbContext, IMediator mediator)
+    public CreateVentaCommandHandler(
+        IMapper mapper,
+        IRepository<Venta> ventaRepository,
+        IRepository<TurnoCaja> turnoCajaRepository,
+        IDbContext dbContext,
+        IMediator mediator)
     {
         _mapper = mapper;
         _ventaRepository = ventaRepository;
+        _turnoCajaRepository = turnoCajaRepository;
         _dbContext = dbContext;
         _mediator = mediator;
     }
@@ -42,6 +50,13 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
         await _mediator.Send(new ValidarVentaCommand { Venta = solicitud.VentaDTO }, tokenCancelacion);
 
         var venta = CrearEntidadVenta(solicitud.VentaDTO, claveIdempotencia);
+        venta.IdTurnoCaja = await ObtenerIdTurnoCajaAbiertoAsync(venta.IdVendedor, tokenCancelacion);
+
+        if (!venta.IdTurnoCaja.HasValue)
+        {
+            throw new InvalidOperationException("El vendedor debe tener un turno de caja abierto para registrar ventas.");
+        }
+
         var resultadoGuardado = await GuardarVentaAsync(venta, tokenCancelacion);
         venta = resultadoGuardado.Venta;
 
@@ -151,5 +166,18 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
             .Where(venta => venta.IdempotencyKey == claveIdempotencia)
             .Select(venta => venta.Id)
             .FirstOrDefaultAsync(tokenCancelacion);
+    }
+
+    private async Task<long?> ObtenerIdTurnoCajaAbiertoAsync(long idVendedor, CancellationToken tokenCancelacion)
+    {
+        var idTurnoCaja = await _turnoCajaRepository.Query()
+            .Where(turno =>
+                turno.IdVendedor == idVendedor &&
+                turno.Estado == (short)EstadoTurnoCaja.Abierto &&
+                !turno.Eliminado)
+            .Select(turno => turno.Id)
+            .FirstOrDefaultAsync(tokenCancelacion);
+
+        return idTurnoCaja > 0 ? idTurnoCaja : null;
     }
 }

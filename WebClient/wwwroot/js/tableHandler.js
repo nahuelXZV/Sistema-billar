@@ -87,7 +87,7 @@ function generateMenuHtml(items, id) {
         </ul>
     `;
 }
-function togglePortalDropdown(event, id) {
+function togglePortalDropdown(event, id, items = menuItems) {
     event.stopPropagation();
 
     const button = event.currentTarget;
@@ -103,7 +103,7 @@ function togglePortalDropdown(event, id) {
         document.body.appendChild(dropdown);
     }
 
-    dropdown.innerHTML = generateMenuHtml(menuItems, id);
+    dropdown.innerHTML = generateMenuHtml(items, id);
 
     const isVisible = dropdown.style.display === 'block';
 

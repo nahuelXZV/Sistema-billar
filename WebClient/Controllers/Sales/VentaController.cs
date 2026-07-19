@@ -26,9 +26,9 @@ public class VentaController : MainController
     [HttpGet]
     public async Task<IActionResult> VentaDirecta()
     {
-        var model = _viewModelFactory.Create<VentaViewModel>();
-        model.IncluirBlazorComponents = true;
-        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
+        var (model, error) = await CrearModeloConTurnoActivo();
+        if (error is not null) return error;
+
         var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
         model.PuntoVenta = PuntoVentaUtils.Create(categoriasBase, model.Vendedor);
 
@@ -41,9 +41,9 @@ public class VentaController : MainController
     [HttpGet]
     public async Task<IActionResult> VentaMesas()
     {
-        var model = _viewModelFactory.Create<VentaViewModel>();
-        model.IncluirBlazorComponents = true;
-        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
+        var (model, error) = await CrearModeloConTurnoActivo();
+        if (error is not null) return error;
+
         model.Mesas = await _appServices.MesasService.GetAll();
 
         var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
@@ -51,6 +51,27 @@ public class VentaController : MainController
         var cliente = await _appServices.ClienteService.GetById(_adminConfig.Personalizaciones.IdClienteDefault);
         model.PuntoVenta.ClienteSeleccionado = cliente;
         return View(model);
+    }
+
+    private async Task<(VentaViewModel Model, IActionResult? Error)> CrearModeloConTurnoActivo()
+    {
+        var model = _viewModelFactory.Create<VentaViewModel>();
+        model.IncluirBlazorComponents = true;
+        model.Vendedor = await _appServices.VendedorService.GetByUsuario(model.IdUsuarioLoggedIn);
+
+        if (model.Vendedor.Id <= 0)
+        {
+            this.AddErrorTempMessage("El usuario no tiene un vendedor activo asignado.");
+            return (model, RedirectToAction("Listado", "TurnoCaja"));
+        }
+
+        if (!await _appServices.TurnoCajaService.TieneActivo(model.Vendedor.Id))
+        {
+            this.AddErrorTempMessage("Debe abrir un turno de caja antes de ingresar a ventas.");
+            return (model, RedirectToAction("Listado", "TurnoCaja"));
+        }
+
+        return (model, null);
     }
 
     [HttpGet]

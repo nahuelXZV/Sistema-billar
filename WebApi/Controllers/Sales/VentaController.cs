@@ -26,6 +26,26 @@ public class VentaController : MainController
         return Ok(await Mediator.Send(new GetVentaByIdQuery { Id = idVenta }));
     }
 
+    [HttpGet("GetMontoVendidoVendedor/{idVendedor}/{idTurnoCaja}")]
+    public async Task<IActionResult> GetMontoVendidoVendedor(long idVendedor, long idTurnoCaja)
+    {
+        return Ok(await Mediator.Send(new GetMontoVendidoVendedorQuery
+        {
+            IdVendedor = idVendedor,
+            IdTurnoCaja = idTurnoCaja
+        }));
+    }
+
+    [HttpGet("GetMontosVendidosPorMetodoPago/{idVendedor}/{idTurnoCaja}")]
+    public async Task<IActionResult> GetMontosVendidosPorMetodoPago(long idVendedor, long idTurnoCaja)
+    {
+        return Ok(await Mediator.Send(new GetMontosVendidosPorMetodoPagoQuery
+        {
+            IdVendedor = idVendedor,
+            IdTurnoCaja = idTurnoCaja
+        }));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(VentaDTO ventaDTO)
     {

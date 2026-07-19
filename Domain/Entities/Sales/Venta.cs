@@ -7,6 +7,7 @@ public class Venta : Entity
     public Guid? IdempotencyKey { get; set; }
     public string Numero { get; set; } = string.Empty;
     public long? IdOrdenVenta { get; set; }
+    public long? IdTurnoCaja { get; set; }
     public long IdCliente { get; set; }
     public long IdVendedor { get; set; }
     public DateTime Fecha { get; set; }
@@ -20,6 +21,7 @@ public class Venta : Entity
     public string Observacion { get; set; } = string.Empty;
 
     public OrdenVenta? OrdenVenta { get; set; }
+    public TurnoCaja? TurnoCaja { get; set; }
     public Cliente? Cliente { get; set; }
     public Vendedor? Vendedor { get; set; }
     public List<VentaDetalle> ListaDetalles { get; set; } = [];

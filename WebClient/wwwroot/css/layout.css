@@ -1110,6 +1110,74 @@ body.dark-mode .iu-nav-menu-link--out {
     gap: 1.25rem;
 }
 
+.cashier-home-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(17rem, 0.7fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background:
+        radial-gradient(circle at 80% 12%, rgba(49, 174, 127, 0.16), transparent 30%),
+        linear-gradient(135deg, rgba(20, 31, 29, 0.98), rgba(23, 30, 33, 0.98));
+}
+
+.cashier-home-welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cashier-home-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.cashier-home-hero h1 {
+    margin: 0.45rem 0 0.35rem;
+    color: #f4f8f5;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.cashier-home-hero p {
+    margin: 0 0 1.25rem;
+    color: #a8bbb1;
+    font-size: 1rem;
+}
+
+.cashier-payment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+}
+
+.cashier-table-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.cashier-recent-sales .table th {
+    color: #95a9a0;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.cashier-recent-sales .table td {
+    padding-block: 0.9rem;
+}
+
+@media (max-width: 991.98px) {
+    .cashier-home-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .cashier-table-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .home-dashboard-header {
     display: flex;
     align-items: flex-end;

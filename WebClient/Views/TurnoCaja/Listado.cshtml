@@ -1,0 +1,154 @@
+@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Sales
+@model TurnoCajaViewModel
+
+@{
+	ViewData["Title"] = "Turnos de caja";
+	ViewData["Module"] = "Ventas";
+	ViewData["Action"] = "Listado";
+	ViewData["Url"] = Url.Action("Listado", "TurnoCaja");
+
+	Model.ListaItemsMenu = new List<ItemMenu>
+	{
+		new ItemMenu
+		{
+			Id = MenuItemId.Editar,
+			Text = "Editar",
+			IconCss = "fa fa-pencil",
+			Url = Url.Action("Crear", "TurnoCaja")!,
+			ActionType = MenuItemActionType.POST
+		},
+		new ItemMenu
+		{
+			Id = MenuItemId.Editar,
+			Text = "Cerrar caja",
+			IconCss = "fa fa-lock",
+			Url = Url.Action("Cerrar", "TurnoCaja")!,
+			ActionType = MenuItemActionType.POST
+		}
+	};
+
+	if (Model.EsSuperAdministrador)
+	{
+		Model.ListaItemsMenu.Add(new ItemMenu
+		{
+			Id = MenuItemId.Eliminar,
+			Text = "Eliminar",
+			IconCss = "fa fa-trash",
+			Url = Url.Action("Eliminar", "TurnoCaja")!,
+			ActionType = MenuItemActionType.POST,
+			Confirm = true,
+			ConfirmMessage = "¿Está seguro de eliminar este turno de caja?"
+		});
+	}
+}
+
+@section ActionBar {
+	<form id="FormCrear" asp-controller="TurnoCaja" asp-action="Crear" method="post" class="d-none">
+		@Html.AntiForgeryToken()
+	</form>
+
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="submit" form="FormCrear" class="iu-btn iu-btn-primary">
+				<i class="bi bi-plus-lg"></i>
+				Abrir turno de caja
+			</button>
+		</div>
+	</div>
+}
+
+<section class="iu-show">
+	<section class="iu-sec">
+		<div id="table-wrapper"></div>
+	</section>
+</section>
+
+@section Scripts {
+	<script>
+		const turnoCajaCurrency = (value) => new Intl.NumberFormat('es-BO', {
+			style: 'currency',
+			currency: 'BOB'
+		}).format(value ?? 0);
+
+		const turnoCajaDate = (value) => value
+			? new Intl.DateTimeFormat('es-BO', {
+				day: '2-digit', month: '2-digit', year: 'numeric',
+				hour: '2-digit', minute: '2-digit'
+			}).format(new Date(value))
+			: '-';
+
+		const turnoCajaTotal = (detalles, propiedad) =>
+			(detalles ?? []).reduce((total, detalle) => total + (detalle[propiedad] ?? 0), 0);
+
+		const turnoCajaCerrarUrl = '@Url.Action("Cerrar", "TurnoCaja")';
+
+		const turnoCajaMenuItems = (estado) => estado === 1
+			? menuItems
+			: menuItems.filter(item => item.url !== turnoCajaCerrarUrl);
+
+		function toggleTurnoCajaDropdown(event, id, estado) {
+			togglePortalDropdown(event, id, turnoCajaMenuItems(estado));
+		}
+
+		const renderTurnoCajaActions = (id, estado) => gridjs.html(`
+					<button type="button"
+							class="inv-btn-action"
+							aria-label="Abrir acciones"
+							onclick="toggleTurnoCajaDropdown(event, '${id}', ${estado})">
+						<i class="bi bi-three-dots"></i>
+					</button>
+				`);
+
+		new gridjs.Grid({
+			columns: [
+				{ name: 'Id', hidden: true },
+				'Vendedor',
+				{ name: 'Apertura', formatter: cell => turnoCajaDate(cell) },
+				{ name: 'Cierre', formatter: cell => turnoCajaDate(cell) },
+				{
+					name: 'Estado',
+					formatter: cell => gridjs.html(
+						cell === 1
+							? '<span class="iu-chip tone-success">Abierto</span>'
+							: '<span class="iu-chip tone-secondary">Cerrado</span>')
+				},
+				{ name: 'Monto apertura', formatter: cell => turnoCajaCurrency(cell) },
+				{ name: 'Ventas sistema', formatter: cell => turnoCajaCurrency(cell) },
+				{ name: 'Monto cierre', formatter: cell => cell == null ? '-' : turnoCajaCurrency(cell) },
+				{
+					name: 'Diferencia',
+					formatter: cell => {
+						if (cell == null) return '-';
+						const tone = cell === 0 ? 'tone-success' : 'tone-danger';
+						return gridjs.html(`<span class="iu-chip ${tone}">${turnoCajaCurrency(cell)}</span>`);
+					}
+				},
+				{
+					name: 'Acciones',
+					sort: false,
+					formatter: (cell, row) => renderTurnoCajaActions(
+						row._cells[0].data,
+						row._cells[4].data)
+				}
+			],
+			server: {
+				url: urlWeb + 'TurnoCaja/GetAll',
+				then: data => data.data.map(turno => [
+					turno.id,
+					turno.vendedor?.nombre ?? '-',
+					turno.fechaApertura,
+					turno.fechaCierre,
+					turno.estado,
+					turnoCajaTotal(turno.detalles, 'montoApertura'),
+					turnoCajaTotal(turno.detalles, 'montoVentasSistema'),
+					turno.fechaCierre ? turnoCajaTotal(turno.detalles, 'montoCierreDeclarado') : null,
+					turno.fechaCierre ? turnoCajaTotal(turno.detalles, 'diferencia') : null
+				]),
+				total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById('table-wrapper'));
+	</script>
+}

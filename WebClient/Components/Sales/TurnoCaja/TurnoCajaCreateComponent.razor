@@ -1,0 +1,131 @@
+@using WebClient.Components.Shared.Elements
+@using Domain.DTOs.Sales
+@using static Domain.Constants.Constantes
+
+@inherits Components.MainBaseComponent
+
+<section class="iu-sec">
+	<div class="iu-head">
+		<div>
+			<h2>@TituloFormulario</h2>
+		</div>
+		@if (IsEditing)
+		{
+			<div class="text-end">
+				<small class="d-block text-muted">Total vendido por el vendedor</small>
+				<strong class="fs-4">Bs @MontoVendidoVendedor.ToString("N2")</strong>
+			</div>
+		}
+	</div>
+
+	<EditForm EditContext="_editContext">
+		<DataAnnotationsValidator />
+
+		<div class="iu-form">
+			@if (!IsEditing && EsSuperAdministrador)
+			{
+				<div>
+					<IUSelect TItem="VendedorDTO"
+							  TValue="long"
+							  Label="Vendedor"
+							  Options="ListaVendedores"
+							  GetValue="@(vendedor => vendedor.Id)"
+							  GetText="@(vendedor => vendedor.Nombre)"
+							  @bind-Value="TurnoCaja.IdVendedor"
+							  Required="true" />
+					<ValidationMessage For="@(() => TurnoCaja.IdVendedor)" />
+				</div>
+			}
+			else
+			{
+				<div class="mb-3">
+					<label class="form-label">Vendedor</label>
+					<input class="form-control" value="@ObtenerNombreVendedor()" readonly />
+					@if (!EsSuperAdministrador && TurnoCaja.IdVendedor <= 0)
+					{
+						<div class="text-danger mt-1">El usuario no tiene un vendedor activo asignado.</div>
+					}
+				</div>
+			}
+
+			<div class="mb-3">
+				<label class="form-label">Fecha de apertura</label>
+				<input class="form-control"
+					   value="@TurnoCaja.FechaApertura.ToString("dd/MM/yyyy HH:mm")"
+					   readonly />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Estado</label>
+				<select class="form-select"
+						@bind="TurnoCaja.Estado"
+						disabled="true">
+					<option value="@((short)EstadoTurnoCaja.Abierto)">Abierto</option>
+					<option value="@((short)EstadoTurnoCaja.Cerrado)">Cerrado</option>
+				</select>
+			</div>
+
+			<div class="mb-3">
+				<IUTextArea Label="Observación"
+							Placeholder="Ingrese una observación opcional..."
+							@bind-Value="TurnoCaja.Observacion"
+							Readonly="@IsClosed" />
+				<ValidationMessage For="@(() => TurnoCaja.Observacion)" />
+			</div>
+		</div>
+
+		<div class="table-responsive mt-4">
+			<table class="table align-middle">
+				<thead>
+					<tr>
+						<th>Método de pago</th>
+						<th>Monto apertura</th>
+						@if (IsEditing)
+						{
+							<th>Ventas sistema</th>
+						}
+						@if (SeEstaCerrando || IsClosed)
+						{
+							<th>Monto cierre</th>
+							<th>Diferencia</th>
+						}
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var detalle in TurnoCaja.Detalles)
+					{
+						<tr @key="detalle.IdMetodoPago">
+							<td>
+								<strong>@(detalle.MetodoPago?.Nombre ?? ObtenerNombreMetodoPago(detalle.IdMetodoPago))</strong>
+							</td>
+							<td>
+								<IUInputNumeric TValue="decimal"
+												Label=""
+												@bind-Value="detalle.MontoApertura"
+												Readonly="@IsClosed" />
+							</td>
+							
+							@if (SeEstaCerrando || IsClosed)
+							{
+								<td>
+									<IUInputNumeric TValue="decimal?"
+													Label=""
+													@bind-Value="detalle.MontoVentasSistema"
+													Readonly="true" />
+								</td>
+								<td>
+									<IUInputNumeric TValue="decimal?"
+													Label=""
+													@bind-Value="detalle.MontoCierreDeclarado"
+													Readonly="@IsClosed"
+													Required="true" />
+								</td>
+								<td>@FormatearMonto(CalcularDiferencia(detalle))</td>
+							}
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</EditForm>
+</section>

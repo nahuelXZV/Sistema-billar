@@ -42,6 +42,20 @@ public class VentaService : AppBaseServices, IVentaService
         return await GetAsync<VentaDTO>(uri);
     }
 
+    public async Task<decimal> GetMontoVendidoVendedor(long idVendedor, long idTurnoCaja)
+    {
+        var uri = $"GetMontoVendidoVendedor/{idVendedor}/{idTurnoCaja}";
+        return await GetAsync<decimal>(uri);
+    }
+
+    public async Task<List<VentaMetodoPagoTotalDTO>> GetMontosVendidosPorMetodoPago(
+        long idVendedor,
+        long idTurnoCaja)
+    {
+        var uri = $"GetMontosVendidosPorMetodoPago/{idVendedor}/{idTurnoCaja}";
+        return await GetAsync<List<VentaMetodoPagoTotalDTO>>(uri);
+    }
+
     public async Task<bool> Update(VentaDTO venta)
     {
         var uri = "";

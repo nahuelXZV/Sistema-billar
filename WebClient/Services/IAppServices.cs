@@ -30,6 +30,7 @@ public interface IAppServices
     public IMesasService MesasService { get; }
     public IVendedorService VendedorService { get; }
     public IMetodoPagoService MetodoPagoService { get; }
+    public ITurnoCajaService TurnoCajaService { get; }
     public IUsoMesaService UsoMesaService { get; }
     public IOrdenVentaService OrdenVentaService { get; }
     public IOrdenMesaService OrdenMesaService { get; }

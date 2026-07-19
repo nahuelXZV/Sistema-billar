@@ -39,6 +39,12 @@ public class VentaConfiguration : IEntityTypeConfiguration<Venta>
             .HasForeignKey(a => a.IdOrdenVenta)
             .IsRequired(false);
 
+        builder.HasOne(a => a.TurnoCaja)
+            .WithMany()
+            .HasForeignKey(a => a.IdTurnoCaja)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(a => a.Cliente)
             .WithMany()
             .HasForeignKey(a => a.IdCliente);

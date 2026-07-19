@@ -47,4 +47,10 @@ public static class Constantes
         EnCurso = 2,
         Finalizado = 3
     }
+
+    public enum EstadoTurnoCaja
+    {
+        Abierto = 1,
+        Cerrado = 2
+    }
 }
