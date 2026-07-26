@@ -36,6 +36,8 @@ public class GeneralProfile : Profile
         CreateMap<Lote, LoteDTO>();
         CreateMap<TransaccionInventario, TransaccionInventarioDTO>();
         CreateMap<TransaccionInventarioDetalle, TransaccionInventarioDetalleDTO>();
+        CreateMap<TraspasoInventario, TraspasoInventarioDTO>();
+        CreateMap<TraspasoInventarioDetalle, TraspasoInventarioDetalleDTO>();
         CreateMap<ListaPrecios, ListaPrecioDTO>();
         CreateMap<ListaPreciosDetalle, ListaPrecioDetalleDTO>();
 
@@ -76,6 +78,15 @@ public class GeneralProfile : Profile
         CreateMap<LoteDTO, Lote>();
         CreateMap<TransaccionInventarioDTO, TransaccionInventario>();
         CreateMap<TransaccionInventarioDetalleDTO, TransaccionInventarioDetalle>();
+        CreateMap<TraspasoInventarioDTO, TraspasoInventario>()
+            .ForMember(dest => dest.AlmacenOrigen, opt => opt.Ignore())
+            .ForMember(dest => dest.AlmacenDestino, opt => opt.Ignore())
+            .ForMember(dest => dest.Usuario, opt => opt.Ignore())
+            .ForMember(dest => dest.Detalles, opt => opt.Ignore());
+        CreateMap<TraspasoInventarioDetalleDTO, TraspasoInventarioDetalle>()
+            .ForMember(dest => dest.TraspasoInventario, opt => opt.Ignore())
+            .ForMember(dest => dest.Producto, opt => opt.Ignore())
+            .ForMember(dest => dest.Lote, opt => opt.Ignore());
         CreateMap<ListaPrecioDTO, ListaPrecios>();
         CreateMap<ListaPrecioDetalleDTO, ListaPreciosDetalle>();
 

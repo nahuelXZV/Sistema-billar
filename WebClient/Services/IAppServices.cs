@@ -23,6 +23,7 @@ public interface IAppServices
     public IProductoService ProductoService { get; }
     public IInventarioService InventarioService { get; }
     public ITransaccionInventarioService TransaccionInventarioService { get; }
+    public ITraspasoInventarioService TraspasoInventarioService { get; }
     public IListaPreciosService ListaPreciosService { get; }
     public ILoteService LoteService { get; }
 

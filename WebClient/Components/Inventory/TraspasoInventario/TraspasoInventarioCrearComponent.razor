@@ -1,0 +1,124 @@
+@using Domain.DTOs.Inventory;
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent;
+
+<EditForm EditContext="_editContext">
+	<DataAnnotationsValidator />
+
+	<div class="iu-grid iu-grid-2">
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div><h2>Nuevo traspaso</h2></div>
+			</div>
+
+			<div class="iu-form">
+				<div>
+					<IUInputDatetime Label="Fecha"
+									 Value="@Traspaso.Fecha"
+									 ValueChanged="CambiarFecha"
+									 Required="true" />
+					<ValidationMessage For="@(() => Traspaso.Fecha)" />
+				</div>
+
+				<div>
+					<IUSelect TItem="AlmacenDTO"
+							  TValue="long"
+							  Label="Almacén origen"
+							  Placeholder="Selecciona el almacén origen"
+							  Options="@ListadoAlmacenes"
+							  GetText="@(almacen => almacen.Nombre)"
+							  GetValue="@(almacen => almacen.Id)"
+							  Value="@Traspaso.IdAlmacenOrigen"
+							  ValueChanged="SeleccionarAlmacenOrigen" />
+					<ValidationMessage For="@(() => Traspaso.IdAlmacenOrigen)" />
+				</div>
+
+				<div>
+					<IUSelect TItem="AlmacenDTO"
+							  TValue="long"
+							  Label="Almacén destino"
+							  Placeholder="Selecciona el almacén destino"
+							  Options="@ListadoAlmacenesDestino"
+							  GetText="@(almacen => almacen.Nombre)"
+							  GetValue="@(almacen => almacen.Id)"
+							  @bind-Value="Traspaso.IdAlmacenDestino" />
+					<ValidationMessage For="@(() => Traspaso.IdAlmacenDestino)" />
+				</div>
+
+				<div class="iu-span-2">
+					<IUTextArea Label="Glosa" Placeholder="Describe el motivo del traspaso..." @bind-Value="Traspaso.Glosa" />
+					<ValidationMessage For="@(() => Traspaso.Glosa)" />
+				</div>
+			</div>
+		</section>
+
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div><h2>Productos a trasladar</h2></div>
+			</div>
+
+			<div class="iu-form">
+				<div class="iu-span-2">
+					<IUSelectFilterComponent TItem="InventarioDTO"
+											 TValue="long"
+											 Label="Producto disponible en origen"
+											 Placeholder="Primero selecciona el almacén origen"
+											 Options="@InventariosDisponibles"
+											 GetText="DescripcionInventario"
+											 GetValue="@(inventario => inventario.Id)"
+											 @bind-Value="IdInventarioSeleccionado" />
+				</div>
+
+				<div>
+					<IUInputNumeric TValue="decimal" Label="Cantidad" Placeholder="0" @bind-Value="Cantidad" />
+				</div>
+
+				<div class="d-flex align-items-end">
+					<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarDetalle">
+						<i class="bi bi-plus-lg"></i>
+						Agregar
+					</button>
+				</div>
+
+				<div class="iu-span-2">
+					@if (ListadoDetalles.Count > 0)
+					{
+						<div class="iu-table">
+							<table class="inv-table">
+								<thead>
+									<tr>
+										<th>Producto</th>
+										<th>Lote</th>
+										<th>Cantidad</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var detalle in ListadoDetalles)
+									{
+										<tr>
+											<td>@detalle.NombreProducto</td>
+											<td>@(string.IsNullOrWhiteSpace(detalle.CodigoLote) ? "Sin lote" : detalle.CodigoLote)</td>
+											<td>@detalle.Cantidad</td>
+											<td>
+												<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarDetalle(detalle)">
+													<i class="bi bi-trash"></i>
+													Eliminar
+												</button>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+					else
+					{
+						<p class="iu-note mb-0">Sin productos agregados.</p>
+					}
+				</div>
+			</div>
+		</section>
+	</div>
+</EditForm>

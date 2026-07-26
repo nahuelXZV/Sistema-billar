@@ -16,12 +16,21 @@ public partial class VentaMesasComponent
     private VentaViewModel? ModeloVentaSeleccionada { get; set; }
     private bool GuardandoOrden { get; set; }
     private bool MostrarConfirmacionVolver { get; set; }
+    private bool MostrarCambioMesa { get; set; }
+    private bool MostrarEliminarOrden { get; set; }
+    private MesaDTO? MesaAccion { get; set; }
+    private OrdenMesaDTO? OrdenAccion { get; set; }
+    private List<MesaDTO> MesasDisponiblesCambio { get; set; } = [];
+    private long IdMesaDestino { get; set; }
+    private bool ProcesandoCambioMesa { get; set; }
+    private bool ProcesandoEliminarOrden { get; set; }
     private string _firmaOrdenGuardada = string.Empty;
 
     private int CantidadMesasActivas => Model.Mesas.Count(mesa => mesa.Activo);
     private int CantidadMesasInactivas => Model.Mesas.Count(mesa => !mesa.Activo);
     private string EtiquetaContextoVenta => MesaSeleccionada is null ? "Venta única" : "Mesa seleccionada";
     private string TituloContextoVenta => MesaSeleccionada?.Nombre ?? "Venta directa";
+    private string NombreMesaDestino => MesasDisponiblesCambio.FirstOrDefault(mesa => mesa.Id == IdMesaDestino)?.Nombre ?? "Mesa destino";
 
     protected override async Task OnInitializedAsync()
     {
@@ -338,15 +347,16 @@ public partial class VentaMesasComponent
             puntoVenta.DescuentoGlobal,
             puntoVenta.RecargoGlobal,
             Detalles = puntoVenta.DetalleItems
-                .OrderBy(detalle => detalle.EsTiempoMesa)
-                .ThenBy(detalle => detalle.IdProducto)
+                // El temporizador actualiza este detalle cada segundo; no representa
+                // una modificación manual pendiente de guardar.
+                .Where(detalle => !detalle.EsTiempoMesa)
+                .OrderBy(detalle => detalle.IdProducto)
                 .Select(detalle => new
                 {
                     detalle.IdProducto,
                     detalle.Nombre,
                     detalle.Cantidad,
-                    detalle.PrecioUnitario,
-                    detalle.EsTiempoMesa
+                    detalle.PrecioUnitario
                 })
                 .ToList()
         };
@@ -355,7 +365,158 @@ public partial class VentaMesasComponent
     }
     #endregion
 
+    #region Acciones de orden desde la tarjeta
+    private void SolicitarCambiarMesa(MesaDTO mesa, OrdenMesaDTO ordenMesa)
+    {
+        MesaAccion = mesa;
+        OrdenAccion = ordenMesa;
+        IdMesaDestino = 0;
+        MesasDisponiblesCambio = Model.Mesas
+            .Where(mesaDisponible =>
+                mesaDisponible.Activo &&
+                mesaDisponible.Id != mesa.Id &&
+                !_ordenesPorMesa.ContainsKey(mesaDisponible.Id))
+            .OrderBy(mesaDisponible => mesaDisponible.Nombre)
+            .ToList();
+        MostrarCambioMesa = true;
+    }
+
+    private void CancelarCambioMesa()
+    {
+        if (ProcesandoCambioMesa)
+        {
+            return;
+        }
+
+        MostrarCambioMesa = false;
+        LimpiarAccionMesa();
+    }
+
+    private async Task ConfirmarCambioMesaAsync()
+    {
+        if (MesaAccion is null || OrdenAccion is null || IdMesaDestino <= 0 || ProcesandoCambioMesa)
+        {
+            return;
+        }
+
+        ProcesandoCambioMesa = true;
+        try
+        {
+            var idMesaOrigen = MesaAccion.Id;
+            var idMesaDestino = IdMesaDestino;
+            var nombreMesaDestino = NombreMesaDestino;
+            var ordenTransferida = await AppServices.OrdenMesaService.Transferir(new TransferirOrdenMesaDTO
+            {
+                IdOrdenVenta = OrdenAccion.Id,
+                IdMesaDestino = idMesaDestino
+            });
+
+            _ordenesPorMesa.Remove(idMesaOrigen);
+            _ordenesPorMesa[idMesaDestino] = ordenTransferida;
+            MostrarCambioMesa = false;
+            LimpiarAccionMesa();
+            await ShowSuccessMessage($"Orden transferida a {nombreMesaDestino}.");
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorMessage(ex);
+        }
+        finally
+        {
+            ProcesandoCambioMesa = false;
+        }
+    }
+
+    private void SolicitarEliminarOrden(MesaDTO mesa, OrdenMesaDTO ordenMesa)
+    {
+        MesaAccion = mesa;
+        OrdenAccion = ordenMesa;
+        MostrarEliminarOrden = true;
+    }
+
+    private void CancelarEliminarOrden()
+    {
+        if (ProcesandoEliminarOrden)
+        {
+            return;
+        }
+
+        MostrarEliminarOrden = false;
+        LimpiarAccionMesa();
+    }
+
+    private async Task ConfirmarEliminarOrdenAsync()
+    {
+        if (MesaAccion is null || OrdenAccion is null || ProcesandoEliminarOrden)
+        {
+            return;
+        }
+
+        ProcesandoEliminarOrden = true;
+        try
+        {
+            var idMesa = MesaAccion.Id;
+            var resultado = await AppServices.OrdenMesaService.Eliminar(OrdenAccion.Id);
+
+            _ordenesPorMesa.Remove(idMesa);
+            MostrarEliminarOrden = false;
+            LimpiarAccionMesa();
+            await ShowSuccessMessage(resultado.Finalizada
+                ? "La orden tenía pagos y fue finalizada. La mesa quedó libre."
+                : "Orden eliminada. La mesa quedó libre.");
+        }
+        catch (Exception ex)
+        {
+            await ShowErrorMessage(ex);
+        }
+        finally
+        {
+            ProcesandoEliminarOrden = false;
+        }
+    }
+
+    private void LimpiarAccionMesa()
+    {
+        MesaAccion = null;
+        OrdenAccion = null;
+        MesasDisponiblesCambio = [];
+        IdMesaDestino = 0;
+    }
+    #endregion
+
     #region Utils
+    private OrdenMesaDTO? ObtenerOrdenMesa(MesaDTO mesa)
+    {
+        return _ordenesPorMesa.GetValueOrDefault(mesa.Id);
+    }
+
+    private static string ObtenerNumeroOrden(OrdenMesaDTO? ordenMesa)
+    {
+        if (ordenMesa is null)
+        {
+            return "la orden";
+        }
+
+        if (!string.IsNullOrWhiteSpace(ordenMesa.Numero))
+        {
+            return ordenMesa.Numero;
+        }
+
+        return ordenMesa.Id > 0 ? $"Orden #{ordenMesa.Id}" : "Orden sin guardar";
+    }
+
+    private static TimeSpan ObtenerTiempoOrden(OrdenMesaDTO ordenMesa)
+    {
+        if (ordenMesa.EstadoUsoMesa == (short)EstadoUsoMesa.EnCurso && ordenMesa.FechaInicio != default)
+        {
+            return DateTime.Now > ordenMesa.FechaInicio
+                ? DateTime.Now - ordenMesa.FechaInicio
+                : TimeSpan.Zero;
+        }
+
+        return TimeSpan.FromMinutes((double)Math.Max(0, ordenMesa.MinutosConsumidos));
+    }
+
     private string ObtenerEstadoMesa(MesaDTO mesa)
     {
         if (!mesa.Activo)
@@ -387,4 +548,3 @@ public partial class VentaMesasComponent
     }
     #endregion
 }
-

@@ -1,105 +1,265 @@
-﻿@typeparam TItem
+@typeparam TItem
 @typeparam TValue
+@implements IDisposable
 
 <div class="mb-3 position-relative iu-filter-select">
-	<label class="form-label">
+	<label for="@Id" class="form-label">
 		@Label
 		@if (Required)
 		{
-			<span class="text-danger">*</span>
+			<span class="text-danger" aria-hidden="true">*</span>
 		}
 	</label>
-	<input type="text"
-		   class="@InputClass"
-		   placeholder="@Placeholder"
-		   value="@DisplayText"
-		   @oninput="OnInput"
-		   @onfocus="ShowDropdown"
-		   @onblur="HideDropdownDelayed"
-		   autocomplete="off" />
-	@if (IsOpen && FilteredOptions.Any())
+
+	<div class="iu-filter-select-control">
+		<input id="@Id"
+			   type="text"
+			   class="@GetInputClass()"
+			   placeholder="@Placeholder"
+			   value="@DisplayText"
+			   @oninput="OnInput"
+			   @onfocus="ShowDropdown"
+			   @onblur="HideDropdownDelayed"
+			   autocomplete="off"
+			   disabled="@Disabled"
+			   required="@Required"
+			   role="combobox"
+			   aria-autocomplete="list"
+			   aria-expanded="@IsOpen.ToString().ToLowerInvariant()"
+			   aria-controls="@MenuId" />
+
+		@if (HasSelection && !Disabled)
+		{
+			<button type="button"
+					class="iu-filter-select-clear"
+					title="@ClearButtonLabel"
+					aria-label="@ClearButtonLabel"
+					@onmousedown:preventDefault
+					@onclick="ClearSelection">
+				<i class="bi bi-x-lg" aria-hidden="true"></i>
+			</button>
+		}
+	</div>
+
+	@if (IsOpen)
 	{
-		<ul class="list-group position-absolute w-100 z-3 shadow-sm iu-filter-select-menu">
-			@foreach (var item in FilteredOptions)
+		var filteredOptions = GetFilteredOptions();
+
+		<ul id="@MenuId"
+			class="list-group position-absolute w-100 z-3 shadow-sm iu-filter-select-menu"
+			role="listbox"
+			aria-label="@Label">
+			@if (filteredOptions.Count == 0)
 			{
-				<li class="list-group-item list-group-item-action iu-filter-select-option"
-					@onclick="() => SelectItem(item)">
-					@GetText(item)
+				<li class="iu-filter-select-empty" role="option" aria-disabled="true">
+					<i class="bi bi-search" aria-hidden="true"></i>
+					<span>@EmptyText</span>
 				</li>
+			}
+			else
+			{
+				@foreach (var item in filteredOptions)
+				{
+					var isSelected = IsSelected(item);
+
+					<li class="@GetOptionClass(isSelected)"
+						role="option"
+						aria-selected="@isSelected.ToString().ToLowerInvariant()"
+						title="@GetItemText(item)"
+						@onmousedown:preventDefault
+						@onclick="() => SelectItem(item)">
+						<span>@GetItemText(item)</span>
+						@if (isSelected)
+						{
+							<i class="bi bi-check2" aria-hidden="true"></i>
+						}
+					</li>
+				}
 			}
 		</ul>
 	}
 </div>
+
 @code {
 	[Parameter] public string Label { get; set; } = "Seleccione";
 	[Parameter] public string Placeholder { get; set; } = "Buscar...";
 	[Parameter] public string InputClass { get; set; } = "form-control";
+	[Parameter] public string EmptyText { get; set; } = "No se encontraron resultados";
+	[Parameter] public string ClearButtonLabel { get; set; } = "Limpiar selección";
+	[Parameter] public string Id { get; set; } = $"iu-select-filter-{Guid.NewGuid():N}";
 	[Parameter] public bool Required { get; set; }
+	[Parameter] public bool Disabled { get; set; }
+	[Parameter] public int MaxResults { get; set; } = 250;
 
 	[Parameter] public IEnumerable<TItem> Options { get; set; } = Enumerable.Empty<TItem>();
-
-	[Parameter] public Func<TItem, TValue?> GetValue { get; set; }
-	[Parameter] public Func<TItem, string?> GetText { get; set; }
+	[Parameter, EditorRequired] public Func<TItem, TValue?> GetValue { get; set; } = default!;
+	[Parameter, EditorRequired] public Func<TItem, string?> GetText { get; set; } = default!;
 
 	[Parameter] public TValue? Value { get; set; }
 	[Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
 
+	private string MenuId => $"{Id}-menu";
 	private string SearchText { get; set; } = string.Empty;
 	private string DisplayText { get; set; } = string.Empty;
 	private bool IsOpen { get; set; }
-
-	private IEnumerable<TItem> FilteredOptions => string.IsNullOrWhiteSpace(SearchText)
-			? Options.Take(10)
-			: Options.Where(o => !string.IsNullOrEmpty(GetText(o)) && GetText(o)!.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-				.Take(10);
+	private bool HasSelection { get; set; }
+	private CancellationTokenSource? HideCancellation { get; set; }
 
 	protected override void OnParametersSet()
 	{
-		if (Value is null || Options is null)
+		HasSelection = TryGetSelectedItem(out var selectedItem);
+
+		if (HasSelection && !IsOpen)
+		{
+			DisplayText = GetItemText(selectedItem!);
+			SearchText = string.Empty;
+		}
+		else if (!HasSelection && !IsOpen)
 		{
 			DisplayText = string.Empty;
 			SearchText = string.Empty;
-			IsOpen = false;
-			return;
 		}
 
-		if (Options is null)
-			return;
-
-		var selectedItem = Options.FirstOrDefault(o =>
-			EqualityComparer<TValue?>.Default.Equals(GetValue(o), Value));
-
-		if (selectedItem != null)
+		if (Disabled)
 		{
-			DisplayText = GetText(selectedItem) ?? string.Empty;
+			IsOpen = false;
 		}
 	}
 
-	private void OnInput(ChangeEventArgs e)
+	private IReadOnlyList<TItem> GetFilteredOptions()
+	{
+		var options = Options ?? Enumerable.Empty<TItem>();
+		var maxResults = Math.Max(1, MaxResults);
+
+		if (string.IsNullOrWhiteSpace(SearchText))
+		{
+			return options.Take(maxResults).ToList();
+		}
+
+		return options
+			.Where(item => GetItemText(item).Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase))
+			.Take(maxResults)
+			.ToList();
+	}
+
+	private bool TryGetSelectedItem(out TItem? selectedItem)
+	{
+		foreach (var item in Options ?? Enumerable.Empty<TItem>())
+		{
+			if (EqualityComparer<TValue?>.Default.Equals(GetValue(item), Value))
+			{
+				selectedItem = item;
+				return true;
+			}
+		}
+
+		selectedItem = default;
+		return false;
+	}
+
+	private bool IsSelected(TItem item) =>
+		HasSelection && EqualityComparer<TValue?>.Default.Equals(GetValue(item), Value);
+
+	private string GetItemText(TItem item) => GetText(item) ?? string.Empty;
+
+	private string GetInputClass() =>
+		HasSelection && !Disabled
+			? $"{InputClass} iu-filter-select-input-with-clear"
+			: InputClass;
+
+	private static string GetOptionClass(bool isSelected) =>
+		isSelected
+			? "list-group-item list-group-item-action iu-filter-select-option active"
+			: "list-group-item list-group-item-action iu-filter-select-option";
+
+	private async Task OnInput(ChangeEventArgs e)
 	{
 		SearchText = e.Value?.ToString() ?? string.Empty;
 		DisplayText = SearchText;
 		IsOpen = true;
+
+		if (HasSelection)
+		{
+			HasSelection = false;
+			Value = default;
+			await ValueChanged.InvokeAsync(Value);
+		}
 	}
 
 	private async Task SelectItem(TItem item)
 	{
-		DisplayText = GetText(item) ?? string.Empty;
-		SearchText = DisplayText;
-		IsOpen = false;
+		CancelPendingHide();
 
+		DisplayText = GetItemText(item);
+		SearchText = string.Empty;
+		IsOpen = false;
+		HasSelection = true;
 		Value = GetValue(item);
+
+		await ValueChanged.InvokeAsync(Value);
+	}
+
+	private async Task ClearSelection()
+	{
+		CancelPendingHide();
+
+		Value = default;
+		DisplayText = string.Empty;
+		SearchText = string.Empty;
+		HasSelection = false;
+		IsOpen = true;
+
 		await ValueChanged.InvokeAsync(Value);
 	}
 
 	private void ShowDropdown()
 	{
+		if (Disabled)
+		{
+			return;
+		}
+
+		CancelPendingHide();
+		SearchText = HasSelection ? string.Empty : DisplayText;
 		IsOpen = true;
 	}
 
 	private async Task HideDropdownDelayed()
 	{
-		await Task.Delay(150);
-		IsOpen = false;
+		CancelPendingHide();
+		HideCancellation = new CancellationTokenSource();
+
+		try
+		{
+			await Task.Delay(180, HideCancellation.Token);
+			IsOpen = false;
+
+			if (HasSelection && TryGetSelectedItem(out var selectedItem))
+			{
+				DisplayText = GetItemText(selectedItem!);
+				SearchText = string.Empty;
+			}
+			else
+			{
+				DisplayText = string.Empty;
+				SearchText = string.Empty;
+			}
+		}
+		catch (TaskCanceledException)
+		{
+			// El foco regresó al control antes de cerrar el menú.
+		}
+	}
+
+	private void CancelPendingHide()
+	{
+		HideCancellation?.Cancel();
+		HideCancellation?.Dispose();
+		HideCancellation = null;
+	}
+
+	public void Dispose()
+	{
+		CancelPendingHide();
 	}
 }

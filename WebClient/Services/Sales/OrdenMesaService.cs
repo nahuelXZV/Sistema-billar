@@ -38,4 +38,14 @@ public class OrdenMesaService : AppBaseServices, IOrdenMesaService
     {
         return await PostAsync<OrdenMesaDTO>($"FinalizarCronometro/{idOrdenVenta}", new { });
     }
+
+    public async Task<OrdenMesaDTO> Transferir(TransferirOrdenMesaDTO transferencia)
+    {
+        return await PostAsync<OrdenMesaDTO>("Transferir", transferencia);
+    }
+
+    public async Task<ResultadoEliminarOrdenMesaDTO> Eliminar(long idOrdenVenta)
+    {
+        return await DeleteAsync<ResultadoEliminarOrdenMesaDTO>($"{idOrdenVenta}");
+    }
 }

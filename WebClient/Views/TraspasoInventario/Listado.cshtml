@@ -1,0 +1,100 @@
+@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Inventory
+@model TraspasoInventarioViewModel
+
+@{
+	ViewData["Title"] = "Traspasos";
+	ViewData["Module"] = "Inventario";
+	ViewData["Action"] = "Listado";
+	ViewData["Url"] = Url.Action("Listado", "TraspasoInventario");
+	Model.ListaItemsMenu = new List<ItemMenu>();
+
+	if (Model.EsSuperAdministrador)
+	{
+		Model.ListaItemsMenu = new List<ItemMenu>() { new ItemMenu
+			{
+				Id = MenuItemId.Eliminar,
+				Text = "Revertir",
+				IconCss = "fa fa-undo",
+				Url = Url.Action("Eliminar", "TraspasoInventario")!,
+				ActionType = MenuItemActionType.POST,
+				Confirm = true,
+				ConfirmMessage = "¿Está seguro de revertir este traspaso? Se devolverá el stock al almacén origen."
+			}   };
+
+	}
+}
+
+@section ActionBar {
+	<form id="FormCrear" asp-controller="TraspasoInventario" asp-action="Crear" method="post" class="d-none">
+		@Html.AntiForgeryToken()
+	</form>
+
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="submit" form="FormCrear" class="iu-btn iu-btn-primary">
+				<i class="bi bi-arrow-left-right"></i>
+				Crear traspaso
+			</button>
+		</div>
+	</div>
+}
+
+<section class="iu-show">
+	<section class="iu-sec">
+		<div id="table-wrapper"></div>
+	</section>
+</section>
+
+@section Scripts {
+	<script>
+		const renderTransferActions = id => gridjs.html(`
+																															<button type="button"
+																																	class="inv-btn-action"
+																																	aria-label="Abrir acciones"
+																																	onclick="togglePortalDropdown(event, '${id}')">
+																																<i class="bi bi-three-dots"></i>
+																															</button>`);
+
+		const transferDate = value => value
+			? new Intl.DateTimeFormat('es-BO', {
+				day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+			}).format(new Date(value))
+			: '-';
+
+		new gridjs.Grid({
+			columns: [
+				{ name: 'Id', hidden: true },
+				'Origen',
+				'Destino',
+				'Glosa',
+				{ name: 'Fecha', formatter: cell => transferDate(cell) },
+				{
+					name: 'Estado',
+					formatter: cell => gridjs.html(cell === 1
+						? '<span class="iu-chip tone-success">Confirmado</span>'
+						: '<span class="iu-chip tone-secondary">Revertido</span>')
+				},
+				{
+					name: 'Acciones',
+					sort: false,
+					formatter: (cell, row) => renderTransferActions(row._cells[0].data)
+				}
+			],
+			server: {
+				url: urlWeb + 'TraspasoInventario/GetAll',
+				then: data => data.data.map(traspaso => [
+					traspaso.id,
+					traspaso.almacenOrigen?.nombre ?? '-',
+					traspaso.almacenDestino?.nombre ?? '-',
+					traspaso.glosa,
+					traspaso.fecha,
+					traspaso.estado
+				]),
+				total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById('table-wrapper'));
+	</script>
+}

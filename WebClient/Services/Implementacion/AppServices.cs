@@ -28,6 +28,7 @@ public class AppServices : IAppServices
     private IProductoService _productoService;
     private IInventarioService _inventarioService;
     private ITransaccionInventarioService _transaccionInventarioService;
+    private ITraspasoInventarioService _traspasoInventarioService;
     private IListaPreciosService _listaPrecioService;
     private ILoteService _loteService;
     private ITipoMesaService _tipoMesaService;
@@ -64,6 +65,7 @@ public class AppServices : IAppServices
     public IProductoService ProductoService => _productoService ??= _serviceProvider.GetService<IProductoService>();
     public IInventarioService InventarioService => _inventarioService ??= _serviceProvider.GetService<IInventarioService>();
     public ITransaccionInventarioService TransaccionInventarioService => _transaccionInventarioService ??= _serviceProvider.GetService<ITransaccionInventarioService>();
+    public ITraspasoInventarioService TraspasoInventarioService => _traspasoInventarioService ??= _serviceProvider.GetService<ITraspasoInventarioService>();
     public IListaPreciosService ListaPreciosService => _listaPrecioService ??= _serviceProvider.GetService<IListaPreciosService>();
     public ILoteService LoteService => _loteService ??= _serviceProvider.GetService<ILoteService>();
     #endregion

@@ -29,6 +29,13 @@ public static class Constantes
         Merma = 3,
     }
 
+    public enum EstadoTraspasoInventario
+    {
+        Confirmado = 1,
+        Revertido = 2,
+        Anulado = 3
+    }
+
     public enum TipoProducto
     {
         Producto = 1,

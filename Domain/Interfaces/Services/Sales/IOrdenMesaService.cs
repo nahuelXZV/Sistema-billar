@@ -9,4 +9,6 @@ public interface IOrdenMesaService
     Task<List<OrdenMesaDTO>> GetAbiertas();
     Task<OrdenMesaDTO> IniciarCronometro(long idOrdenVenta);
     Task<OrdenMesaDTO> FinalizarCronometro(long idOrdenVenta);
+    Task<OrdenMesaDTO> Transferir(TransferirOrdenMesaDTO transferencia);
+    Task<ResultadoEliminarOrdenMesaDTO> Eliminar(long idOrdenVenta);
 }

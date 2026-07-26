@@ -64,6 +64,7 @@ public class UpdateStockHandler : ICommandHandler<UpdateStockCommand, Response<b
             if (request.Transaccion.Tipo == (short)TipoTransaccionInventario.Ingreso)
             {
                 inventario.Cantidad += detalle.Cantidad;
+                inventario.FechaActualizacion = DateTime.Now;
             }
             else if (request.Transaccion.Tipo == (short)TipoTransaccionInventario.Salida || request.Transaccion.Tipo == (short)TipoTransaccionInventario.Merma)
             {
@@ -75,6 +76,7 @@ public class UpdateStockHandler : ICommandHandler<UpdateStockCommand, Response<b
                         $"Disponible: {inventario.Cantidad}; solicitado: {detalle.Cantidad}.");
                 }
                 inventario.Cantidad -= detalle.Cantidad;
+                inventario.FechaActualizacion = DateTime.Now;
             }
 
         }

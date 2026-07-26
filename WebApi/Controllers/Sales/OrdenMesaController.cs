@@ -42,4 +42,22 @@ public class OrdenMesaController : MainController
             IdOrdenVenta = idOrdenVenta
         }));
     }
+
+    [HttpPost("Transferir")]
+    public async Task<IActionResult> Transferir(TransferirOrdenMesaDTO transferencia)
+    {
+        return Ok(await Mediator.Send(new TransferirOrdenMesaCommand
+        {
+            Transferencia = transferencia
+        }));
+    }
+
+    [HttpDelete("{idOrdenVenta}")]
+    public async Task<IActionResult> Eliminar(long idOrdenVenta)
+    {
+        return Ok(await Mediator.Send(new EliminarOrdenMesaCommand
+        {
+            IdOrdenVenta = idOrdenVenta
+        }));
+    }
 }

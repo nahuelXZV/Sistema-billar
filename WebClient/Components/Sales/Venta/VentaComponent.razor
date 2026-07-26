@@ -1,4 +1,5 @@
 @using WebClient.Models.Sales
+@using WebClient.Components.Shared.Elements
 @inherits Components.MainBaseComponent;
 
 @if (Model.PuntoVenta is null)
@@ -30,7 +31,7 @@ else
 									   OnIncrementarCantidad="IncrementarCantidad"
 									   OnDecrementarCantidad="ReducirCantidad"
 									   OnCantidadModificada="SetearCantidad"
-									   OnLimpiarVenta="LimpiarVenta"
+									   OnLimpiarVenta="SolicitarLimpiarVenta"
 									   MostrarGuardar="EsVentaMesa"
 									   Guardando="GuardandoOrden"
 									   OnGuardar="GuardarOrdenAsync"
@@ -43,4 +44,32 @@ else
 							@bind-Visible="MostrarModalPago"
 							OnPaymentConfirmed="PagoConfirmado" />
 	</section>
+
+	<IUModal Title="Limpiar venta" @bind-Visible="MostrarConfirmacionLimpiar">
+		<Body>
+			<div class="venta-table-exit-confirmation is-danger">
+				<i class="bi bi-exclamation-octagon"></i>
+				<div>
+					<strong>¿Quieres limpiar la venta actual?</strong>
+					<span>
+						Se quitarán todos los productos, el cliente seleccionado, la nota y los ajustes.
+						Esta acción no se puede deshacer.
+					</span>
+				</div>
+			</div>
+		</Body>
+		<Footer>
+			<button type="button"
+					class="venta-pos-client-modal-button is-secondary"
+					@onclick="CancelarLimpiarVenta">
+				Conservar venta
+			</button>
+			<button type="button"
+					class="venta-pos-client-modal-button is-danger"
+					@onclick="ConfirmarLimpiarVenta">
+				<i class="bi bi-trash3"></i>
+				Sí, limpiar venta
+			</button>
+		</Footer>
+	</IUModal>
 }

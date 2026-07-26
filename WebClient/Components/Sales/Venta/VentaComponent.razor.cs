@@ -17,6 +17,7 @@ public partial class VentaComponent
     [Parameter] public EventCallback<long> OnVentaFinalizada { get; set; }
     private ClienteDTO ClienteDefault { get; set; } = new();
     private bool MostrarModalPago { get; set; }
+    private bool MostrarConfirmacionLimpiar { get; set; }
     private bool BloquearPagoTiempo => EsVentaMesa && Model.OrdenMesa?.EstadoUsoMesa == (short)EstadoUsoMesa.EnCurso;
 
     protected override async Task OnInitializedAsync()
@@ -178,6 +179,22 @@ public partial class VentaComponent
     #endregion
 
     #region Utils
+    private void SolicitarLimpiarVenta()
+    {
+        MostrarConfirmacionLimpiar = true;
+    }
+
+    private void CancelarLimpiarVenta()
+    {
+        MostrarConfirmacionLimpiar = false;
+    }
+
+    private void ConfirmarLimpiarVenta()
+    {
+        MostrarConfirmacionLimpiar = false;
+        LimpiarVenta();
+    }
+
     private void LimpiarVenta()
     {
         Model.PuntoVenta.DetalleItems.Clear();
