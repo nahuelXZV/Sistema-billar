@@ -10,4 +10,13 @@ public class DashboardController : MainController
     {
         return Ok(await Mediator.Send(new GetDashboardQuery()));
     }
+
+    [HttpGet("Cajero")]
+    public async Task<IActionResult> GetCajero()
+    {
+        return Ok(await Mediator.Send(new GetDashboardCajeroQuery
+        {
+            IdUsuario = IdUsuarioActual
+        }));
+    }
 }

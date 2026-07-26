@@ -11,7 +11,11 @@ public class TurnoCajaController : MainController
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] FilterDTO? filter)
     {
-        return Ok(await Mediator.Send(new GetTurnosCajaFilterQuery { Filter = filter }));
+        return Ok(await Mediator.Send(new GetTurnosCajaFilterQuery
+        {
+            Filter = filter,
+            IdUsuario = IdUsuarioActual
+        }));
     }
 
     [HttpGet("GetAll")]

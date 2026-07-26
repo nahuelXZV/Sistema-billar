@@ -1,0 +1,239 @@
+@using Domain.DTOs.General
+@inherits Components.MainBaseComponent
+
+@if (IsLoading)
+{
+	<div class="iu-show home-dashboard-loading">
+		<div class="home-skeleton hero"></div>
+		<div class="home-skeleton-row">
+			<div class="home-skeleton card"></div>
+			<div class="home-skeleton card"></div>
+			<div class="home-skeleton card"></div>
+			<div class="home-skeleton card"></div>
+		</div>
+	</div>
+}
+else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+{
+	<section class="iu-show">
+		<div class="iu-sec home-dashboard-error">
+			<i class="bi bi-exclamation-circle"></i>
+			<div>
+				<strong>No se pudo cargar el dashboard de caja</strong>
+				<span>@ErrorMessage</span>
+			</div>
+		</div>
+	</section>
+}
+else if (Dashboard is not null)
+{
+	<section class="iu-show home-dashboard cashier-home">
+		<section class="iu-sec cashier-home-hero">
+			<div class="cashier-home-welcome">
+				<h1>Hola, @NombreCajero</h1>
+				@if (Dashboard.TieneTurnoActivo)
+				{
+					<p>Tu caja está abierta y lista para continuar atendiendo.</p>
+				}
+				else
+				{
+					<p>No tienes un turno de caja abierto. Abre uno para comenzar a vender.</p>
+				}
+			</div>
+
+			<div class="home-hero-highlight">
+				<span class="home-highlight-label">Vendido en el turno</span>
+				<strong class="home-highlight-value">@FormatCurrency(Dashboard.TotalVendidoTurno)</strong>
+				<span class="home-highlight-caption">
+					@Dashboard.CantidadVentasTurno
+					@(Dashboard.CantidadVentasTurno == 1 ? "venta realizada" : "ventas realizadas")
+				</span>
+			</div>
+		</section>
+
+		<div class="iu-grid-4">
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-primary">
+					<i class="bi bi-receipt"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Ventas realizadas</span>
+					<strong>@Dashboard.CantidadVentasTurno</strong>
+				</div>
+			</article>
+
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-success">
+					<i class="bi bi-cash-stack"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Ventas en efectivo</span>
+					<strong>@FormatCurrency(Dashboard.VentasEfectivo)</strong>
+				</div>
+			</article>
+
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-warning">
+					<i class="bi bi-qr-code"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Pagos digitales</span>
+					<strong>@FormatCurrency(Dashboard.PagosDigitales)</strong>
+				</div>
+			</article>
+
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-danger">
+					<i class="bi bi-wallet2"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Efectivo esperado</span>
+					<strong>@FormatCurrency(Dashboard.EfectivoEsperado)</strong>
+				</div>
+			</article>
+		</div>
+
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<span class="iu-kicker">Acciones rápidas</span>
+					<h2>¿Qué quieres hacer?</h2>
+				</div>
+			</div>
+
+			<div class="iu-grid-4">
+				<a class="iu-sec home-quick-action" href="/Venta/VentaDirecta">
+					<div class="home-quick-action-icon tone-success">
+						<i class="bi bi-cart-check"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>Venta directa</strong>
+						<span>Cobrar productos sin mesa.</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
+
+				<a class="iu-sec home-quick-action" href="/Venta/VentaMesas">
+					<div class="home-quick-action-icon tone-primary">
+						<i class="bi bi-grid-3x3-gap-fill"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>Venta por mesa</strong>
+						<span>Abrir o cobrar una mesa.</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
+
+				<a class="iu-sec home-quick-action" href="/Venta/Listado">
+					<div class="home-quick-action-icon tone-warning">
+						<i class="bi bi-clock-history"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>Mis ventas</strong>
+						<span>Consultar operaciones recientes.</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
+
+				<a class="iu-sec home-quick-action" href="/TurnoCaja/Listado">
+					<div class="home-quick-action-icon tone-danger">
+						<i class="bi @(Dashboard.TieneTurnoActivo ? "bi-lock" : "bi-unlock")"></i>
+					</div>
+					<div class="home-quick-action-copy">
+						<strong>@(Dashboard.TieneTurnoActivo ? "Cerrar caja" : "Abrir caja")</strong>
+						<span>
+							@(Dashboard.TieneTurnoActivo
+								? "Revisar y declarar los montos."
+								: "Registrar los montos de apertura.")
+						</span>
+					</div>
+					<i class="bi bi-arrow-up-right"></i>
+				</a>
+			</div>
+		</section>
+
+		<div class="iu-grid-2 cashier-home-details">
+			<section class="iu-sec">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Recaudación</span>
+						<h2>Ventas por método de pago</h2>
+					</div>
+					<strong>@FormatCurrency(Dashboard.TotalVendidoTurno)</strong>
+				</div>
+
+				<div class="cashier-payment-list">
+					@if (Dashboard.VentasPorMetodoPago.Count == 0)
+					{
+						<div class="home-dashboard-error">
+							<i class="bi bi-receipt"></i>
+							<div>
+								<strong>Sin movimientos todavía</strong>
+								<span>Los cobros del turno aparecerán aquí.</span>
+							</div>
+						</div>
+					}
+					else
+					{
+						@foreach (var payment in Dashboard.VentasPorMetodoPago.Select((item, index) => new { Item = item, Index = index }))
+						{
+							var tone = GetPaymentTone(payment.Index);
+							<div class="home-progress-item" @key="payment.Item.IdMetodoPago">
+								<div class="home-progress-copy">
+									<span>
+										<i class="@GetPaymentIcon(payment.Item) me-2"></i>
+										@payment.Item.Nombre
+									</span>
+									<strong>@FormatCurrency(payment.Item.MontoVendido)</strong>
+								</div>
+								<div class="home-progress-track">
+									<div class="home-progress-bar @tone"
+										 style="width: @(GetPercentage(payment.Item.MontoVendido, Dashboard.TotalVendidoTurno).ToString(System.Globalization.CultureInfo.InvariantCulture))%"></div>
+								</div>
+							</div>
+						}
+					}
+				</div>
+			</section>
+
+			<section class="iu-sec home-panel-felt">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Salón</span>
+						<h2>Estado de las mesas</h2>
+					</div>
+					<a href="/Venta/VentaMesas" class="iu-btn iu-btn-secondary">Ver mesas</a>
+				</div>
+
+				<div class="cashier-table-grid">
+					<article class="home-table-status-card">
+						<div class="home-table-status-top">
+							<span class="iu-chip tone-success">Disponibles</span>
+							<i class="bi bi-check-circle text-success"></i>
+						</div>
+						<strong>@Dashboard.MesasDisponibles mesas</strong>
+						<small>Listas para iniciar atención</small>
+					</article>
+
+					<article class="home-table-status-card table-busy">
+						<div class="home-table-status-top">
+							<span class="iu-chip tone-primary">Ocupadas</span>
+							<i class="bi bi-hourglass-split text-info"></i>
+						</div>
+						<strong>@Dashboard.MesasOcupadas mesas</strong>
+						<small>Con consumo en curso</small>
+					</article>
+
+					<article class="home-table-status-card table-warning">
+						<div class="home-table-status-top">
+							<span class="iu-chip tone-danger">Por cobrar</span>
+							<i class="bi bi-exclamation-circle text-warning"></i>
+						</div>
+						<strong>@Dashboard.MesasPorCobrar mesas</strong>
+						<small>Esperando confirmación de pago</small>
+					</article>
+				</div>
+			</section>
+		</div>
+	</section>
+}

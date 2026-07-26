@@ -8,7 +8,10 @@
 	ViewData["Action"] = "Dashboard";
 	ViewData["Url"] = Url.Action("Index", "Home");
 
-	// var componentName = nameof(HomeComponent);
+	var componentType = Model.EsSuperAdministrador
+		? typeof(HomeComponent)
+		: typeof(HomeCajeroComponent);
+
 	var componentParameters = new Dictionary<string, object>
 	{
 	};
@@ -21,6 +24,6 @@
 @* @section ContentHeader { *@
 @* } *@
 <component type="typeof(MainComponent)"
-		   param-ComponentTypeName="typeof(HomeComponent).FullName"
+		   param-ComponentTypeName="componentType.FullName"
 		   param-Parameters="@componentParameters"
 		   render-mode="ServerPrerendered" />
