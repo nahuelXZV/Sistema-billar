@@ -1,0 +1,123 @@
+.iu-config-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+}
+
+.iu-config-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.35rem;
+    border: 1px solid rgba(113, 132, 123, 0.16);
+    border-radius: 1rem;
+    background: rgba(16, 22, 20, 0.7);
+}
+
+.iu-config-tab {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    color: #96a9a0;
+    background: transparent;
+    font-weight: 600;
+    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.iu-config-tab:hover {
+    color: #f4f8f5;
+    border-color: rgba(184, 106, 63, 0.24);
+}
+
+.iu-config-tab.active {
+    color: #f4f8f5;
+    border-color: rgba(184, 106, 63, 0.36);
+    background: rgba(184, 106, 63, 0.16);
+}
+
+.iu-config-count {
+    display: inline-flex;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    color: #f4f8f5;
+    background: rgba(184, 106, 63, 0.45);
+    font-size: 0.72rem;
+}
+
+.iu-config-content {
+    padding-top: 1.25rem;
+}
+
+.iu-config-empty {
+    display: flex;
+    min-height: 12rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border: 1px dashed rgba(113, 132, 123, 0.24);
+    border-radius: 1rem;
+    text-align: center;
+}
+
+.iu-config-empty > i {
+    color: #b86a3f;
+    font-size: 2rem;
+}
+
+.iu-base-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(184, 106, 63, 0.2);
+    border-radius: 1rem;
+    background: rgba(184, 106, 63, 0.08);
+}
+
+.iu-base-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.iu-base-summary strong {
+    color: #f4f8f5;
+}
+
+.iu-base-label,
+.iu-help {
+    color: #96a9a0;
+    font-size: 0.8rem;
+}
+
+.iu-help {
+    display: block;
+    margin-top: -0.65rem;
+}
+
+.iu-config-error {
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(220, 53, 69, 0.32);
+    border-radius: 0.75rem;
+    color: #f1aeb5;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+@media (max-width: 767.98px) {
+    .iu-config-tabs {
+        grid-template-columns: 1fr;
+    }
+}

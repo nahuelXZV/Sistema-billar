@@ -38,7 +38,12 @@ public class GetProductosByCategoriaHandler : IQueryHandler<GetProductosByCatego
         }
 
         var detallesPrecio = await _repository.Query<ListaPreciosDetalle>()
-            .Where(detalle => !detalle.Eliminado && detalle.IdListaPrecio == vendedor.IdListaPrecio)
+            .Include(detalle => detalle.ProductoConversion)
+            .Where(detalle =>
+                !detalle.Eliminado &&
+                detalle.IdListaPrecio == vendedor.IdListaPrecio &&
+                detalle.ProductoConversion != null &&
+                !detalle.ProductoConversion.Eliminado)
             .ToListAsync(cancellationToken);
 
         if (detallesPrecio.Count == 0)
@@ -47,7 +52,7 @@ public class GetProductosByCategoriaHandler : IQueryHandler<GetProductosByCatego
         }
 
         var productosConPrecioIds = detallesPrecio
-            .Select(detalle => detalle.IdProducto)
+            .Select(detalle => detalle.ProductoConversion!.IdProducto)
             .Distinct()
             .ToList();
 
@@ -63,8 +68,13 @@ public class GetProductosByCategoriaHandler : IQueryHandler<GetProductosByCatego
 
         foreach (var productoDto in productosDto)
         {
-            var detallePrecio = detallesPrecio.FirstOrDefault(detalle => detalle.IdProducto == productoDto.Id);
-            productoDto.Precio = detallePrecio is null ? 0m : (decimal)detallePrecio.Precio;
+            var detallePrecio = detallesPrecio.FirstOrDefault(detalle =>
+                detalle.ProductoConversion!.IdProducto == productoDto.Id &&
+                detalle.ProductoConversion.IdUnidadMedida == productoDto.IdUnidadMedida)
+                ?? detallesPrecio.FirstOrDefault(detalle =>
+                    detalle.ProductoConversion!.IdProducto == productoDto.Id);
+
+            productoDto.Precio = detallePrecio?.Precio ?? 0m;
         }
 
         return new Response<List<ProductoDTO>>(productosDto);

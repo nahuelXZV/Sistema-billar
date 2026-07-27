@@ -31,6 +31,7 @@ public class GeneralProfile : Profile
         CreateMap<Categoria, CategoriaDTO>();
         CreateMap<UnidadMedida, UnidadMedidaDTO>();
         CreateMap<Producto, ProductoDTO>();
+        CreateMap<ProductoConversion, ProductoConversionDTO>();
         CreateMap<ProductoCompuesto, ProductoCompuestoDTO>();
         CreateMap<Inventario, InventarioDTO>();
         CreateMap<Lote, LoteDTO>();
@@ -39,7 +40,23 @@ public class GeneralProfile : Profile
         CreateMap<TraspasoInventario, TraspasoInventarioDTO>();
         CreateMap<TraspasoInventarioDetalle, TraspasoInventarioDetalleDTO>();
         CreateMap<ListaPrecios, ListaPrecioDTO>();
-        CreateMap<ListaPreciosDetalle, ListaPrecioDetalleDTO>();
+        CreateMap<ListaPreciosDetalle, ListaPrecioDetalleDTO>()
+            .ForMember(dest => dest.NombreProducto, opt => opt.MapFrom(src =>
+                src.ProductoConversion != null && src.ProductoConversion.Producto != null
+                    ? src.ProductoConversion.Producto.Nombre
+                    : string.Empty))
+            .ForMember(dest => dest.NombreUnidadMedida, opt => opt.MapFrom(src =>
+                src.ProductoConversion != null && src.ProductoConversion.UnidadMedida != null
+                    ? src.ProductoConversion.UnidadMedida.Nombre
+                    : string.Empty))
+            .ForMember(dest => dest.AbreviaturaUnidadMedida, opt => opt.MapFrom(src =>
+                src.ProductoConversion != null && src.ProductoConversion.UnidadMedida != null
+                    ? src.ProductoConversion.UnidadMedida.Abreviatura
+                    : string.Empty))
+            .ForMember(dest => dest.FactorConversion, opt => opt.MapFrom(src =>
+                src.ProductoConversion != null
+                    ? src.ProductoConversion.FactorConversion
+                    : 0));
 
         CreateMap<Cliente, ClienteDTO>();
         CreateMap<Mesa, MesaDTO>();
@@ -72,6 +89,9 @@ public class GeneralProfile : Profile
         CreateMap<AlmacenDTO, Almacen>();
         CreateMap<CategoriaDTO, Categoria>();
         CreateMap<UnidadMedidaDTO, UnidadMedida>();
+        CreateMap<ProductoConversionDTO, ProductoConversion>()
+            .ForMember(dest => dest.Producto, opt => opt.Ignore())
+            .ForMember(dest => dest.UnidadMedida, opt => opt.Ignore());
         CreateMap<ProductoCompuestoDTO, ProductoCompuesto>();
         CreateMap<ProductoDTO, Producto>();
         CreateMap<InventarioDTO, Inventario>();
@@ -87,8 +107,10 @@ public class GeneralProfile : Profile
             .ForMember(dest => dest.TraspasoInventario, opt => opt.Ignore())
             .ForMember(dest => dest.Producto, opt => opt.Ignore())
             .ForMember(dest => dest.Lote, opt => opt.Ignore());
-        CreateMap<ListaPrecioDTO, ListaPrecios>();
-        CreateMap<ListaPrecioDetalleDTO, ListaPreciosDetalle>();
+        CreateMap<ListaPrecioDTO, ListaPrecios>()
+            .ForMember(dest => dest.ListaDetalles, opt => opt.Ignore());
+        CreateMap<ListaPrecioDetalleDTO, ListaPreciosDetalle>()
+            .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore());
 
         CreateMap<ClienteDTO, Cliente>();
         CreateMap<MesaDTO, Mesa>();

@@ -53,20 +53,33 @@
 											 Options="@ListadoProductos"
 											 GetText="@(c => c.Nombre)"
 											 GetValue="@(c => c.Id)"
-											 @bind-Value="DetalleDTO.IdProducto" />
+											 @bind-Value="IdProductoSeleccionado"
+											 @bind-Value:after="ProductoSeleccionado" />
 				</div>
 
 				<div>
-					<IUInputNumeric TValue="double"
+					<IUSelectFilterComponent TItem="ProductoConversionDTO"
+											 TValue="long"
+											 Label="Unidad de medida"
+											 Placeholder="Selecciona una unidad"
+											 Options="@ConversionesProductoSeleccionado"
+											 GetText="ObtenerEtiquetaConversion"
+											 GetValue="@(conversion => conversion.Id)"
+											 Disabled="@(IdProductoSeleccionado == 0)"
+											 @bind-Value="DetalleDTO.IdProductoConversion" />
+				</div>
+
+				<div>
+					<IUInputNumeric TValue="decimal"
 									Label="Precio"
 									Placeholder="0.0"
 									@bind-Value="DetalleDTO.Precio" />
 				</div>
 
-				<div class="iu-span-2">
+				<div class="d-flex align-items-end mb-3">
 					<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarDetalle">
-						<i class="bi bi-plus-lg"></i>
-						Agregar
+						<i class="bi @(IdProductoConversionEnEdicion.HasValue ? "bi-check-lg" : "bi-plus-lg")"></i>
+						@(IdProductoConversionEnEdicion.HasValue ? "Actualizar precio" : "Agregar precio")
 					</button>
 				</div>
 
@@ -78,6 +91,8 @@
 								<thead>
 									<tr>
 										<th>Producto</th>
+										<th>Unidad</th>
+										<th>Factor</th>
 										<th>Precio</th>
 										<th>Acciones</th>
 									</tr>
@@ -87,14 +102,25 @@
 									{
 										<tr>
 											<td>@item.NombreProducto</td>
+											<td>@item.NombreUnidadMedida</td>
+											<td>
+												@if (item.FactorConversion == 1)
+												{
+													<span class="iu-chip tone-primary">Base</span>
+												}
+												else
+												{
+													<span>x @item.FactorConversion</span>
+												}
+											</td>
 											<td>@item.Precio Bs.</td>
 											<td>
 												<div class="d-flex flex-wrap gap-2">
-													<button type="button" class="iu-btn iu-btn-secondary" @onclick="() => EditarDetalle(item.IdProducto)">
+													<button type="button" class="iu-btn iu-btn-secondary" @onclick="() => EditarDetalle(item.IdProductoConversion)">
 														<i class="bi bi-pencil"></i>
 														Editar
 													</button>
-													<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarDetalle(item.IdProducto)">
+													<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarDetalle(item.IdProductoConversion)">
 														<i class="bi bi-trash"></i>
 														Eliminar
 													</button>

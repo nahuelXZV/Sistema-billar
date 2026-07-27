@@ -12,8 +12,8 @@ public class ListaPreciosDetallesConfiguration : IEntityTypeConfiguration<ListaP
 
         builder.HasKey(a => a.Id);
 
-        builder.HasOne(a => a.Producto)
+        builder.HasOne(a => a.ProductoConversion)
               .WithMany()
-              .HasForeignKey(c => c.IdProducto);
+              .HasForeignKey(c => c.IdProductoConversion);
     }
 }

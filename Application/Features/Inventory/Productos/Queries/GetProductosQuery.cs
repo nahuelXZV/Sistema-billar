@@ -27,12 +27,22 @@ public class GetProductosQueryHandler : IQueryHandler<GetProductosQuery, Respons
     {
         var listaProductos = await _repository.Query().Where(p => !p.Eliminado).ToListAsync(cancellationToken);
         var listaProductosDtos = _mapper.Map<List<ProductoDTO>>(listaProductos);
+        var idsProductos = listaProductos.Select(producto => producto.Id).ToList();
+
+        var conversiones = await _repository.Query<ProductoConversion>()
+            .Include(conversion => conversion.UnidadMedida)
+            .Where(conversion =>
+                !conversion.Eliminado &&
+                idsProductos.Contains(conversion.IdProducto))
+            .ToListAsync(cancellationToken);
 
         var lotes = await _repository.Query<Lote>().Where(l => !l.Eliminado).ToListAsync(cancellationToken);
         var lotesDtos = _mapper.Map<List<LoteDTO>>(lotes);
         foreach (var productoDto in listaProductosDtos)
         {
             productoDto.ListadoLotes = lotesDtos.Where(l => l.IdProducto == productoDto.Id).ToList();
+            productoDto.ProductoConversiones = _mapper.Map<List<ProductoConversionDTO>>(
+                conversiones.Where(conversion => conversion.IdProducto == productoDto.Id));
         }
 
         return new Response<List<ProductoDTO>>(listaProductosDtos);

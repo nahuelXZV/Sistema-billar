@@ -36,6 +36,8 @@
 						}
 					</div>
 
+				</div>
+				<div>
 					<IUInputFile Label="Subir imagen"
 								 Accept="image/*"
 								 HelpText="Seleccione una imagen para guardarla en el servidor."
@@ -47,7 +49,7 @@
 					<ValidationMessage For="@(() => Producto.UrlImagen)" />
 				</div>
 
-				<div>
+				<div class="iu-span-2">
 					<IUInputText Label="Nombre"
 								 Placeholder="Escriba el nombre..."
 								 @bind-Value="Producto.Nombre"
@@ -97,12 +99,13 @@
 				<div>
 					<IUSelectFilterComponent TItem="UnidadMedidaDTO"
 											 TValue="long"
-											 Label="Unidad de medida"
-											 Placeholder="Selecciona una unidad de medida"
+											 Label="Unidad de medida base"
+											 Placeholder="Selecciona la unidad base"
 											 Options="@ListadoUnidadesMedidas"
 											 GetText="@(c => c.Nombre)"
 											 GetValue="@(c => c.Id)"
-											 @bind-Value="Producto.IdUnidadMedida" />
+											 @bind-Value="Producto.IdUnidadMedida"
+											 @bind-Value:after="SincronizarUnidadBase" />
 					<ValidationMessage For="@(() => Producto.IdUnidadMedida)" />
 				</div>
 
@@ -115,87 +118,220 @@
 			</div>
 		</section>
 
-		<section class="iu-sec">
+		<section class="iu-sec iu-config-card">
 			<div class="iu-head">
 				<div>
-					<h2>Producto compuesto</h2>
+					<h2>Configuración del producto</h2>
 				</div>
-
-				@if (Producto.EsCompuesto)
-				{
-					<span class="iu-chip tone-primary">Compuesto</span>
-				}
 			</div>
 
-			@if (Producto.EsCompuesto)
-			{
-				<div class="iu-form">
-					<div>
-						<IUSelectFilterComponent TItem="ProductoDTO"
-												 TValue="long"
-												 Label="Producto"
-												 Placeholder="Selecciona un producto"
-												 Options="@ListadoProductosDisponibles"
-												 GetText="@(c => c.Nombre)"
-												 GetValue="@(c => c.Id)"
-												 @bind-Value="ProdCompuesto.IdProductoComponente" />
-					</div>
+			<div class="iu-config-tabs" role="tablist" aria-label="Configuración del producto">
+				<button type="button"
+						class="iu-config-tab @(TabConfiguracionActiva == "compuestos" ? "active" : null)"
+						role="tab"
+						aria-selected="@(TabConfiguracionActiva == "compuestos")"
+						@onclick='() => CambiarTabConfiguracion("compuestos")'>
+					<i class="bi bi-boxes"></i>
+					Producto compuesto
+					@if (ListadoProdCompuesto.Count > 0)
+					{
+						<span class="iu-config-count">@ListadoProdCompuesto.Count</span>
+					}
+				</button>
 
-					<div>
-						<IUInputNumeric TValue="double"
-										Label="Cantidad"
-										Placeholder="0"
-										@bind-Value="ProdCompuesto.Cantidad" />
-					</div>
+				<button type="button"
+						class="iu-config-tab @(TabConfiguracionActiva == "unidades" ? "active" : null)"
+						role="tab"
+						aria-selected="@(TabConfiguracionActiva == "unidades")"
+						@onclick='() => CambiarTabConfiguracion("unidades")'>
+					<i class="bi bi-rulers"></i>
+					Unidades de medida
+					@if (ListadoConversiones.Count > 0)
+					{
+						<span class="iu-config-count">@ListadoConversiones.Count</span>
+					}
+				</button>
+			</div>
 
-					<div class="iu-span-2">
-						<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarComponente">
-							<i class="bi bi-plus-lg"></i>
-							Agregar componente
-						</button>
-					</div>
-
-					<div class="iu-span-2">
-						@if (ListadoProdCompuesto.Count > 0)
-						{
-							<div class="iu-table">
-								<table class="inv-table">
-									<thead>
-										<tr>
-											<th>Producto</th>
-											<th>Cantidad</th>
-											<th>Acciones</th>
-										</tr>
-									</thead>
-									<tbody>
-										@foreach (var item in ListadoProdCompuesto)
-										{
-											<tr>
-												<td>@item.ProductoComponente?.Nombre</td>
-												<td>@item.Cantidad</td>
-												<td>
-													<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarComponente(item.IdProductoComponente)">
-														<i class="bi bi-trash"></i>
-														Eliminar
-													</button>
-												</td>
-											</tr>
-										}
-									</tbody>
-								</table>
+			<div class="iu-config-content">
+				@if (TabConfiguracionActiva == "compuestos")
+				{
+					@if (Producto.EsCompuesto)
+					{
+						<div class="iu-form">
+							<div>
+								<IUSelectFilterComponent TItem="ProductoDTO"
+														 TValue="long"
+														 Label="Producto componente"
+														 Placeholder="Selecciona un producto"
+														 Options="@ListadoProductosDisponibles"
+														 GetText="@(c => c.Nombre)"
+														 GetValue="@(c => c.Id)"
+														 @bind-Value="ProdCompuesto.IdProductoComponente" />
 							</div>
-						}
-						else
-						{
-							<p class="iu-note mb-0">Sin componentes agregados.</p>
-						}
-					</div>
-				</div>
-			}
-			else
-			{
-				<p class="iu-note mb-0">Sin componentes.</p>
-			}
+
+							<div>
+								<IUInputNumeric TValue="double"
+												Label="Cantidad"
+												Placeholder="0"
+												@bind-Value="ProdCompuesto.Cantidad" />
+							</div>
+
+							<div class="iu-span-2">
+								<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarComponente">
+									<i class="bi bi-plus-lg"></i>
+									Agregar componente
+								</button>
+							</div>
+
+							<div class="iu-span-2">
+								@if (ListadoProdCompuesto.Count > 0)
+								{
+									<div class="iu-table">
+										<table class="inv-table">
+											<thead>
+												<tr>
+													<th>Producto</th>
+													<th>Cantidad</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody>
+												@foreach (var item in ListadoProdCompuesto)
+												{
+													<tr>
+														<td>@item.ProductoComponente?.Nombre</td>
+														<td>@item.Cantidad</td>
+														<td>
+															<button type="button"
+																	class="iu-btn iu-btn-danger"
+																	@onclick="() => EliminarComponente(item.IdProductoComponente)">
+																<i class="bi bi-trash"></i>
+																Eliminar
+															</button>
+														</td>
+													</tr>
+												}
+											</tbody>
+										</table>
+									</div>
+								}
+								else
+								{
+									<p class="iu-note mb-0">Sin componentes agregados.</p>
+								}
+							</div>
+						</div>
+					}
+					else
+					{
+						<div class="iu-config-empty">
+							<i class="bi bi-box"></i>
+							<p class="iu-note mb-0">
+								Activa la opción <strong>Compuesto</strong> para agregar productos componentes.
+							</p>
+						</div>
+					}
+				}
+				else
+				{
+					@if (Producto.IdUnidadMedida > 0)
+					{
+						<div class="iu-form">
+							<div>
+								<IUSelectFilterComponent TItem="UnidadMedidaDTO"
+														 TValue="long"
+														 Label="Unidad equivalente"
+														 Placeholder="Selecciona una unidad"
+														 Options="@ListadoUnidadesConversionDisponibles"
+														 GetText="@(unidad => unidad.Nombre)"
+														 GetValue="@(unidad => unidad.Id)"
+														 @bind-Value="NuevaConversion.IdUnidadMedida" />
+							</div>
+
+							<div>
+								<IUInputNumeric TValue="decimal"
+												Label="Factor hacia la unidad base"
+												Placeholder="Ej. 12"
+												@bind-Value="NuevaConversion.FactorConversion" />
+							</div>
+
+							@if (!string.IsNullOrWhiteSpace(ErrorConversion))
+							{
+								<div class="iu-span-2">
+									<p class="iu-config-error mb-0">@ErrorConversion</p>
+								</div>
+							}
+
+							<div class="iu-span-2">
+								<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarConversion">
+									<i class="bi bi-plus-lg"></i>
+									Agregar unidad
+								</button>
+							</div>
+
+							<div class="iu-span-2">
+								<div class="iu-table">
+									<table class="inv-table">
+										<thead>
+											<tr>
+												<th>Unidad de medida</th>
+												<th>Factor</th>
+												<th>Equivalencia</th>
+												<th>Acciones</th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach (var item in ListadoConversiones)
+											{
+												var esUnidadBase = item.IdUnidadMedida == Producto.IdUnidadMedida;
+												<tr>
+													<td>
+														@ObtenerNombreUnidad(item.IdUnidadMedida)
+														@if (esUnidadBase)
+														{
+															<span class="iu-chip tone-primary ms-2">Base</span>
+														}
+													</td>
+													<td>@item.FactorConversion</td>
+													<td>
+														1 @ObtenerAbreviaturaUnidad(item.IdUnidadMedida)
+														= @item.FactorConversion @ObtenerAbreviaturaUnidad(Producto.IdUnidadMedida)
+													</td>
+													<td>
+														@if (!esUnidadBase)
+														{
+															<button type="button"
+																	class="iu-btn iu-btn-danger"
+																	@onclick="() => EliminarConversion(item.IdUnidadMedida)">
+																<i class="bi bi-trash"></i>
+																Eliminar
+															</button>
+														}
+														else
+														{
+															<span class="iu-note">Obligatoria</span>
+														}
+													</td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div class="iu-config-empty">
+							<i class="bi bi-rulers"></i>
+							<p class="iu-note mb-0">
+								Selecciona primero la unidad de medida base del producto.
+							</p>
+						</div>
+					}
+				}
+			</div>
 		</section>
 	</div>
 </EditForm>

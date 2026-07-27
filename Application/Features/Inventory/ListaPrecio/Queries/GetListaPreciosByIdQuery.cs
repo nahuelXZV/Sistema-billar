@@ -27,10 +27,15 @@ public class GetListaPreciosByIdHandler : IQueryHandler<GetListaPreciosByIdQuery
     public async Task<Response<ListaPrecioDTO>> Handle(GetListaPreciosByIdQuery request, CancellationToken cancellationToken)
     {
         var query = _repository.Query()
-            .Include(p => p.ListaDetalles)
+            .Include(lista => lista.ListaDetalles!.Where(detalle => !detalle.Eliminado))
+                .ThenInclude(detalle => detalle.ProductoConversion)
+                    .ThenInclude(conversion => conversion!.Producto)
+            .Include(lista => lista.ListaDetalles!.Where(detalle => !detalle.Eliminado))
+                .ThenInclude(detalle => detalle.ProductoConversion)
+                    .ThenInclude(conversion => conversion!.UnidadMedida)
             .Where(p => p.Id == request.Id);
 
-        var listado = await query.FirstOrDefaultAsync();
+        var listado = await query.FirstOrDefaultAsync(cancellationToken);
         if (listado == null) throw new Exception("Lista de precios no encontrado.");
 
         var listadoDtos = _mapper.Map<ListaPrecioDTO>(listado);

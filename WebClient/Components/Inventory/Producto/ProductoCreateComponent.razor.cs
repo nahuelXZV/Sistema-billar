@@ -19,12 +19,22 @@ public partial class ProductoCreateComponent
     [Parameter] public List<SelectOptionDTO<short>> ListaTiposProductos { get; set; } = new();
     public ProductoCompuestoDTO ProdCompuesto { get; set; } = new();
     public List<ProductoCompuestoDTO> ListadoProdCompuesto { get; set; } = new();
+    public ProductoConversionDTO NuevaConversion { get; set; } = new() { FactorConversion = 1 };
+    public List<ProductoConversionDTO> ListadoConversiones { get; set; } = new();
+    public string TabConfiguracionActiva { get; set; } = "compuestos";
+    public string? ErrorConversion { get; set; }
     public bool IsEditing => Producto?.Id > 0;
     public List<ProductoDTO> ListadoProductosDisponibles =>
         ListadoProductos.Where(p => p.Id != Producto?.Id).ToList();
+    public List<UnidadMedidaDTO> ListadoUnidadesConversionDisponibles =>
+        ListadoUnidadesMedidas
+            .Where(unidad => ListadoConversiones.All(conversion => conversion.IdUnidadMedida != unidad.Id))
+            .ToList();
     private FluentValidationValidator<ProductoDTO> _fvValidator;
     private EditContext? _editContext { get; set; }
     private DotNetObjectReference<ProductoCreateComponent>? _objectHelper;
+    private ProductoDTO? _productoInicializado;
+    private long _idUnidadBaseSincronizada;
 
     protected override void OnInitialized()
     {
@@ -36,7 +46,15 @@ public partial class ProductoCreateComponent
     protected override void OnParametersSet()
     {
         Producto ??= new ProductoDTO();
+
+        if (ReferenceEquals(_productoInicializado, Producto))
+            return;
+
+        _productoInicializado = Producto;
         ListadoProdCompuesto = Producto.ProductosCompuestos?.ToList() ?? new();
+        ListadoConversiones = Producto.ProductoConversiones?.ToList() ?? new();
+        _idUnidadBaseSincronizada = Producto.IdUnidadMedida;
+        AsegurarUnidadBase();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -68,8 +86,10 @@ public partial class ProductoCreateComponent
     {
         try
         {
+            AsegurarUnidadBase();
+            Producto.ProductosCompuestos = Producto.EsCompuesto ? ListadoProdCompuesto : [];
+            Producto.ProductoConversiones = ListadoConversiones;
 
-            Producto.ProductosCompuestos = ListadoProdCompuesto;
             if (Producto.Id != 0)
             {
                 var respuesta = await AppServices.ProductoService.Update(Producto);
@@ -93,6 +113,7 @@ public partial class ProductoCreateComponent
     public void AgregarComponente()
     {
         if (ProdCompuesto.IdProductoComponente == 0 || ProdCompuesto.Cantidad <= 0) return;
+        if (ListadoProdCompuesto.Any(item => item.IdProductoComponente == ProdCompuesto.IdProductoComponente)) return;
 
         var productoComponente = ListadoProductos.FirstOrDefault(p => p.Id == ProdCompuesto.IdProductoComponente);
         if (productoComponente == null) return;
@@ -112,5 +133,111 @@ public partial class ProductoCreateComponent
 
         ListadoProdCompuesto.Remove(componente);
         StateHasChanged();
+    }
+
+    public void CambiarTabConfiguracion(string tab)
+    {
+        TabConfiguracionActiva = tab;
+    }
+
+    public void SincronizarUnidadBase()
+    {
+        if (Producto.IdUnidadMedida <= 0)
+            return;
+
+        if (_idUnidadBaseSincronizada > 0 &&
+            _idUnidadBaseSincronizada != Producto.IdUnidadMedida)
+        {
+            ListadoConversiones.Clear();
+            ErrorConversion = "Las conversiones se reiniciaron porque cambió la unidad base.";
+        }
+
+        _idUnidadBaseSincronizada = Producto.IdUnidadMedida;
+        AsegurarUnidadBase();
+    }
+
+    public void AgregarConversion()
+    {
+        ErrorConversion = null;
+
+        if (NuevaConversion.IdUnidadMedida <= 0)
+        {
+            ErrorConversion = "Selecciona una unidad de medida.";
+            return;
+        }
+
+        if (NuevaConversion.FactorConversion <= 0)
+        {
+            ErrorConversion = "El factor de conversión debe ser mayor a cero.";
+            return;
+        }
+
+        if (ListadoConversiones.Any(
+            conversion => conversion.IdUnidadMedida == NuevaConversion.IdUnidadMedida))
+        {
+            ErrorConversion = "La unidad de medida ya fue agregada.";
+            return;
+        }
+
+        var unidadMedida = ListadoUnidadesMedidas.FirstOrDefault(
+            unidad => unidad.Id == NuevaConversion.IdUnidadMedida);
+
+        ListadoConversiones.Add(new ProductoConversionDTO
+        {
+            IdProducto = Producto.Id,
+            IdUnidadMedida = NuevaConversion.IdUnidadMedida,
+            FactorConversion = NuevaConversion.FactorConversion,
+            UnidadMedida = unidadMedida
+        });
+
+        NuevaConversion = new ProductoConversionDTO { FactorConversion = 1 };
+    }
+
+    public void EliminarConversion(long idUnidadMedida)
+    {
+        if (idUnidadMedida == Producto.IdUnidadMedida)
+            return;
+
+        var conversion = ListadoConversiones.FirstOrDefault(
+            item => item.IdUnidadMedida == idUnidadMedida);
+
+        if (conversion == null)
+            return;
+
+        ListadoConversiones.Remove(conversion);
+        ErrorConversion = null;
+    }
+
+    public string ObtenerNombreUnidad(long idUnidadMedida) =>
+        ListadoUnidadesMedidas.FirstOrDefault(unidad => unidad.Id == idUnidadMedida)?.Nombre
+        ?? "Unidad no encontrada";
+
+    public string ObtenerAbreviaturaUnidad(long idUnidadMedida) =>
+        ListadoUnidadesMedidas.FirstOrDefault(unidad => unidad.Id == idUnidadMedida)?.Abreviatura
+        ?? string.Empty;
+
+    private void AsegurarUnidadBase()
+    {
+        if (Producto.IdUnidadMedida <= 0)
+            return;
+
+        var unidadBase = ListadoConversiones.FirstOrDefault(
+            conversion => conversion.IdUnidadMedida == Producto.IdUnidadMedida);
+
+        if (unidadBase == null)
+        {
+            ListadoConversiones.Insert(0, new ProductoConversionDTO
+            {
+                IdProducto = Producto.Id,
+                IdUnidadMedida = Producto.IdUnidadMedida,
+                FactorConversion = 1,
+                UnidadMedida = ListadoUnidadesMedidas.FirstOrDefault(
+                    unidad => unidad.Id == Producto.IdUnidadMedida)
+            });
+        }
+        else
+        {
+            unidadBase.FactorConversion = 1;
+        }
     }
 }

@@ -18,12 +18,18 @@ public class GetProductoByIdQueryHandler : IQueryHandler<GetProductoByIdQuery, R
     private readonly IMapper _mapper;
     private readonly IRepository<Producto> _repository;
     private readonly IRepository<ProductoCompuesto> _rpProductoCompuesto;
+    private readonly IRepository<ProductoConversion> _rpProductoConversion;
 
-    public GetProductoByIdQueryHandler(IMapper mapper, IRepository<Producto> repository, IRepository<ProductoCompuesto> rpProductoCompuesto)
+    public GetProductoByIdQueryHandler(
+        IMapper mapper,
+        IRepository<Producto> repository,
+        IRepository<ProductoCompuesto> rpProductoCompuesto,
+        IRepository<ProductoConversion> rpProductoConversion)
     {
         _mapper = mapper;
         _repository = repository;
         _rpProductoCompuesto = rpProductoCompuesto;
+        _rpProductoConversion = rpProductoConversion;
     }
 
     public async Task<Response<ProductoDTO>> Handle(GetProductoByIdQuery request, CancellationToken cancellationToken)
@@ -40,7 +46,7 @@ public class GetProductoByIdQueryHandler : IQueryHandler<GetProductoByIdQuery, R
         {
             var listaCompuesto = await _rpProductoCompuesto.Query()
                 .Where(pc => pc.IdProductoPadre == producto.Id)
-                .Where(pc => pc.Eliminado)
+                .Where(pc => !pc.Eliminado)
                 .ToListAsync(cancellationToken);
 
             if (listaCompuesto != null && listaCompuesto.Any())
@@ -63,6 +69,13 @@ public class GetProductoByIdQueryHandler : IQueryHandler<GetProductoByIdQuery, R
                 }).ToList();
             }
         }
+
+        var conversiones = await _rpProductoConversion.Query()
+            .Include(conversion => conversion.UnidadMedida)
+            .Where(conversion => conversion.IdProducto == producto.Id && !conversion.Eliminado)
+            .ToListAsync(cancellationToken);
+
+        productoDto.ProductoConversiones = _mapper.Map<List<ProductoConversionDTO>>(conversiones);
 
         return new Response<ProductoDTO>(productoDto);
     }

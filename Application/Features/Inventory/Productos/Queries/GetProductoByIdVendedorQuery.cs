@@ -26,9 +26,7 @@ public class GetProductoByIdVendedorQueryHandler : IQueryHandler<GetProductoById
         _repository = repository;
     }
 
-    public async Task<Response<ProductoDTO>> Handle(
-        GetProductoByIdVendedorQuery request,
-        CancellationToken cancellationToken)
+    public async Task<Response<ProductoDTO>> Handle(GetProductoByIdVendedorQuery request, CancellationToken cancellationToken)
     {
         var producto = await _repository.Query()
             .Where(p => !p.Eliminado && p.Id == request.IdProducto)
@@ -54,7 +52,11 @@ public class GetProductoByIdVendedorQueryHandler : IQueryHandler<GetProductoById
         var precio = await _repository.Query<ListaPreciosDetalle>()
             .Where(detalle => !detalle.Eliminado
                 && detalle.IdListaPrecio == idListaPrecio
-                && detalle.IdProducto == request.IdProducto)
+                && detalle.ProductoConversion != null
+                && !detalle.ProductoConversion.Eliminado
+                && detalle.ProductoConversion.IdProducto == request.IdProducto)
+            .OrderBy(detalle =>
+                detalle.ProductoConversion!.IdUnidadMedida == producto.IdUnidadMedida ? 0 : 1)
             .Select(detalle => (decimal?)detalle.Precio)
             .FirstOrDefaultAsync(cancellationToken);
 
