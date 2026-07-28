@@ -1,0 +1,150 @@
+@using Domain.DTOs.Contact
+@using Domain.DTOs.Inventory
+@using Domain.DTOs.Purchases
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent
+
+<EditForm EditContext="_editContext">
+	<DataAnnotationsValidator />
+
+	<div class="iu-grid iu-grid-2">
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<h2>@(IsEditing ? "Datos del proveedor" : "Nuevo proveedor")</h2>
+				</div>
+			</div>
+
+			<div class="iu-form">
+				<div class="iu-span-2">
+					<IUInputText Label="Nombre comercial"
+								 Placeholder="Escriba el nombre comercial..."
+								 @bind-Value="Proveedor.NombreComercial"
+								 Required="true" />
+					<ValidationMessage For="@(() => Proveedor.NombreComercial)" />
+				</div>
+
+				<div>
+					<IUInputText Label="Persona de contacto"
+								 Placeholder="Escriba el contacto..."
+								 @bind-Value="Proveedor.NombreContacto" />
+					<ValidationMessage For="@(() => Proveedor.NombreContacto)" />
+				</div>
+
+				<div>
+					<IUInputText Label="Teléfono"
+								 Placeholder="Escriba el teléfono..."
+								 @bind-Value="Proveedor.Telefono" />
+					<ValidationMessage For="@(() => Proveedor.Telefono)" />
+				</div>
+
+				<div class="iu-span-2">
+					<IUTextArea Label="Dirección"
+								Placeholder="Escriba la dirección..."
+								@bind-Value="Proveedor.Direccion" />
+					<ValidationMessage For="@(() => Proveedor.Direccion)" />
+				</div>
+
+				<div class="iu-span-2">
+					<IUInputCheckbox Label="Activo" @bind-Value="Proveedor.Activo" />
+				</div>
+			</div>
+		</section>
+
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<h2>Costos por producto</h2>
+					<p class="iu-note mb-0">Configura el costo de cada presentación que ofrece el proveedor.</p>
+				</div>
+			</div>
+
+			<div class="iu-form">
+				<div class="iu-span-2">
+					<IUSelectFilterComponent TItem="ProductoDTO"
+											 TValue="long"
+											 Label="Producto"
+											 Placeholder="Selecciona un producto"
+											 Options="@ProductosDisponibles"
+											 GetText="@(producto => producto.Nombre)"
+											 GetValue="@(producto => producto.Id)"
+											 @bind-Value="IdProductoSeleccionado"
+											 @bind-Value:after="ProductoSeleccionado" />
+				</div>
+
+				<div>
+					<IUSelectFilterComponent TItem="ProductoConversionDTO"
+											 TValue="long?"
+											 Label="Unidad de medida"
+											 Placeholder="Selecciona una unidad"
+											 Options="@ConversionesProductoSeleccionado"
+											 GetText="ObtenerEtiquetaConversion"
+											 GetValue="@(conversion => (long?)conversion.Id)"
+											 Disabled="@(IdProductoSeleccionado == 0)"
+											 @bind-Value="CostoFormulario.IdProductoConversion" />
+				</div>
+
+				<div>
+					<IUInputNumeric TValue="decimal"
+									Label="Costo referencial"
+									Placeholder="0.00"
+									@bind-Value="CostoFormulario.CostoReferencial" />
+				</div>
+
+				<div class="iu-span-2 d-flex align-items-end mb-3">
+					<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarCosto">
+						<i class="bi @(_costoEnEdicion is null ? "bi-plus-lg" : "bi-check-lg")"></i>
+						@(_costoEnEdicion is null ? "Agregar costo" : "Actualizar costo")
+					</button>
+				</div>
+
+				<div class="iu-span-2">
+					@if (ListaCostos.Count == 0)
+					{
+						<p class="iu-note mb-0">Sin costos configurados.</p>
+					}
+					else
+					{
+						<div class="iu-table">
+							<table class="inv-table">
+								<thead>
+									<tr>
+										<th>Producto</th>
+										<th>Unidad</th>
+										<th>Factor</th>
+										<th>Costo</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach (var costo in ListaCostos)
+									{
+										<tr>
+											<td>@ObtenerNombreProducto(costo)</td>
+											<td>@ObtenerNombreUnidad(costo)</td>
+											<td>@ObtenerFactorConversion(costo)</td>
+											<td>@costo.CostoReferencial.ToString("N2") Bs.</td>
+											<td>
+												<div class="d-flex flex-wrap gap-2">
+													<button type="button" class="iu-btn iu-btn-secondary" @onclick="() => EditarCosto(costo)">
+														<i class="bi bi-pencil"></i>
+														Editar
+													</button>
+													<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarCosto(costo)">
+														<i class="bi bi-trash"></i>
+														Eliminar
+													</button>
+												</div>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+				</div>
+			</div>
+		</section>
+	</div>
+</EditForm>

@@ -2,12 +2,14 @@ using AutoMapper;
 using Domain.DTOs.Contact;
 using Domain.DTOs.Configuration;
 using Domain.DTOs.Inventory;
+using Domain.DTOs.Purchases;
 using Domain.DTOs.Sales;
 using Domain.DTOs.Security;
 using Domain.DTOs.Security.Request;
 using Domain.Entities.Contact;
 using Domain.Entities.Configuration;
 using Domain.Entities.Inventory;
+using Domain.Entities.Purchases;
 using Domain.Entities.Security;
 using Domain.Entities.Sales;
 
@@ -59,6 +61,8 @@ public class GeneralProfile : Profile
                     : 0));
 
         CreateMap<Cliente, ClienteDTO>();
+        CreateMap<Proveedor, ProveedorDTO>();
+        CreateMap<ProveedorProducto, ProveedorProductoDTO>();
         CreateMap<Mesa, MesaDTO>();
         CreateMap<TipoMesa, TipoMesaDTO>();
         CreateMap<Vendedor, VendedorDTO>()
@@ -113,6 +117,13 @@ public class GeneralProfile : Profile
             .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore());
 
         CreateMap<ClienteDTO, Cliente>();
+        CreateMap<ProveedorDTO, Proveedor>()
+            .ForMember(dest => dest.ListaProductos, opt => opt.Ignore());
+        CreateMap<ProveedorProductoDTO, ProveedorProducto>()
+            .ForMember(dest => dest.IdProveedor, opt => opt.Ignore())
+            .ForMember(dest => dest.Proveedor, opt => opt.Ignore())
+            .ForMember(dest => dest.Producto, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore());
         CreateMap<MesaDTO, Mesa>();
         CreateMap<TipoMesaDTO, TipoMesa>();
         CreateMap<VendedorDTO, Vendedor>()

@@ -20,6 +20,7 @@ public class AppServices : IAppServices
     private IModuloService _moduloService;
     private IUsuarioService _usuarioService;
     private IClienteService _clienteService;
+    private IProveedorService _proveedorService;
     private IDashboardService _dashboardService;
 
     private IAlmacenService _almacenService;
@@ -54,6 +55,7 @@ public class AppServices : IAppServices
     public IModuloService ModuloService => _moduloService ??= _serviceProvider.GetService<IModuloService>();
     public IUsuarioService UsuarioService => _usuarioService ??= _serviceProvider.GetService<IUsuarioService>();
     public IClienteService ClienteService => _clienteService ??= _serviceProvider.GetService<IClienteService>();
+    public IProveedorService ProveedorService => _proveedorService ??= _serviceProvider.GetService<IProveedorService>();
     public IDashboardService DashboardService => _dashboardService ??= _serviceProvider.GetService<IDashboardService>();
     #endregion
 

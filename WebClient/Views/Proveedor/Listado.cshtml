@@ -1,0 +1,85 @@
+@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Contact
+@model ProveedorViewModel
+
+@{
+	ViewData["Title"] = "Proveedor";
+	ViewData["Module"] = "Proveedor";
+	ViewData["Action"] = "Listado";
+	ViewData["Url"] = Url.Action("Listado", "Proveedor");
+
+	Model.ListaItemsMenu = new List<ItemMenu>
+	{
+		new ItemMenu { Id = MenuItemId.Editar, Text = "Editar", IconCss = "fa fa-pencil", Url = Url.Action("Crear", "Proveedor"), ActionType = MenuItemActionType.POST },
+		new ItemMenu { Id = MenuItemId.Eliminar, Text = "Eliminar", IconCss = "fa fa-trash", Url = Url.Action("Eliminar", "Proveedor"), ActionType = MenuItemActionType.POST, Confirm = true, ConfirmMessage = "Esta seguro de eliminar este proveedor?" },
+	};
+}
+
+@section ActionBar {
+	<form id="FormCrear" asp-controller="Proveedor" asp-action="Crear" method="post" class="d-none">
+		@Html.AntiForgeryToken()
+	</form>
+
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<button type="submit" form="FormCrear" class="iu-btn iu-btn-primary">
+				<i class="bi bi-plus-lg"></i>
+				Crear proveedor
+			</button>
+		</div>
+	</div>
+}
+
+<section class="iu-show">
+	<section class="iu-sec">
+		<div id="table-wrapper"></div>
+	</section>
+</section>
+
+@section Scripts {
+	<script>
+		const renderSupplierActions = (id) => gridjs.html(`
+					<button type="button"
+							class="inv-btn-action"
+							aria-label="Abrir acciones"
+							onclick="togglePortalDropdown(event, '${id}')">
+						<i class="bi bi-three-dots"></i>
+					</button>
+				`);
+
+		new gridjs.Grid({
+			columns: [
+				'Id',
+				'Nombre comercial',
+				'Contacto',
+				'Teléfono',
+				{
+					name: 'Activo',
+					formatter: (cell) => gridjs.html(`<span class="iu-chip ${cell ? 'tone-success' : 'tone-warning'}">${cell ? 'Activo' : 'Inactivo'}</span>`)
+				},
+				{
+					name: 'Costos configurados',
+					formatter: (cell) => cell ?? 0
+				},
+				{
+					name: 'Acciones',
+					formatter: (cell, row) => renderSupplierActions(row._cells[0].data)
+				}
+			],
+			server: {
+				url: urlWeb + "Proveedor/GetAll",
+				then: data => data.data.map(proveedor => [
+					proveedor.id,
+					proveedor.nombreComercial,
+					proveedor.nombreContacto ?? '-',
+					proveedor.telefono ?? '-',
+					proveedor.activo,
+					(proveedor.listaProductos ?? []).length
+				]),
+				total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById("table-wrapper"));
+	</script>
+}

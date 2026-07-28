@@ -15,6 +15,7 @@ public interface IAppServices
     public IModuloService ModuloService { get; }
     public IUsuarioService UsuarioService { get; }
     public IClienteService ClienteService { get; }
+    public IProveedorService ProveedorService { get; }
     public IDashboardService DashboardService { get; }
 
     public IAlmacenService AlmacenService { get; }

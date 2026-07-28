@@ -64,6 +64,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IModuloService, ModuloService>();
         services.AddScoped<IUsuarioService, UsuarioService>();
         services.AddScoped<IClienteService, ClienteService>();
+        services.AddScoped<IProveedorService, ProveedorService>();
         services.AddScoped<IDashboardService, DashboardService>();
 
         services.AddScoped<IAlmacenService, AlmacenService>();
