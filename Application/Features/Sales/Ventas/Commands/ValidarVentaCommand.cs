@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Domain.Common;
 using Domain.DTOs.Sales;
 using Domain.Entities.Inventory;
+using Domain.Entities.Sales;
 using Domain.Utils;
 using Infraestructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +25,8 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
 
     public async Task<Response<bool>> Handle(ValidarVentaCommand solicitud, CancellationToken tokenCancelacion)
     {
+        await NormalizarProductosYPreciosAsync(solicitud.Venta, tokenCancelacion);
         ValidarImportes(solicitud.Venta);
-        await ValidarProductosAsync(solicitud.Venta.ListaDetalles ?? [], tokenCancelacion);
-
         return new Response<bool>(true);
     }
 
@@ -133,26 +133,147 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
         }
     }
 
-    private async Task ValidarProductosAsync(IEnumerable<VentaDetalleDTO> detalles, CancellationToken tokenCancelacion)
+    private async Task NormalizarProductosYPreciosAsync(VentaDTO venta, CancellationToken tokenCancelacion)
     {
-        var idsProductos = detalles
-            .Select(detalle => detalle.IdProducto)
-            .Distinct()
-            .ToList();
+        var detalles = venta.ListaDetalles ?? [];
+        var idsProductos = detalles.Select(detalle => detalle.IdProducto).Distinct().ToList();
 
         var productosValidos = await _productoRepository.Query()
             .Where(producto => idsProductos.Contains(producto.Id) && producto.Activo && !producto.Eliminado)
-            .Select(producto => producto.Id)
             .ToListAsync(tokenCancelacion);
 
-        var idsProductosInvalidos = idsProductos
-            .Except(productosValidos)
-            .ToList();
-
+        var idsProductosInvalidos = idsProductos.Except(productosValidos.Select(producto => producto.Id)).ToList();
         if (idsProductosInvalidos.Count > 0)
         {
-            throw new InvalidOperationException($"Los siguientes productos no existen o están inactivos: {string.Join(", ", idsProductosInvalidos)}.");
+            throw new InvalidOperationException(
+                $"Los siguientes productos no existen o están inactivos: {string.Join(", ", idsProductosInvalidos)}.");
         }
+
+        var idsDetallesOrden = detalles
+            .Where(detalle => detalle.IdOrdenVentaDetalle.HasValue)
+            .Select(detalle => detalle.IdOrdenVentaDetalle!.Value)
+            .Distinct()
+            .ToList();
+
+        var detallesOrden = idsDetallesOrden.Count == 0
+            ? []
+            : await _productoRepository.Query<OrdenVentaDetalle>()
+                .Where(detalle => !detalle.Eliminado && idsDetallesOrden.Contains(detalle.Id))
+                .ToListAsync(tokenCancelacion);
+
+        var idsConversiones = detalles
+            .Where(detalle => detalle.IdProductoConversion.HasValue)
+            .Select(detalle => detalle.IdProductoConversion!.Value)
+            .Distinct()
+            .ToList();
+
+        var conversiones = idsConversiones.Count == 0
+            ? []
+            : await _productoRepository.Query<ProductoConversion>()
+                .Include(conversion => conversion.UnidadMedida)
+                .Where(conversion => !conversion.Eliminado && idsConversiones.Contains(conversion.Id))
+                .ToListAsync(tokenCancelacion);
+
+        var detallesDirectos = detalles.Where(detalle => !detalle.IdOrdenVentaDetalle.HasValue).ToList();
+        var idListaPrecio = detallesDirectos.Count == 0
+            ? 0
+            : await _productoRepository.Query<Vendedor>()
+                .Where(vendedor =>
+                    !vendedor.Eliminado &&
+                    vendedor.Activo &&
+                    vendedor.Id == venta.IdVendedor)
+                .Select(vendedor => vendedor.IdListaPrecio)
+                .FirstOrDefaultAsync(tokenCancelacion);
+
+        if (detallesDirectos.Count > 0 && idListaPrecio <= 0)
+        {
+            throw new InvalidOperationException("El vendedor no tiene una lista de precios asignada.");
+        }
+
+        var idsConversionesDirectas = detallesDirectos
+            .Where(detalle => detalle.IdProductoConversion.HasValue)
+            .Select(detalle => detalle.IdProductoConversion!.Value)
+            .Distinct()
+            .ToList();
+
+        var precios = idsConversionesDirectas.Count == 0
+            ? []
+            : await _productoRepository.Query<ListaPreciosDetalle>()
+                .Where(detalle =>
+                    !detalle.Eliminado &&
+                    detalle.IdListaPrecio == idListaPrecio &&
+                    idsConversionesDirectas.Contains(detalle.IdProductoConversion))
+                .ToListAsync(tokenCancelacion);
+
+        foreach (var detalle in detalles)
+        {
+            var producto = productosValidos.First(item => item.Id == detalle.IdProducto);
+            detalle.NombreProducto = producto.Nombre;
+
+            if (detalle.IdOrdenVentaDetalle.HasValue)
+            {
+                NormalizarDesdeOrden(venta, detalle, producto, detallesOrden);
+                continue;
+            }
+
+            NormalizarVentaDirecta(detalle, producto, conversiones, precios);
+        }
+    }
+
+    private static void NormalizarDesdeOrden(
+        VentaDTO venta,
+        VentaDetalleDTO detalle,
+        Producto producto,
+        IReadOnlyCollection<OrdenVentaDetalle> detallesOrden)
+    {
+        var detalleOrden = detallesOrden.FirstOrDefault(item => item.Id == detalle.IdOrdenVentaDetalle)
+            ?? throw new InvalidOperationException($"El detalle de orden {detalle.IdOrdenVentaDetalle} no existe.");
+
+        if (venta.IdOrdenVenta != detalleOrden.IdOrdenVenta ||
+            detalleOrden.IdProducto != detalle.IdProducto ||
+            detalleOrden.IdProductoConversion != detalle.IdProductoConversion)
+        {
+            throw new InvalidOperationException($"El detalle pagado de {producto.Nombre} no coincide con la orden.");
+        }
+
+        detalle.PrecioUnitario = detalleOrden.PrecioUnitario;
+        detalle.NombreUnidadMedida = detalleOrden.NombreUnidadMedida;
+        detalle.AbreviaturaUnidadMedida = detalleOrden.AbreviaturaUnidadMedida;
+        detalle.FactorConversion = detalleOrden.FactorConversion > 0 ? detalleOrden.FactorConversion : 1;
+    }
+
+    private static void NormalizarVentaDirecta(
+        VentaDetalleDTO detalle,
+        Producto producto,
+        IReadOnlyCollection<ProductoConversion> conversiones,
+        IReadOnlyCollection<ListaPreciosDetalle> precios)
+    {
+        if (!detalle.IdProductoConversion.HasValue)
+        {
+            throw new InvalidOperationException($"Debe seleccionar una unidad de medida para {producto.Nombre}.");
+        }
+
+        var conversion = conversiones.FirstOrDefault(item => item.Id == detalle.IdProductoConversion.Value)
+            ?? throw new InvalidOperationException($"La unidad seleccionada para {producto.Nombre} no existe.");
+
+        if (conversion.IdProducto != producto.Id || conversion.FactorConversion <= 0)
+        {
+            throw new InvalidOperationException($"La unidad seleccionada no corresponde a {producto.Nombre}.");
+        }
+
+        var precio = precios.FirstOrDefault(item => item.IdProductoConversion == conversion.Id)
+            ?? throw new InvalidOperationException(
+                $"La presentación seleccionada de {producto.Nombre} no tiene precio para este vendedor.");
+
+        if (precio.Precio <= 0)
+        {
+            throw new InvalidOperationException($"El precio de {producto.Nombre} debe ser mayor a cero.");
+        }
+
+        detalle.PrecioUnitario = precio.Precio;
+        detalle.NombreUnidadMedida = conversion.UnidadMedida?.Nombre ?? string.Empty;
+        detalle.AbreviaturaUnidadMedida = conversion.UnidadMedida?.Abreviatura ?? string.Empty;
+        detalle.FactorConversion = conversion.FactorConversion;
     }
 
     private static bool Coincide(decimal valorRecibido, decimal valorCalculado) => Utils.Redondear(valorRecibido) == Utils.Redondear(valorCalculado);

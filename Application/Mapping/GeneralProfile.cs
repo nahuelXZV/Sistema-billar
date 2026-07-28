@@ -123,7 +123,8 @@ public class GeneralProfile : Profile
         CreateMap<OrdenVentaDTO, OrdenVenta>()
             .ForMember(dest => dest.ListaDetalles, opt => opt.Ignore())
             .ForMember(dest => dest.ListaUsoMesas, opt => opt.Ignore());
-        CreateMap<OrdenVentaDetalleDTO, OrdenVentaDetalle>();
+        CreateMap<OrdenVentaDetalleDTO, OrdenVentaDetalle>()
+            .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore());
         CreateMap<VentaDTO, Venta>()
             .ForMember(dest => dest.IdempotencyKey, opt => opt.Ignore())
             .ForMember(dest => dest.IdTurnoCaja, opt => opt.Ignore())
@@ -136,7 +137,8 @@ public class GeneralProfile : Profile
         CreateMap<VentaDetalleDTO, VentaDetalle>()
             .ForMember(dest => dest.Venta, opt => opt.Ignore())
             .ForMember(dest => dest.OrdenVentaDetalle, opt => opt.Ignore())
-            .ForMember(dest => dest.Producto, opt => opt.Ignore());
+            .ForMember(dest => dest.Producto, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore());
         CreateMap<PagoVentaDTO, PagoVenta>()
             .ForMember(dest => dest.Venta, opt => opt.Ignore())
             .ForMember(dest => dest.MetodoPago, opt => opt.Ignore());

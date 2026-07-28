@@ -7,9 +7,9 @@ namespace WebClient.Components.Sales.Venta;
 public partial class ResumenVentaComponent
 {
     [Parameter] public PuntoVentaViewModel PuntoVenta { get; set; } = new();
-    [Parameter] public EventCallback<long> OnEliminarItem { get; set; }
-    [Parameter] public EventCallback<long> OnIncrementarCantidad { get; set; }
-    [Parameter] public EventCallback<long> OnDecrementarCantidad { get; set; }
+    [Parameter] public EventCallback<ItemsViewModel> OnEliminarItem { get; set; }
+    [Parameter] public EventCallback<ItemsViewModel> OnIncrementarCantidad { get; set; }
+    [Parameter] public EventCallback<ItemsViewModel> OnDecrementarCantidad { get; set; }
     [Parameter] public EventCallback<CantidadModificada> OnCantidadModificada { get; set; }
     [Parameter] public EventCallback OnLimpiarVenta { get; set; }
     [Parameter] public EventCallback OnAbrirPago { get; set; }
@@ -17,19 +17,19 @@ public partial class ResumenVentaComponent
     [Parameter] public bool MostrarGuardar { get; set; }
     [Parameter] public bool Guardando { get; set; }
 
-    private Task EliminarItem(long productId)
+    private Task EliminarItem(ItemsViewModel item)
     {
-        return OnEliminarItem.InvokeAsync(productId);
+        return OnEliminarItem.InvokeAsync(item);
     }
 
-    private Task IncrementarCantidad(long productId)
+    private Task IncrementarCantidad(ItemsViewModel item)
     {
-        return OnIncrementarCantidad.InvokeAsync(productId);
+        return OnIncrementarCantidad.InvokeAsync(item);
     }
 
-    private Task DecrementarCantidad(long productId)
+    private Task DecrementarCantidad(ItemsViewModel item)
     {
-        return OnDecrementarCantidad.InvokeAsync(productId);
+        return OnDecrementarCantidad.InvokeAsync(item);
     }
 
     private Task SetearCantidad(ItemsViewModel item, decimal quantity)
@@ -38,6 +38,8 @@ public partial class ResumenVentaComponent
         return OnCantidadModificada.InvokeAsync(new CantidadModificada
         {
             ProductId = item.IdProducto,
+            ProductConversionId = item.IdProductoConversion,
+            EsTiempoMesa = item.EsTiempoMesa,
             Cantidad = quantity
         });
     }

@@ -1,5 +1,4 @@
-﻿using Application.Features.Configuration.TipoMesas.Queries;
-using Application.Features.Inventory.Inventarios.Commands;
+﻿using Application.Features.Inventory.Inventarios.Commands;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
@@ -64,9 +63,7 @@ public class CreateTransaccionInventarioHandler : ICommandHandler<CreateTransacc
         return new Response<long>(transaccion.Id);
     }
 
-    private async Task<List<TransaccionInventarioDetalleDTO>> ObtenerDetallesInventarioAsync(
-        IEnumerable<TransaccionInventarioDetalleDTO> detalles,
-        CancellationToken cancellationToken)
+    private async Task<List<TransaccionInventarioDetalleDTO>> ObtenerDetallesInventarioAsync(IEnumerable<TransaccionInventarioDetalleDTO> detalles, CancellationToken cancellationToken)
     {
         var listaDetalles = detalles.ToList();
         var idsProductos = listaDetalles
@@ -82,16 +79,57 @@ public class CreateTransaccionInventarioHandler : ICommandHandler<CreateTransacc
             .ToListAsync(cancellationToken);
 
         var productosMesaIds = await _repository.Query<TipoMesa>()
-            .Where(t => !t.Eliminado
-                && t.IdProducto.HasValue
-                && idsProductos.Contains(t.IdProducto.Value))
+            .Where(t => !t.Eliminado && t.IdProducto.HasValue && idsProductos.Contains(t.IdProducto.Value))
             .Select(t => t.IdProducto!.Value)
             .Distinct()
             .ToListAsync(cancellationToken);
 
-        return listaDetalles
-            .Where(d => productosFisicosIds.Contains(d.IdProducto)
-                && !productosMesaIds.Contains(d.IdProducto))
+        var detallesFisicos = listaDetalles
+            .Where(d => productosFisicosIds.Contains(d.IdProducto) && !productosMesaIds.Contains(d.IdProducto))
             .ToList();
+
+        var idsConversiones = detallesFisicos
+            .Where(detalle => detalle.IdProductoConversion.HasValue)
+            .Select(detalle => detalle.IdProductoConversion!.Value)
+            .Distinct()
+            .ToList();
+
+        var conversiones = idsConversiones.Count == 0
+            ? []
+            : await _repository.Query<ProductoConversion>()
+                .AsNoTracking()
+                .Include(conversion => conversion.UnidadMedida)
+                .Where(conversion => !conversion.Eliminado && idsConversiones.Contains(conversion.Id))
+                .ToListAsync(cancellationToken);
+
+        foreach (var detalle in detallesFisicos)
+        {
+            if (detalle.Cantidad <= 0)
+            {
+                throw new InvalidOperationException($"La cantidad del producto {detalle.IdProducto} debe ser mayor a cero.");
+            }
+
+            if (!detalle.IdProductoConversion.HasValue)
+            {
+                detalle.FactorConversion = 1;
+                continue;
+            }
+
+            var conversion = conversiones.FirstOrDefault(item =>
+                item.Id == detalle.IdProductoConversion.Value)
+                ?? throw new InvalidOperationException($"La unidad seleccionada para el producto {detalle.IdProducto} no existe.");
+
+            if (conversion.IdProducto != detalle.IdProducto || conversion.FactorConversion <= 0)
+            {
+                throw new InvalidOperationException($"La unidad seleccionada no corresponde al producto {detalle.IdProducto}.");
+            }
+
+            detalle.NombreUnidadMedida = conversion.UnidadMedida?.Nombre ?? string.Empty;
+            detalle.AbreviaturaUnidadMedida = conversion.UnidadMedida?.Abreviatura ?? string.Empty;
+            detalle.FactorConversion = conversion.FactorConversion;
+            detalle.Cantidad *= (double)conversion.FactorConversion;
+        }
+
+        return detallesFisicos;
     }
 }

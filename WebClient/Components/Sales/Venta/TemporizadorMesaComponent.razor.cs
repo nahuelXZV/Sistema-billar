@@ -45,8 +45,7 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
         }
     }
 
-    private decimal ImporteTiempoActual => ProductoTiempo is null
-        ? 0 : Math.Round((decimal)TiempoTranscurrido.TotalHours * ProductoTiempo.Precio, 2, MidpointRounding.AwayFromZero);
+    private decimal ImporteTiempoActual => ProductoTiempo is null ? 0 : Math.Round((decimal)TiempoTranscurrido.TotalHours * ProductoTiempo.Precio, 2, MidpointRounding.AwayFromZero);
 
     protected override async Task OnParametersSetAsync()
     {
@@ -232,10 +231,15 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
 
         if (detalleTiempo is null)
         {
+            var precioUnidad = ProductoTiempo.PreciosVenta.FirstOrDefault();
             Venta.PuntoVenta.DetalleItems.Add(new ItemsViewModel
             {
                 IdProducto = ProductoTiempo.Id,
+                IdProductoConversion = precioUnidad?.IdProductoConversion,
                 Nombre = ProductoTiempo.Nombre,
+                NombreUnidadMedida = precioUnidad?.NombreUnidadMedida ?? string.Empty,
+                AbreviaturaUnidadMedida = precioUnidad?.AbreviaturaUnidadMedida ?? string.Empty,
+                FactorConversion = precioUnidad?.FactorConversion ?? 1,
                 Cantidad = horasFacturadas,
                 PrecioUnitario = ProductoTiempo.Precio,
                 EsTiempoMesa = true
@@ -244,7 +248,12 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
         }
 
         detalleTiempo.IdProducto = ProductoTiempo.Id;
+        var unidadTiempo = ProductoTiempo.PreciosVenta.FirstOrDefault();
+        detalleTiempo.IdProductoConversion = unidadTiempo?.IdProductoConversion;
         detalleTiempo.Nombre = ProductoTiempo.Nombre;
+        detalleTiempo.NombreUnidadMedida = unidadTiempo?.NombreUnidadMedida ?? string.Empty;
+        detalleTiempo.AbreviaturaUnidadMedida = unidadTiempo?.AbreviaturaUnidadMedida ?? string.Empty;
+        detalleTiempo.FactorConversion = unidadTiempo?.FactorConversion ?? 1;
         detalleTiempo.Cantidad = horasFacturadas;
         detalleTiempo.PrecioUnitario = ProductoTiempo.Precio;
     }

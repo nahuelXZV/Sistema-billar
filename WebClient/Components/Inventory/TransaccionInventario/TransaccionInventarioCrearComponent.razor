@@ -55,13 +55,28 @@
 			<div class="iu-form">
 				<div>
 					<IUSelectFilterComponent TItem="ProductoDTO"
-											 TValue="long"
+											 TValue="long?"
 											 Label="Producto"
 											 Placeholder="Selecciona un producto"
 											 Options="@ListadoProductos"
 											 GetText="@(c => c.Nombre)"
-											 GetValue="@(c => c.Id)"
-											 @bind-Value="DetalleDTO.IdProducto" />
+											 GetValue="@(c => (long?)c.Id)"
+											 Value="@DetalleDTO.IdProducto"
+											 ValueChanged="ProductoCambiado" />
+				</div>
+
+				<div>
+					<IUSelectFilterComponent TItem="ProductoConversionDTO"
+											 TValue="long?"
+											 Label="Unidad de medida"
+											 Placeholder="Selecciona una unidad"
+											 Options="@ListadoUnidadesDisponibles"
+											 GetText="DescripcionUnidad"
+											 GetValue="@(c => (long?)c.Id)"
+											 Value="@DetalleDTO.IdProductoConversion"
+											 ValueChanged="UnidadCambiada"
+											 Disabled="@(DetalleDTO.IdProducto <= 0)"
+											 Required="true" />
 				</div>
 
 				<div>
@@ -113,9 +128,11 @@
 								<thead>
 									<tr>
 										<th>Producto</th>
+										<th>Unidad</th>
 										<th>Almacen</th>
 										<th>Lote</th>
 										<th>Cantidad</th>
+										<th>Equivalente base</th>
 										<th>Acciones</th>
 									</tr>
 								</thead>
@@ -124,16 +141,18 @@
 									{
 										<tr>
 											<td>@item.NombreProducto</td>
+											<td>@item.NombreUnidadMedida</td>
 											<td>@item.NombreAlmacen</td>
 											<td>@item.CodigoLote</td>
 											<td>@item.Cantidad</td>
+											<td>@($"{CantidadBase(item):0.######} {UnidadBase(item)}")</td>
 											<td>
 												<div class="d-flex flex-wrap gap-2">
-													<button type="button" class="iu-btn iu-btn-secondary" @onclick="() => Editar(item.IdProducto, item.IdLote, item.IdAlmacen)">
+													<button type="button" class="iu-btn iu-btn-secondary" @onclick="() => Editar(item.IdProducto, item.IdProductoConversion, item.IdLote, item.IdAlmacen)">
 														<i class="bi bi-pencil"></i>
 														Editar
 													</button>
-													<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarDetalle(item.IdProducto, item.IdLote, item.IdAlmacen)">
+													<button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarDetalle(item.IdProducto, item.IdProductoConversion, item.IdLote, item.IdAlmacen)">
 														<i class="bi bi-trash"></i>
 														Eliminar
 													</button>

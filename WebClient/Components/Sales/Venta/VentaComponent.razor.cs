@@ -63,6 +63,7 @@ public partial class VentaComponent
             {
                 var orderItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item =>
                     item.IdProducto == paidItem.IdProducto &&
+                    item.IdProductoConversion == paidItem.IdProductoConversion &&
                     item.EsTiempoMesa == paidItem.EsTiempoMesa);
                 if (orderItem is null)
                 {
@@ -121,10 +122,14 @@ public partial class VentaComponent
         }
     }
 
-    private void AgregarItem(Productos product)
+    private void AgregarItem(ProductoSeleccionado seleccion)
     {
+        var product = seleccion.Producto;
+        var precioUnidad = seleccion.PrecioUnidad;
         var existingItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item =>
-            item.IdProducto == product.Id && !item.EsTiempoMesa);
+            item.IdProducto == product.Id &&
+            item.IdProductoConversion == precioUnidad.IdProductoConversion &&
+            !item.EsTiempoMesa);
         if (existingItem is not null)
         {
             existingItem.Cantidad = existingItem.Cantidad + 1;
@@ -135,35 +140,42 @@ public partial class VentaComponent
         Model.PuntoVenta.DetalleItems.Add(new ItemsViewModel
         {
             IdProducto = product.Id,
+            IdProductoConversion = precioUnidad.IdProductoConversion,
             Nombre = product.Nombre,
+            NombreUnidadMedida = precioUnidad.NombreUnidadMedida,
+            AbreviaturaUnidadMedida = precioUnidad.AbreviaturaUnidadMedida,
+            FactorConversion = precioUnidad.FactorConversion,
             Cantidad = 1,
-            PrecioUnitario = product.Precio,
+            PrecioUnitario = precioUnidad.Precio,
         });
     }
 
-    private void EliminarItem(long productId)
+    private void EliminarItem(ItemsViewModel itemSeleccionado)
     {
         var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(
-            orderItem => orderItem.IdProducto == productId && !orderItem.EsTiempoMesa);
+            orderItem => MismoDetalle(orderItem, itemSeleccionado));
         if (item is not null)
         {
             Model.PuntoVenta.DetalleItems.Remove(item);
         }
     }
 
-    private void IncrementarCantidad(long productId)
+    private void IncrementarCantidad(ItemsViewModel item)
     {
-        CambiarCantidad(productId, 1);
+        CambiarCantidad(item, 1);
     }
 
-    private void ReducirCantidad(long productId)
+    private void ReducirCantidad(ItemsViewModel item)
     {
-        CambiarCantidad(productId, -1);
+        CambiarCantidad(item, -1);
     }
 
     private void SetearCantidad(CantidadModificada quantityChange)
     {
-        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem => orderItem.IdProducto == quantityChange.ProductId);
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem =>
+            orderItem.IdProducto == quantityChange.ProductId &&
+            orderItem.IdProductoConversion == quantityChange.ProductConversionId &&
+            orderItem.EsTiempoMesa == quantityChange.EsTiempoMesa);
         if (item is null)
         {
             return;
@@ -213,7 +225,7 @@ public partial class VentaComponent
             MostrarModalPago = true;
         }
     }
-    private void CambiarCantidad(long productId, decimal delta)
+    private void CambiarCantidad(ItemsViewModel itemSeleccionado, decimal delta)
     {
         if (Model.PuntoVenta is null)
         {
@@ -221,7 +233,7 @@ public partial class VentaComponent
         }
 
         var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(
-            orderItem => orderItem.IdProducto == productId && !orderItem.EsTiempoMesa);
+            orderItem => MismoDetalle(orderItem, itemSeleccionado));
         if (item is null)
         {
             return;
@@ -234,5 +246,10 @@ public partial class VentaComponent
             Model.PuntoVenta.DetalleItems.Remove(item);
         }
     }
+
+    private static bool MismoDetalle(ItemsViewModel item, ItemsViewModel seleccionado) =>
+        item.IdProducto == seleccionado.IdProducto &&
+        item.IdProductoConversion == seleccionado.IdProductoConversion &&
+        item.EsTiempoMesa == seleccionado.EsTiempoMesa;
     #endregion
 }

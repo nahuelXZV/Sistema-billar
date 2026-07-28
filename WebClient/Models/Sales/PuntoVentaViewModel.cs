@@ -1,4 +1,5 @@
 using Domain.DTOs.Contact;
+using Domain.DTOs.Inventory;
 using Domain.DTOs.Sales;
 
 namespace WebClient.Models.Sales;
@@ -62,12 +63,16 @@ public class PuntoVentaViewModel
             {
                 IdOrdenVentaDetalle = d.IdOrdenVentaDetalle,
                 IdProducto = d.IdProducto,
+                IdProductoConversion = d.IdProductoConversion,
                 Cantidad = d.CantidadPagar,
                 Descuento = 0,
                 PrecioUnitario = d.PrecioUnitario,
                 SubTotal = d.Total,
                 Total = d.Total,
-                NombreProducto = d.Nombre
+                NombreProducto = d.Nombre,
+                NombreUnidadMedida = d.NombreUnidadMedida,
+                AbreviaturaUnidadMedida = d.AbreviaturaUnidadMedida,
+                FactorConversion = d.FactorConversion
             }).ToList(),
             ListaPagos = DetallePagos.Select(p => new PagoVentaDTO()
             {
@@ -110,15 +115,26 @@ public class Productos
     public string Descripcion { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
     public decimal Precio { get; set; }
+    public List<ProductoPrecioVentaDTO> PreciosVenta { get; set; } = [];
     public string IconCss { get; set; } = string.Empty;
     public string ToneClass { get; set; } = string.Empty;
+}
+
+public class ProductoSeleccionado
+{
+    public Productos Producto { get; set; } = new();
+    public ProductoPrecioVentaDTO PrecioUnidad { get; set; } = new();
 }
 
 public class ItemsViewModel
 {
     public long? IdOrdenVentaDetalle { get; set; }
     public long IdProducto { get; set; }
+    public long? IdProductoConversion { get; set; }
     public string Nombre { get; set; } = string.Empty;
+    public string NombreUnidadMedida { get; set; } = string.Empty;
+    public string AbreviaturaUnidadMedida { get; set; } = string.Empty;
+    public decimal FactorConversion { get; set; } = 1;
     public decimal Cantidad { get; set; }
     public decimal PrecioUnitario { get; set; }
     public bool EsTiempoMesa { get; set; }
@@ -128,6 +144,8 @@ public class ItemsViewModel
 public class CantidadModificada
 {
     public long ProductId { get; set; }
+    public long? ProductConversionId { get; set; }
+    public bool EsTiempoMesa { get; set; }
     public decimal Cantidad { get; set; }
 }
 
@@ -146,7 +164,11 @@ public class ProductosPagar
 {
     public long? IdOrdenVentaDetalle { get; set; }
     public long IdProducto { get; set; }
+    public long? IdProductoConversion { get; set; }
     public string Nombre { get; set; } = string.Empty;
+    public string NombreUnidadMedida { get; set; } = string.Empty;
+    public string AbreviaturaUnidadMedida { get; set; } = string.Empty;
+    public decimal FactorConversion { get; set; } = 1;
     public decimal CantidadDisponible { get; set; }
     public decimal CantidadPagar { get; set; }
     public decimal PrecioUnitario { get; set; }

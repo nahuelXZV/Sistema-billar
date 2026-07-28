@@ -33,6 +33,11 @@
 								<span>@item.Nombre</span>
 							</label>
 
+							@if (!item.EsTiempoMesa && !string.IsNullOrWhiteSpace(item.NombreUnidadMedida))
+							{
+								<small class="venta-pos-payment-unit">@item.NombreUnidadMedida</small>
+							}
+
 							@if (BloquearPagoTiempo && item.EsTiempoMesa)
 							{
 								<small class="venta-pos-payment-time-warning">

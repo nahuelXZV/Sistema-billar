@@ -1,5 +1,6 @@
 @using WebClient.Extensions
 @using WebClient.Models.Sales
+@using WebClient.Components.Shared.Elements
 
 <section class="venta-pos-catalog-panel">
 	<div class="venta-pos-pathbar d-flex align-items-center gap-2 flex-wrap">
@@ -31,7 +32,9 @@
 				<div class="col">
 					<button type="button"
 							class="venta-pos-card venta-pos-product-card venta-pos-click-card h-100 w-100"
-							aria-label="@($"Agregar {product.Nombre}")"
+							aria-label="@(product.PreciosVenta.Count > 1
+														? $"Seleccionar unidad de medida para {product.Nombre}"
+														: $"Agregar {product.Nombre}")"
 							@onclick="@(() => SelectProductAsync(product))">
 						<ProductImage Product="product" />
 
@@ -65,3 +68,54 @@
 		</div>
 	}
 </section>
+
+<IUModal Title="Seleccionar unidad de medida"
+		 Visible="MostrarUnidadesMedida"
+		 VisibleChanged="@((visible) => { if (!visible) CerrarSeleccionUnidad(); })">
+	<Body>
+		@if (ProductoPendiente is not null)
+		{
+			<div class="venta-pos-unit-selector">
+				<div class="venta-pos-unit-product">
+					<ProductImage Product="ProductoPendiente" />
+					<div>
+						<strong>@ProductoPendiente.Nombre</strong>
+						<span>Selecciona cómo deseas vender este producto.</span>
+					</div>
+				</div>
+
+				<div class="venta-pos-unit-options">
+					@foreach (var precioUnidad in ProductoPendiente.PreciosVenta)
+					{
+						<button type="button"
+								class="venta-pos-unit-option"
+								aria-label="@($"Vender por {precioUnidad.NombreUnidadMedida} a {precioUnidad.Precio.FormatoDinero()}")"
+								@onclick="@(() => SeleccionarUnidadAsync(precioUnidad))">
+							<span class="venta-pos-unit-option-copy">
+								<strong>@precioUnidad.NombreUnidadMedida</strong>
+								<small>
+									@if (precioUnidad.FactorConversion == 1)
+									{
+										<text>Unidad base</text>
+									}
+									else
+									{
+										<text>@($"Equivale a {precioUnidad.FactorConversion:0.##} unidades base")</text>
+									}
+								</small>
+							</span>
+							<strong class="venta-pos-unit-option-price">@precioUnidad.Precio.FormatoDinero()</strong>
+						</button>
+					}
+				</div>
+			</div>
+		}
+	</Body>
+	<Footer>
+		<button type="button"
+				class="venta-pos-client-modal-button is-secondary"
+				@onclick="CerrarSeleccionUnidad">
+			Cancelar
+		</button>
+	</Footer>
+</IUModal>

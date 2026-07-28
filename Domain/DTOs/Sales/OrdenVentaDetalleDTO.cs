@@ -7,9 +7,13 @@ public class OrdenVentaDetalleDTO
     public long Id { get; set; }
     public long IdOrdenVenta { get; set; }
     public long IdProducto { get; set; }
+    public long? IdProductoConversion { get; set; }
     public long? IdUsoMesa { get; set; }
     public long IdVendedor { get; set; }
     public string NombreProducto { get; set; } = string.Empty;
+    public string NombreUnidadMedida { get; set; } = string.Empty;
+    public string AbreviaturaUnidadMedida { get; set; } = string.Empty;
+    public decimal FactorConversion { get; set; } = 1;
     public decimal Cantidad { get; set; }
     public decimal PrecioUnitario { get; set; }
     public decimal Descuento { get; set; }
@@ -19,6 +23,7 @@ public class OrdenVentaDetalleDTO
     public string Observacion { get; set; } = string.Empty;
 
     public ProductoDTO? Producto { get; set; }
+    public ProductoConversionDTO? ProductoConversion { get; set; }
     public UsoMesaDTO? UsoMesa { get; set; }
     public VendedorDTO? Vendedor { get; set; }
 }

@@ -20,5 +20,6 @@ public class ProductoDTO
     public UnidadMedida? UnidadMedida { get; set; }
     public List<ProductoCompuestoDTO>? ProductosCompuestos { get; set; }
     public List<ProductoConversionDTO>? ProductoConversiones { get; set; }
+    public List<ProductoPrecioVentaDTO> PreciosVenta { get; set; } = [];
     public List<LoteDTO>? ListadoLotes { get; set; }
 }

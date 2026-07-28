@@ -82,9 +82,12 @@ public class CrearMovimientoInventarioVentaCommandHandler : ICommandHandler<Crea
                 throw new InvalidOperationException($"La cantidad del producto {detalle.IdProducto} debe ser mayor a cero.");
             }
 
+            var factorConversion = detalle.FactorConversion > 0 ? detalle.FactorConversion : 1;
+            var cantidadBase = detalle.Cantidad * factorConversion;
+
             await ExpandirProductoAsync(
                 detalle.IdProducto,
-                (double)detalle.Cantidad,
+                (double)cantidadBase,
                 idAlmacen,
                 idLote: null,
                 ruta: [],

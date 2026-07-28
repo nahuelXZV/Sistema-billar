@@ -49,7 +49,9 @@ public class GetProductoByIdVendedorQueryHandler : IQueryHandler<GetProductoById
             return new Response<ProductoDTO>(productoDto);
         }
 
-        var precio = await _repository.Query<ListaPreciosDetalle>()
+        var detallesPrecio = await _repository.Query<ListaPreciosDetalle>()
+            .Include(detalle => detalle.ProductoConversion)
+                .ThenInclude(conversion => conversion!.UnidadMedida)
             .Where(detalle => !detalle.Eliminado
                 && detalle.IdListaPrecio == idListaPrecio
                 && detalle.ProductoConversion != null
@@ -57,10 +59,21 @@ public class GetProductoByIdVendedorQueryHandler : IQueryHandler<GetProductoById
                 && detalle.ProductoConversion.IdProducto == request.IdProducto)
             .OrderBy(detalle =>
                 detalle.ProductoConversion!.IdUnidadMedida == producto.IdUnidadMedida ? 0 : 1)
-            .Select(detalle => (decimal?)detalle.Precio)
-            .FirstOrDefaultAsync(cancellationToken);
+            .ThenBy(detalle => detalle.ProductoConversion!.FactorConversion)
+            .ToListAsync(cancellationToken);
 
-        productoDto.Precio = precio ?? 0m;
+        productoDto.PreciosVenta = detallesPrecio.Select(detalle => new ProductoPrecioVentaDTO
+        {
+            IdProductoConversion = detalle.IdProductoConversion,
+            IdUnidadMedida = detalle.ProductoConversion!.IdUnidadMedida,
+            NombreUnidadMedida = detalle.ProductoConversion.UnidadMedida?.Nombre ?? string.Empty,
+            AbreviaturaUnidadMedida = detalle.ProductoConversion.UnidadMedida?.Abreviatura ?? string.Empty,
+            FactorConversion = detalle.ProductoConversion.FactorConversion,
+            Precio = detalle.Precio,
+            EsUnidadBase = detalle.ProductoConversion.IdUnidadMedida == producto.IdUnidadMedida
+        }).ToList();
+
+        productoDto.Precio = productoDto.PreciosVenta.FirstOrDefault()?.Precio ?? 0m;
         return new Response<ProductoDTO>(productoDto);
     }
 }

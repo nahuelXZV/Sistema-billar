@@ -28,7 +28,7 @@ public class GetOrdenesMesaAbiertasQueryHandler : IQueryHandler<GetOrdenesMesaAb
 
     public async Task<Response<List<OrdenMesaDTO>>> Handle(GetOrdenesMesaAbiertasQuery request, CancellationToken tokenCancelacion)
     {
-        var usos = await _usoMesaRepository.Query().Where(uso => !uso.Eliminado).ToListAsync(tokenCancelacion);
+        var usos = await _usoMesaRepository.Query().Where(uso => !uso.Eliminado && uso.Estado != (short)EstadoUsoMesa.Finalizado).ToListAsync(tokenCancelacion);
 
         if (usos.Count == 0) return new Response<List<OrdenMesaDTO>>([]);
 

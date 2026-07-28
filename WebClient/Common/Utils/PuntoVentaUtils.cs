@@ -39,6 +39,7 @@ public static class PuntoVentaUtils
             Descripcion = producto.Descripcion,
             ImageUrl = producto.UrlImagen ?? string.Empty,
             Precio = producto.Precio,
+            PreciosVenta = producto.PreciosVenta?.ToList() ?? [],
             IconCss = "bi bi-box-seam",
             ToneClass = "tone-primary",
         };

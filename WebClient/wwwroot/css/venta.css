@@ -1511,6 +1511,88 @@
     color: #fff0ed;
 }
 
+.venta-pos-unit-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-width: min(30rem, 76vw);
+}
+
+.venta-pos-unit-product {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.venta-pos-unit-product > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+}
+
+.venta-pos-unit-product strong,
+.venta-pos-unit-option strong {
+    color: #f4f8f5;
+}
+
+.venta-pos-unit-product span,
+.venta-pos-unit-option small,
+.venta-pos-order-unit,
+.venta-pos-payment-unit {
+    color: #9bb1a7;
+    font-size: 0.74rem;
+}
+
+.venta-pos-unit-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.venta-pos-unit-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    min-height: 4rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(113, 132, 123, 0.16);
+    border-radius: 0.85rem;
+    background: rgba(11, 16, 15, 0.72);
+    color: inherit;
+    text-align: left;
+}
+
+.venta-pos-unit-option:hover,
+.venta-pos-unit-option:focus-visible {
+    border-color: rgba(38, 192, 124, 0.38);
+    background: rgba(31, 122, 90, 0.14);
+    outline: 0;
+}
+
+.venta-pos-unit-option-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    min-width: 0;
+}
+
+.venta-pos-unit-option-price {
+    color: #72ddb1 !important;
+    white-space: nowrap;
+}
+
+.venta-pos-order-unit {
+    margin-top: -0.12rem;
+}
+
+.venta-pos-payment-unit {
+    display: block;
+    margin-left: 1.6rem;
+}
+
 .venta-table-sale-nav {
     padding: 0.42rem 0.62rem;
 }
@@ -1675,6 +1757,10 @@
 }
 
 @media (max-width: 767.98px) {
+    .venta-pos-unit-selector {
+        min-width: 0;
+    }
+
     .venta-tables-header,
     .venta-table-sale-nav {
         align-items: stretch;

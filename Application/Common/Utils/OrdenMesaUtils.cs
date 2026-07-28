@@ -33,7 +33,11 @@ public static class OrdenMesaUtils
             {
                 Id = detalle.Id,
                 IdProducto = detalle.IdProducto,
+                IdProductoConversion = detalle.IdProductoConversion,
                 NombreProducto = detalle.NombreProducto,
+                NombreUnidadMedida = detalle.NombreUnidadMedida,
+                AbreviaturaUnidadMedida = detalle.AbreviaturaUnidadMedida,
+                FactorConversion = detalle.FactorConversion,
                 Cantidad = detalle.Cantidad,
                 PrecioUnitario = detalle.PrecioUnitario,
                 Descuento = detalle.Descuento,
@@ -55,9 +59,13 @@ public static class OrdenMesaUtils
             {
                 IdOrdenVenta = idOrdenVenta,
                 IdProducto = detalle.IdProducto,
+                IdProductoConversion = detalle.IdProductoConversion,
                 IdUsoMesa = detalle.EsTiempoMesa ? idUsoMesa : null,
                 IdVendedor = solicitud.IdVendedor,
                 NombreProducto = detalle.NombreProducto,
+                NombreUnidadMedida = detalle.NombreUnidadMedida,
+                AbreviaturaUnidadMedida = detalle.AbreviaturaUnidadMedida,
+                FactorConversion = detalle.FactorConversion,
                 Cantidad = detalle.Cantidad,
                 PrecioUnitario = detalle.PrecioUnitario,
                 Descuento = detalle.Descuento,
@@ -84,12 +92,10 @@ public static class OrdenMesaUtils
 
     public static void CalcularTotales(OrdenVenta orden, OrdenMesaDTO solicitud)
     {
-        var subTotalProductos = solicitud.Detalles
-            .Where(detalle => !detalle.EsTiempoMesa)
+        var subTotalProductos = solicitud.Detalles.Where(detalle => !detalle.EsTiempoMesa)
             .Sum(detalle => DomainUtils.Redondear(detalle.Cantidad * detalle.PrecioUnitario - detalle.Descuento));
 
-        var subTotalTiempo = solicitud.Detalles
-            .Where(detalle => detalle.EsTiempoMesa)
+        var subTotalTiempo = solicitud.Detalles.Where(detalle => detalle.EsTiempoMesa)
             .Sum(detalle => DomainUtils.Redondear(detalle.Cantidad * detalle.PrecioUnitario - detalle.Descuento));
 
         var totalAntesDescuento = DomainUtils.Redondear(subTotalProductos + subTotalTiempo);

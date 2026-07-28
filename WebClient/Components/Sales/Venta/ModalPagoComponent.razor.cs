@@ -49,7 +49,11 @@ public partial class ModalPagoComponent
         {
             IdOrdenVentaDetalle = item.IdOrdenVentaDetalle,
             IdProducto = item.IdProducto,
+            IdProductoConversion = item.IdProductoConversion,
             Nombre = item.Nombre,
+            NombreUnidadMedida = item.NombreUnidadMedida,
+            AbreviaturaUnidadMedida = item.AbreviaturaUnidadMedida,
+            FactorConversion = item.FactorConversion,
             CantidadDisponible = item.Cantidad,
             CantidadPagar = item.Cantidad,
             PrecioUnitario = item.PrecioUnitario,
@@ -176,7 +180,11 @@ public partial class ModalPagoComponent
             {
                 IdOrdenVentaDetalle = item.IdOrdenVentaDetalle,
                 IdProducto = item.IdProducto,
+                IdProductoConversion = item.IdProductoConversion,
                 Nombre = item.Nombre,
+                NombreUnidadMedida = item.NombreUnidadMedida,
+                AbreviaturaUnidadMedida = item.AbreviaturaUnidadMedida,
+                FactorConversion = item.FactorConversion,
                 Cantidad = Math.Min(item.CantidadPagar, item.CantidadDisponible),
                 PrecioUnitario = item.PrecioUnitario,
                 EsTiempoMesa = item.EsTiempoMesa

@@ -32,6 +32,7 @@
 			<thead>
 				<tr>
 					<th>Producto</th>
+					<th>Unidad Medida</th>
 					<th class="text-end">Cantidad</th>
 					<th class="text-end">Precio unitario</th>
 					<th class="text-end">Descuento</th>
@@ -44,7 +45,14 @@
 					@foreach (var detalle in Venta.ListaDetalles)
 					{
 						<tr>
-							<td>@detalle.NombreProducto</td>
+							<td>
+								<div>@detalle.NombreProducto</div>
+								@if (!string.IsNullOrWhiteSpace(detalle.NombreUnidadMedida))
+								{
+									<small class="text-secondary">@detalle.NombreUnidadMedida</small>
+								}
+							</td>
+							<td>@detalle.NombreUnidadMedida</td>
 							<td class="text-end">@detalle.Cantidad.ToString("N2")</td>
 							<td class="text-end">Bs @detalle.PrecioUnitario.ToString("N2")</td>
 							<td class="text-end">Bs @((detalle.Descuento ?? 0).ToString("N2"))</td>
