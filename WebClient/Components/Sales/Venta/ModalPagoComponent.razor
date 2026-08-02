@@ -3,206 +3,254 @@
 @using WebClient.Models.Sales
 @inherits Components.MainBaseComponent;
 
-<IUModal Title="Pagar venta" Visible="Visible" VisibleChanged="HandleVisibleChangedAsync">
+<IUModal Title="Pagar venta"
+		 Visible="Visible"
+		 VisibleChanged="HandleVisibleChangedAsync"
+		 CssClass="venta-pos-payment-dialog">
 	<Body>
 		<div class="venta-pos-payment-modal">
-			<BuscarClienteComponent PuntoVenta="PuntoVenta" />
-			@if (MostrarAlertaCliente)
-			{
-				<span class="venta-pos-payment-client-alert">
-					<i class="bi bi-exclamation-triangle-fill"></i>
-					Debe Seleccionar un cliente.
-				</span>
-			}
-
-			<div class="venta-pos-payment-modal-list">
-				@if (PuntoVenta.ProductosPagar.Count == 0)
-				{
-					<div class="venta-pos-payment-empty">No hay productos pendientes.</div>
-				}
-				else
-				{
-					@foreach (var item in PuntoVenta.ProductosPagar)
+			<div class="venta-pos-payment-layout">
+				<section class="venta-pos-payment-column">
+					<BuscarClienteComponent PuntoVenta="PuntoVenta" />
+					@if (MostrarAlertaCliente)
 					{
-						<article class="venta-pos-payment-line @(item.IsSelected ? "is-selected" : string.Empty)">
-							<label class="venta-pos-payment-check">
-								<input type="checkbox"
-									   disabled="@(BloquearPagoTiempo && item.EsTiempoMesa)"
-									   checked="@item.IsSelected"
-									   @onchange="@((args) => CambiarSeleccion(item, args.Value))" />
-								<span>@item.Nombre</span>
+						<span class="venta-pos-payment-client-alert">
+							<i class="bi bi-exclamation-triangle-fill"></i>
+							Debe seleccionar un cliente.
+						</span>
+					}
+
+					<h6 class="venta-pos-payment-section-title">Productos</h6>
+
+					<div class="venta-pos-payment-modal-list">
+						@if (PuntoVenta.ProductosPagar.Count == 0)
+						{
+							<div class="venta-pos-payment-empty">No hay productos pendientes.</div>
+						}
+						else
+						{
+							@foreach (var item in PuntoVenta.ProductosPagar)
+							{
+								<article class="venta-pos-payment-line @(item.IsSelected ? "is-selected" : string.Empty)">
+									<label class="venta-pos-payment-check">
+										<input type="checkbox"
+											   disabled="@(BloquearPagoTiempo && item.EsTiempoMesa)"
+											   checked="@item.IsSelected"
+											   @onchange="@((args) => CambiarSeleccion(item, args.Value))" />
+										<span>@item.Nombre</span>
+									</label>
+
+									@if (!item.EsTiempoMesa && !string.IsNullOrWhiteSpace(item.NombreUnidadMedida))
+									{
+										<small class="venta-pos-payment-unit">@item.NombreUnidadMedida</small>
+									}
+
+									@if (BloquearPagoTiempo && item.EsTiempoMesa)
+									{
+										<small class="venta-pos-payment-time-warning">
+											Finaliza el cronómetro para cobrar este tiempo.
+										</small>
+									}
+
+									<div class="venta-pos-payment-line-actions">
+										<div class="venta-pos-stepper d-flex align-items-center">
+											<button type="button" @onclick="@(() => DisminuirCantidad(item))" disabled="@(!item.IsSelected)">
+												<i class="bi bi-dash"></i>
+											</button>
+											<input type="text"
+												   inputmode="decimal"
+												   value="@item.CantidadPagar.FormatearCantidad()"
+												   disabled="@(!item.IsSelected)"
+												   @onchange="@((args) => SetearCantidad(item, ParseQuantity(args.Value)))" />
+											<button type="button" @onclick="@(() => IncrementarCantidad(item))" disabled="@(!item.IsSelected)">
+												<i class="bi bi-plus"></i>
+											</button>
+										</div>
+
+										<strong>@item.Total.FormatoDinero()</strong>
+									</div>
+								</article>
+							}
+						}
+					</div>
+
+					<div class="venta-pos-payment-adjustments">
+						<button type="button" class="venta-pos-note-link" @onclick="ToggleNote">
+							<i class="bi bi-pencil-square"></i>
+							@(IsNoteOpen ? "Ocultar nota" : "Agregar nota a la venta")
+						</button>
+
+						@if (IsNoteOpen)
+						{
+							<textarea class="venta-pos-note-textarea"
+									  placeholder="Escriba una nota para esta venta..."
+									  @bind="PuntoVenta.NotaVenta"
+									  @bind:event="oninput"></textarea>
+						}
+
+						<div class="venta-pos-payment-fields">
+							<label>
+								<span>Descuento</span>
+								<div class="venta-pos-money-input">
+									<span>Bs</span>
+									<input type="number"
+										   min="0"
+										   step="0.01"
+										   @bind-value="PuntoVenta.DescuentoGlobal"
+										   @bind-value:event="oninput" />
+								</div>
 							</label>
 
-							@if (!item.EsTiempoMesa && !string.IsNullOrWhiteSpace(item.NombreUnidadMedida))
-							{
-								<small class="venta-pos-payment-unit">@item.NombreUnidadMedida</small>
-							}
-
-							@if (BloquearPagoTiempo && item.EsTiempoMesa)
-							{
-								<small class="venta-pos-payment-time-warning">
-									Finaliza el cronómetro para cobrar este tiempo.
-								</small>
-							}
-
-							<div class="venta-pos-payment-line-meta">
-								<small>@($"{item.CantidadDisponible.FormatearCantidad()} disponibles")</small>
-								<strong>@item.PrecioUnitario.FormatoDinero()</strong>
-							</div>
-
-							<div class="venta-pos-payment-line-actions">
-								<div class="venta-pos-stepper d-flex align-items-center">
-									<button type="button" @onclick="@(() => DisminuirCantidad(item))" disabled="@(!item.IsSelected)">
-										<i class="bi bi-dash"></i>
-									</button>
-									<input type="text"
-										   inputmode="decimal"
-										   value="@item.CantidadPagar.FormatearCantidad()"
-										   disabled="@(!item.IsSelected)"
-										   @onchange="@((args) => SetearCantidad(item, ParseQuantity(args.Value)))" />
-									<button type="button" @onclick="@(() => IncrementarCantidad(item))" disabled="@(!item.IsSelected)">
-										<i class="bi bi-plus"></i>
-									</button>
+							<label>
+								<span>Recargo</span>
+								<div class="venta-pos-money-input">
+									<span>Bs</span>
+									<input type="number"
+										   min="0"
+										   step="0.01"
+										   @bind-value="PuntoVenta.RecargoGlobal"
+										   @bind-value:event="oninput" />
 								</div>
+							</label>
+						</div>
+					</div>
+				</section>
 
-								<strong>@item.Total.FormatoDinero()</strong>
+				<section class="venta-pos-payment-column">
+					<div class="venta-pos-payment-summary-card">
+						<h6 class="venta-pos-payment-section-title">Resumen</h6>
+						<div class="venta-pos-totals d-flex flex-column">
+							<div>
+								<span>Subtotal</span>
+								<strong>@PuntoVenta.SubTotalSeleccionado.FormatoDinero()</strong>
 							</div>
-						</article>
-					}
-				}
-			</div>
-
-			<div class="venta-pos-payment-adjustments">
-				<button type="button" class="venta-pos-note-link" @onclick="ToggleNote">
-					<i class="bi bi-pencil-square"></i>
-					@(IsNoteOpen ? "Ocultar nota" : "Agregar nota a la venta")
-				</button>
-
-				@if (IsNoteOpen)
-				{
-					<textarea class="venta-pos-note-textarea"
-							  placeholder="Escriba una nota para esta venta..."
-							  @bind="PuntoVenta.NotaVenta"
-							  @bind:event="oninput"></textarea>
-				}
-
-				<div class="venta-pos-payment-fields">
-					<label>
-						<span>Descuento</span>
-						<div class="venta-pos-money-input">
-							<span>Bs</span>
-							<input type="number"
-								   min="0"
-								   step="0.01"
-								   @bind-value="PuntoVenta.DescuentoGlobal"
-								   @bind-value:event="oninput" />
+							<div>
+								<span>Descuento</span>
+								<strong>@PuntoVenta.DescuentoGlobal.FormatoDinero()</strong>
+							</div>
+							<div>
+								<span>Recargo</span>
+								<strong>@PuntoVenta.RecargoGlobal.FormatoDinero()</strong>
+							</div>
+							<div class="is-total">
+								<span>Total a pagar</span>
+								<strong>@PuntoVenta.MontoTotal.FormatoDinero()</strong>
+							</div>
 						</div>
-					</label>
+					</div>
 
-					<label>
-						<span>Recargo</span>
-						<div class="venta-pos-money-input">
-							<span>Bs</span>
-							<input type="number"
-								   min="0"
-								   step="0.01"
-								   @bind-value="PuntoVenta.RecargoGlobal"
-								   @bind-value:event="oninput" />
-						</div>
-					</label>
-				</div>
-			</div>
-
-			<div class="venta-pos-payment-methods">
-				<div class="venta-pos-payment-method-entry">
-					<label>
-						<span>Metodo de pago</span>
-						<select class="venta-pos-payment-method-select"
-								@bind="SelectedMetodoPagoId"
-								disabled="@(MetodosPago.Count == 0)">
-							<option value="0">Seleccione...</option>
-							@foreach (var metodo in MetodosPago)
-							{
-								<option value="@metodo.Id">@metodo.Nombre</option>
-							}
-						</select>
-					</label>
-
-					<label>
-						<span>Monto</span>
-						<div class="venta-pos-money-input">
-							<span>Bs</span>
-							<input type="number"
-								   min="0"
-								   step="0.01"
-								   @bind-value="MontoPagar"
-								   @bind-value:event="oninput" />
-						</div>
-					</label>
-
-					<button type="button"
-							class="venta-pos-payment-method-add"
-							disabled="@(!CanAddPaymentMethod)"
-							@onclick="AgregarMetodoPago">
-						<i class="bi bi-plus-lg"></i>
-						Agregar
-					</button>
-				</div>
-
-				@if (MetodosPago.Count == 0)
-				{
-					<div class="venta-pos-payment-empty">No hay metodos de pago activos.</div>
-				}
-				else if (PuntoVenta.DetallePagos.Count == 0)
-				{
-					<div class="venta-pos-payment-empty">Agrega al menos un metodo de pago.</div>
-				}
-				else
-				{
-					<div class="venta-pos-payment-method-summary">
-						<div class="venta-pos-payment-method-summary-head">
-							<span>Resumen de pagos</span>
-							<strong>@PuntoVenta.TotalPagado.FormatoDinero()</strong>
+					<div class="venta-pos-payment-methods">
+						<div>
+							<h6 class="venta-pos-payment-section-title">Método de pago</h6>
+							<div class="venta-pos-payment-method-options">
+								@foreach (var metodo in MetodosPago)
+								{
+									<button type="button"
+											class="venta-pos-payment-button @(SelectedMetodoPagoId == metodo.Id ? "is-primary" : string.Empty)"
+											@onclick="@(() => SeleccionarMetodoPago(metodo.Id))">
+										@if (!string.IsNullOrWhiteSpace(metodo.Icono))
+										{
+											<i class="@metodo.Icono"></i>
+										}
+										<span>@metodo.Nombre</span>
+									</button>
+								}
+							</div>
 						</div>
 
-						@foreach (var payment in PuntoVenta.DetallePagos)
+						@if (MetodosPago.Count == 0)
 						{
-							<div class="venta-pos-payment-method-row">
-								<span>
-									@if (!string.IsNullOrWhiteSpace(payment.Icono))
-									{
-										<i class="@payment.Icono"></i>
-									}
-									@payment.Nombre
-								</span>
-								<strong>@payment.MontoTotal.FormatoDinero()</strong>
+							<div class="venta-pos-payment-empty">No hay métodos de pago activos.</div>
+						}
+						else
+						{
+							<div class="venta-pos-payment-method-entry">
+								<label>
+									<span>Monto</span>
+									<div class="venta-pos-money-input">
+										<span>Bs</span>
+										<input type="number"
+											   min="0"
+											   step="0.01"
+											   @bind-value="MontoPagar"
+											   @bind-value:event="oninput" />
+									</div>
+								</label>
+
 								<button type="button"
-										aria-label="Quitar metodo de pago"
-										@onclick="@(() => EliminarMetodoPago(payment.Id))">
-									<i class="bi bi-x-lg"></i>
+										class="venta-pos-payment-method-add"
+										disabled="@(!CanAddPaymentMethod)"
+										@onclick="AgregarMetodoPago">
+									<i class="bi bi-plus-lg"></i>
+									Agregar pago
 								</button>
 							</div>
 						}
+
+						<div class="venta-pos-payment-method-summary">
+							<h6 class="venta-pos-payment-section-title">Pagos registrados</h6>
+							<table class="venta-pos-payment-method-table">
+								<thead>
+									<tr>
+										<th scope="col">Método</th>
+										<th scope="col">Monto</th>
+										<th scope="col">Acción</th>
+									</tr>
+								</thead>
+								<tbody>
+									@if (PuntoVenta.DetallePagos.Count == 0)
+									{
+										<tr>
+											<td colspan="3">
+												<div class="venta-pos-payment-empty">Agrega al menos un método de pago.</div>
+											</td>
+										</tr>
+									}
+									else
+									{
+										@foreach (var payment in PuntoVenta.DetallePagos)
+										{
+											<tr>
+												<td class="venta-pos-payment-method-name">
+													@if (!string.IsNullOrWhiteSpace(payment.Icono))
+													{
+														<i class="@payment.Icono"></i>
+													}
+													<span>@payment.Nombre</span>
+												</td>
+												<td>@payment.MontoTotal.FormatoDinero()</td>
+												<td>
+													<button type="button"
+															aria-label="Quitar método de pago"
+															@onclick="@(() => EliminarMetodoPago(payment.Id))">
+														<i class="bi bi-trash3"></i>
+													</button>
+												</td>
+											</tr>
+										}
+									}
+								</tbody>
+								<tfoot>
+									<tr class="is-paid">
+										<th scope="row">Total pagado</th>
+										<td>@PuntoVenta.TotalPagado.FormatoDinero()</td>
+										<td></td>
+									</tr>
+									<tr class="is-pending">
+										<th scope="row">Pendiente</th>
+										<td>@MontoPendiente.FormatoDinero()</td>
+										<td></td>
+									</tr>
+									<tr class="is-change">
+										<th scope="row">Cambio</th>
+										<td>@PuntoVenta.Cambio.FormatoDinero()</td>
+										<td></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
 					</div>
-				}
-			</div>
-
-			<div class="venta-pos-payment-modal-total">
-				<span>Total a pagar</span>
-				<strong>@PuntoVenta.MontoTotal.FormatoDinero()</strong>
-			</div>
-
-			@if (MontoPendiente > 0)
-			{
-				<div class="venta-pos-payment-modal-pending">
-					<span>Monto pendiente</span>
-					<strong>@MontoPendiente.FormatoDinero()</strong>
-				</div>
-			}
-
-			<div class="venta-pos-payment-modal-change">
-				<span>Cambio</span>
-				<strong>@PuntoVenta.Cambio.FormatoDinero()</strong>
+				</section>
 			</div>
 		</div>
 	</Body>

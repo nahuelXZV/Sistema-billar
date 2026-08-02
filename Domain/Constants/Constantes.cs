@@ -60,4 +60,10 @@ public static class Constantes
         Abierto = 1,
         Cerrado = 2
     }
+
+    public enum EstadoCompra
+    {
+        Registrada = 1,
+        Anulada = 2
+    }
 }

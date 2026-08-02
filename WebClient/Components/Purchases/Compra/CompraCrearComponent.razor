@@ -1,0 +1,128 @@
+@using Domain.DTOs.Contact
+@using Domain.DTOs.Inventory
+@using Domain.DTOs.Purchases
+@using WebClient.Components.Shared.Elements
+
+@inherits Components.MainBaseComponent
+
+<EditForm EditContext="_editContext">
+	<DataAnnotationsValidator />
+
+	<div class="iu-grid iu-grid-2">
+		<section class="iu-sec">
+			<div class="iu-head"><div><h2>Nueva compra</h2></div></div>
+
+			<div class="iu-form">
+				<div>
+					<IUInputDatetime Label="Fecha" Value="@Compra.Fecha" ValueChanged="CambiarFecha" Required="true" />
+					<ValidationMessage For="@(() => Compra.Fecha)" />
+				</div>
+
+				<div>
+					<IUSelectFilterComponent TItem="AlmacenDTO" TValue="long"
+						Label="Almacén" Placeholder="Selecciona el almacén" Options="@ListaAlmacenes"
+						GetText="@(almacen => almacen.Nombre)" GetValue="@(almacen => almacen.Id)"
+						@bind-Value="Compra.IdAlmacen" Required="true" />
+					<ValidationMessage For="@(() => Compra.IdAlmacen)" />
+				</div>
+
+				<div class="iu-span-2">
+					<IUSelectFilterComponent TItem="ProveedorDTO" TValue="long"
+						Label="Proveedor" Placeholder="Selecciona el proveedor" Options="@ListaProveedores"
+						GetText="@(proveedor => proveedor.NombreComercial)" GetValue="@(proveedor => proveedor.Id)"
+						@bind-Value="Compra.IdProveedor" @bind-Value:after="ProveedorSeleccionado" Required="true" />
+					<ValidationMessage For="@(() => Compra.IdProveedor)" />
+				</div>
+
+				<div class="iu-span-2">
+					<IUTextArea Label="Observación" Placeholder="Detalle u observación de la compra..." @bind-Value="Compra.Observacion" />
+					<ValidationMessage For="@(() => Compra.Observacion)" />
+				</div>
+			</div>
+		</section>
+
+		<section class="iu-sec">
+			<div class="iu-head">
+				<div>
+					<h2>Agregar productos</h2>
+					<p class="iu-note mb-0">El costo referencial se carga al seleccionar un producto configurado para el proveedor.</p>
+				</div>
+			</div>
+
+			<div class="iu-form">
+				<div class="iu-span-2">
+					<IUSelectFilterComponent TItem="ProductoDTO" TValue="long"
+						Label="Producto" Placeholder="Selecciona un producto" Options="@ListaProductos"
+						GetText="@(producto => producto.Nombre)" GetValue="@(producto => producto.Id)"
+						@bind-Value="IdProductoSeleccionado" @bind-Value:after="ProductoSeleccionado" />
+				</div>
+
+				<div>
+					<IUSelectFilterComponent TItem="ProductoConversionDTO" TValue="long?"
+						Label="Unidad de medida" Placeholder="Selecciona una unidad" Options="@ConversionesDisponibles"
+						GetText="ObtenerEtiquetaConversion" GetValue="@(conversion => (long?)conversion.Id)"
+						Disabled="@(IdProductoSeleccionado == 0)" @bind-Value="IdConversionSeleccionada"
+						@bind-Value:after="ConversionSeleccionada" />
+				</div>
+
+				<div>
+					<IUSelectFilterComponent TItem="LoteDTO" TValue="long?"
+						Label="Lote" Placeholder="Sin lote" Options="@LotesDisponibles"
+						GetText="@(lote => lote.Codigo)" GetValue="@(lote => (long?)lote.Id)"
+						Disabled="@(IdProductoSeleccionado == 0)" @bind-Value="IdLoteSeleccionado" />
+				</div>
+
+				<div>
+					<IUInputNumeric TValue="decimal" Label="Cantidad" Placeholder="0" @bind-Value="Cantidad" />
+				</div>
+
+				<div>
+					<IUInputNumeric TValue="decimal" Label="Costo unitario" Placeholder="0.00" @bind-Value="CostoUnitario" />
+				</div>
+
+				<div>
+					<IUInputNumeric TValue="decimal" Label="Descuento" Placeholder="0.00" @bind-Value="Descuento" />
+				</div>
+
+				<div class="d-flex align-items-end">
+					<button type="button" class="iu-btn iu-btn-primary" @onclick="AgregarDetalle">
+						<i class="bi bi-plus-lg"></i>
+						Agregar
+					</button>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<section class="iu-sec mt-3">
+		<div class="iu-head"><div><h2>Detalle de compra</h2></div></div>
+		@if (ListadoDetalles.Count == 0)
+		{
+			<p class="iu-note mb-0">Agrega al menos un producto para registrar la compra.</p>
+		}
+		else
+		{
+			<div class="iu-table">
+				<table class="inv-table">
+					<thead><tr><th>Producto</th><th>Unidad</th><th>Lote</th><th>Cantidad</th><th>Costo</th><th>Descuento</th><th>Total</th><th></th></tr></thead>
+					<tbody>
+						@foreach (var detalle in ListadoDetalles)
+						{
+							<tr>
+								<td>@ObtenerNombreProducto(detalle)</td>
+								<td>@ObtenerNombreUnidad(detalle)</td>
+								<td>@ObtenerCodigoLote(detalle)</td>
+								<td>@detalle.Cantidad</td>
+								<td>@detalle.CostoUnitario.ToString("N2") Bs.</td>
+								<td>@detalle.Descuento.ToString("N2") Bs.</td>
+								<td>@ObtenerTotalDetalle(detalle).ToString("N2") Bs.</td>
+								<td><button type="button" class="iu-btn iu-btn-danger" @onclick="() => EliminarDetalle(detalle)"><i class="bi bi-trash"></i></button></td>
+							</tr>
+						}
+					</tbody>
+					<tfoot><tr><th colspan="6" class="text-end">Total</th><th>@TotalCompra.ToString("N2") Bs.</th><th></th></tr></tfoot>
+				</table>
+			</div>
+		}
+	</section>
+</EditForm>

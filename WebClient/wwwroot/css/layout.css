@@ -1218,6 +1218,287 @@ body.dark-mode .iu-nav-menu-link--out {
     background: rgba(255, 255, 255, 0.025);
 }
 
+.home-dashboard-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.65rem;
+}
+
+.home-dashboard-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem;
+    border: 1px solid rgba(49, 174, 127, 0.32);
+    border-radius: 0.9rem;
+    background: rgba(16, 22, 20, 0.5);
+    color: #91a69b;
+}
+
+.home-dashboard-filter > i {
+    margin-left: 0.35rem;
+    color: #31ae7f;
+}
+
+.home-dashboard-select {
+    min-width: 7.5rem;
+    padding: 0.45rem 1.85rem 0.45rem 0.65rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background-color: #202a2c;
+    color: #e8f0eb;
+    font: inherit;
+    font-size: 0.86rem;
+    outline: none;
+}
+
+.home-dashboard-select + .home-dashboard-select {
+    min-width: 5.5rem;
+}
+
+.home-dashboard-filter-button {
+    padding: 0.5rem 0.85rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background: linear-gradient(135deg, #1f7a5a, #24956d);
+    color: #ffffff;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.home-dashboard-filter-button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.home-commercial-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(20rem, 0.9fr);
+    gap: 1.25rem;
+}
+
+.home-commercial-chart-card,
+.home-result-card {
+    min-height: 28rem;
+}
+
+.home-commercial-chart {
+    min-height: 22rem;
+}
+
+.home-result-chart {
+    min-height: 13rem;
+}
+
+.home-result-summary {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 0.5rem;
+}
+
+.home-result-summary > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid rgba(113, 132, 123, 0.14);
+    border-radius: 0.85rem;
+    background: rgba(16, 22, 20, 0.48);
+}
+
+.home-result-summary span,
+.home-result-summary small {
+    color: #91a69b;
+}
+
+.home-result-summary strong {
+    color: #f4f8f5;
+    font-size: 1.05rem;
+}
+
+.home-result-summary .home-result-profit {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    border-color: rgba(49, 174, 127, 0.25);
+    background: rgba(31, 122, 90, 0.1);
+}
+
+.home-result-profit small {
+    grid-column: 1 / -1;
+}
+
+.home-ranking-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.home-ranking-card {
+    min-width: 0;
+    min-height: 18rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1.1rem 1.15rem;
+}
+
+.home-ranking-card .iu-head {
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.home-ranking-card .iu-head h2 {
+    margin-top: 0.3rem;
+    font-size: 1.3rem;
+    line-height: 1.2;
+}
+
+.home-ranking-card .iu-kicker {
+    font-size: 0.68rem;
+}
+
+.home-ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    background: transparent !important;
+    color: inherit;
+}
+
+.home-ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.58rem 0.65rem;
+    border: 1px solid rgba(113, 132, 123, 0.1);
+    border-radius: 0.8rem;
+    background: transparent;
+}
+
+.home-ranking-position,
+.home-ranking-icon {
+    width: 1.85rem;
+    height: 1.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(49, 174, 127, 0.28);
+    border-radius: 50%;
+    background: rgba(31, 122, 90, 0.2);
+    color: #75d5aa;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.home-ranking-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.home-ranking-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.38rem;
+}
+
+.home-ranking-copy strong {
+    min-width: 0;
+    overflow: hidden;
+    color: #e8f0eb;
+    font-size: 0.86rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-ranking-copy span {
+    color: #d4e0d9;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.home-ranking-metric {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+}
+
+.home-ranking-metric b {
+    color: #e6ad52;
+    font-size: 0.78rem;
+}
+
+.home-ranking-metric small {
+    color: #7f9288;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.home-ranking-track {
+    height: 0.42rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.home-ranking-bar {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #1f7a5a, #50bd8e);
+    box-shadow: 0 0 14px rgba(49, 174, 127, 0.18);
+}
+
+.home-ranking-list--warning .home-ranking-position,
+.home-ranking-list--warning .home-ranking-icon {
+    border-color: rgba(184, 106, 63, 0.42);
+    background: rgba(184, 106, 63, 0.14);
+    color: #e0a16f;
+}
+
+.home-ranking-list--warning .home-ranking-copy > span {
+    color: #e6ad52;
+}
+
+.home-ranking-list--warning .home-ranking-bar {
+    background: linear-gradient(90deg, #b86a3f, #d7a548);
+    box-shadow: 0 0 14px rgba(184, 106, 63, 0.18);
+}
+
+.home-ranking-card .home-chart-empty {
+    min-height: 10rem;
+}
+
+.home-ranking-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(113, 132, 123, 0.12);
+}
+
+.home-ranking-list + .home-ranking-footer {
+    margin-top: 1rem;
+}
+
+.home-ranking-footer span {
+    color: #7f9288;
+    font-size: 0.76rem;
+}
+
+.home-ranking-footer strong {
+    color: #dce7e0;
+    font-size: 0.86rem;
+}
+
 .home-chart-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1296,7 +1577,30 @@ body.dark-mode .iu-nav-menu-link--out {
 }
 
 @media (max-width: 991.98px) {
+    .home-commercial-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-ranking-grid {
+        grid-template-columns: 1fr;
+    }
+
     .home-chart-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .home-dashboard-controls {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .home-dashboard-filter {
+        flex-wrap: wrap;
+    }
+
+    .home-dashboard-select {
+        flex: 1;
     }
 }

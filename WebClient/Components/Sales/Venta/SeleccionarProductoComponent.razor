@@ -26,15 +26,13 @@
 
 	@if (PuntoVenta.ShowingProducts)
 	{
-		<div class="row row-cols-2 row-cols-lg-4 row-cols-xxl-5 g-3">
+		<div class="row row-cols-2 row-cols-md-5 row-cols-xl-6 g-3">
 			@foreach (var product in PuntoVenta.VisibleProducts)
 			{
 				<div class="col">
 					<button type="button"
 							class="venta-pos-card venta-pos-product-card venta-pos-click-card h-100 w-100"
-							aria-label="@(product.PreciosVenta.Count > 1
-														? $"Seleccionar unidad de medida para {product.Nombre}"
-														: $"Agregar {product.Nombre}")"
+							aria-label="@(product.PreciosVenta.Count > 1 ? $"Seleccionar unidad de medida para {product.Nombre}" : $"Agregar {product.Nombre}")"
 							@onclick="@(() => SelectProductAsync(product))">
 						<ProductImage Product="product" />
 
@@ -49,7 +47,7 @@
 	}
 	else
 	{
-		<div class="row row-cols-2 row-cols-md-3 row-cols-xl-6 g-3">
+		<div class="row row-cols-2 row-cols-md-5 row-cols-xl-6 g-3">
 			@foreach (var category in PuntoVenta.VisibleCategories)
 			{
 				<div class="col">

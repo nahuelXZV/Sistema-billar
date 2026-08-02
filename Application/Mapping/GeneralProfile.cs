@@ -63,6 +63,8 @@ public class GeneralProfile : Profile
         CreateMap<Cliente, ClienteDTO>();
         CreateMap<Proveedor, ProveedorDTO>();
         CreateMap<ProveedorProducto, ProveedorProductoDTO>();
+        CreateMap<Compra, CompraDTO>();
+        CreateMap<CompraDetalle, CompraDetalleDTO>();
         CreateMap<Mesa, MesaDTO>();
         CreateMap<TipoMesa, TipoMesaDTO>();
         CreateMap<Vendedor, VendedorDTO>()
@@ -124,6 +126,18 @@ public class GeneralProfile : Profile
             .ForMember(dest => dest.Proveedor, opt => opt.Ignore())
             .ForMember(dest => dest.Producto, opt => opt.Ignore())
             .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore());
+        CreateMap<CompraDTO, Compra>()
+            .ForMember(dest => dest.Proveedor, opt => opt.Ignore())
+            .ForMember(dest => dest.Almacen, opt => opt.Ignore())
+            .ForMember(dest => dest.Usuario, opt => opt.Ignore())
+            .ForMember(dest => dest.UsuarioAnulacion, opt => opt.Ignore())
+            .ForMember(dest => dest.TransaccionInventario, opt => opt.Ignore())
+            .ForMember(dest => dest.ListaDetalles, opt => opt.Ignore());
+        CreateMap<CompraDetalleDTO, CompraDetalle>()
+            .ForMember(dest => dest.Compra, opt => opt.Ignore())
+            .ForMember(dest => dest.Producto, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore())
+            .ForMember(dest => dest.Lote, opt => opt.Ignore());
         CreateMap<MesaDTO, Mesa>();
         CreateMap<TipoMesaDTO, TipoMesa>();
         CreateMap<VendedorDTO, Vendedor>()

@@ -3,15 +3,24 @@ namespace Domain.DTOs.General;
 public class DashboardDTO
 {
     public DateTime FechaActualizacion { get; set; }
-    public decimal VentasMesActual { get; set; }
-    public decimal VentasUltimosDoceMeses { get; set; }
-    public int CantidadVentasUltimosDoceMeses { get; set; }
-    public double HorasMesaUltimosDoceMeses { get; set; }
-    public decimal UnidadesVendidasUltimosDoceMeses { get; set; }
+    public int Mes { get; set; }
+    public int Anio { get; set; }
+    public decimal VentasNetas { get; set; }
+    public decimal Compras { get; set; }
+    public decimal CostoVentas { get; set; }
+    public decimal UtilidadBruta { get; set; }
+    public decimal MargenBruto { get; set; }
+    public List<DashboardComparisonItemDTO> VentasVsCompras { get; set; } = [];
+    public List<DashboardChartItemDTO> ProductosRentables { get; set; } = [];
+    public List<DashboardChartItemDTO> ComprasPorProveedor { get; set; } = [];
     public List<DashboardChartItemDTO> MesasMasUsadas { get; set; } = [];
-    public List<DashboardChartItemDTO> ProductosMasVendidos { get; set; } = [];
-    public List<DashboardChartItemDTO> VentasPorMes { get; set; } = [];
-    public List<DashboardChartItemDTO> VentasPorSemana { get; set; } = [];
+}
+
+public class DashboardComparisonItemDTO
+{
+    public string Etiqueta { get; set; } = string.Empty;
+    public decimal Ventas { get; set; }
+    public decimal Compras { get; set; }
 }
 
 public class DashboardChartItemDTO

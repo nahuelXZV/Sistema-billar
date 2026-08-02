@@ -9,21 +9,25 @@ using WebClient.Services.Implementacion;
 using Domain.Interfaces.Services.Security;
 using Domain.Validators.Security;
 using Domain.Interfaces.Services.Inventory;
+using Domain.Interfaces.Services.Purchases;
 using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Shared;
 using WebClient.Services.Inventory;
+using WebClient.Services.Purchases;
 using Domain.Validators.Inventory;
 using Domain.Interfaces.Services.Configuration;
 using WebClient.Services.Configuration;
 using Domain.Validators.Contact;
 using Domain.Validators.Configuration;
 using Domain.Validators.Sales;
+using Domain.Validators.Purchases;
 using WebClient.Services.Contact;
 using WebClient.Services.General;
 using WebClient.Services.Sales;
 using WebClient.Services.Security;
 using WebClient.Services.Shared;
 using WebClient.Services;
+using WebClient.Common.Http;
 
 namespace WebClient.Extensions;
 
@@ -31,12 +35,11 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddServices(this IServiceCollection services, AdminConfig configs)
     {
-        services.AddTransient<AppServicesAuthorizationHandler>();
         services.AddHttpClient(Constantes.HttpClientNames.ApiRest, client =>
         {
             client.BaseAddress = new Uri(configs.General.ApiUrl);
             client.Timeout = TimeSpan.FromSeconds(configs.General.ServiceTimeout);
-        }).AddHttpMessageHandler<AppServicesAuthorizationHandler>();
+        }).AddScopeAwareHttpHandler<AppServicesAuthorizationHandler>();
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         #region Validators
@@ -53,6 +56,7 @@ public static class DependencyInjectionExtensions
         services.AddValidatorsFromAssemblyContaining<CreateVendedorDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateMetodoPagoDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateClienteDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateCompraDTOValidator>();
         //services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());CreateTransaccionInventarioDTOValidator
         #endregion
 
@@ -76,6 +80,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITraspasoInventarioService, TraspasoInventarioService>();
         services.AddScoped<IListaPreciosService, ListaPreciosService>();
         services.AddScoped<ILoteService, LoteService>();
+        services.AddScoped<ICompraService, CompraService>();
         services.AddScoped<ITipoMesaService, TipoMesaService>();
         services.AddScoped<IMesasService, MesasService>();
         services.AddScoped<IVendedorService, VendedorService>();

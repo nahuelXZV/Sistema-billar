@@ -2,6 +2,7 @@ using Domain.Interfaces.Services.Contact;
 using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.General;
 using Domain.Interfaces.Services.Inventory;
+using Domain.Interfaces.Services.Purchases;
 using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Security;
 using Domain.Interfaces.Services.Shared;
@@ -27,6 +28,7 @@ public interface IAppServices
     public ITraspasoInventarioService TraspasoInventarioService { get; }
     public IListaPreciosService ListaPreciosService { get; }
     public ILoteService LoteService { get; }
+    public ICompraService CompraService { get; }
 
     public ITipoMesaService TipoMesaService { get; }
     public IMesasService MesasService { get; }

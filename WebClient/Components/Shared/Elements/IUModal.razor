@@ -1,7 +1,7 @@
 ﻿@if (Visible)
 {
     <div class="iu-modal-backdrop">
-        <div class="iu-modal">
+        <div class="iu-modal @CssClass">
 
             <div class="iu-modal-header">
                 <h5>@Title</h5>
@@ -26,6 +26,8 @@
 @code {
 
     [Parameter] public string Title { get; set; } = "Modal";
+
+    [Parameter] public string? CssClass { get; set; }
 
     [Parameter] public RenderFragment? Body { get; set; }
 

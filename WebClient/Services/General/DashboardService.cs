@@ -14,9 +14,9 @@ public class DashboardService : AppBaseServices, IDashboardService
     {
     }
 
-    public async Task<DashboardDTO> Get()
+    public async Task<DashboardDTO> Get(int mes, int anio)
     {
-        return await GetAsync<DashboardDTO>();
+        return await GetAsync<DashboardDTO>($"?mes={mes}&anio={anio}");
     }
 
     public async Task<DashboardCajeroDTO> GetCajero()

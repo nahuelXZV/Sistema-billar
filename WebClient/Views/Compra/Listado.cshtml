@@ -1,0 +1,50 @@
+@using WebClient.Common
+@using WebClient.Models
+@using WebClient.Models.Purchases
+@model CompraViewModel
+
+@{
+	ViewData["Title"] = "Compras";
+	ViewData["Module"] = "Compras";
+	ViewData["Action"] = "Listado";
+	ViewData["Url"] = Url.Action("Listado", "Compra");
+	Model.ListaItemsMenu = new List<ItemMenu>
+	{
+		new ItemMenu { Id = MenuItemId.Detalles, Text = "Ver detalle", IconCss = "fa fa-eye", Url = Url.Action("Ver", "Compra")!, ActionType = MenuItemActionType.GET }
+	};
+}
+
+@section ActionBar {
+	<form id="FormCrear" asp-controller="Compra" asp-action="Crear" method="post" class="d-none">
+		@Html.AntiForgeryToken()
+	</form>
+	<div class="iu-tools"><div class="iu-tools-actions">
+		<button type="submit" form="FormCrear" class="iu-btn iu-btn-primary"><i class="bi bi-cart-plus"></i> Registrar compra</button>
+	</div></div>
+}
+
+<section class="iu-show"><section class="iu-sec"><div id="table-wrapper"></div></section></section>
+
+@section Scripts {
+	<script>
+		const renderPurchaseActions = id => gridjs.html(`<button type="button" class="inv-btn-action" aria-label="Abrir acciones" onclick="togglePortalDropdown(event, '${id}')"><i class="bi bi-three-dots"></i></button>`);
+		const formatPurchaseDate = value => value ? new Intl.DateTimeFormat('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value)) : '-';
+		const formatAmount = value => new Intl.NumberFormat('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value ?? 0) + ' Bs.';
+
+		new gridjs.Grid({
+			columns: [
+				{ name: 'Id', hidden: true }, 'Número', 'Proveedor', 'Almacén',
+				{ name: 'Fecha', formatter: cell => formatPurchaseDate(cell) },
+				{ name: 'Total', formatter: cell => formatAmount(cell) },
+				{ name: 'Estado', formatter: cell => gridjs.html(cell === 1 ? '<span class="iu-chip tone-success">Registrada</span>' : '<span class="iu-chip tone-danger">Anulada</span>') },
+				{ name: 'Acciones', sort: false, formatter: (cell, row) => renderPurchaseActions(row._cells[0].data) }
+			],
+			server: {
+				url: urlWeb + 'Compra/GetAll',
+				then: data => data.data.map(compra => [compra.id, compra.numero, compra.proveedor?.nombreComercial ?? '-', compra.almacen?.nombre ?? '-', compra.fecha, compra.total, compra.estado]),
+				total: data => data.total
+			},
+			...this.optionsTable
+		}).render(document.getElementById('table-wrapper'));
+	</script>
+}

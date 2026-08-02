@@ -6,9 +6,13 @@ namespace WebApi.Controllers.General;
 public class DashboardController : MainController
 {
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] int? mes, [FromQuery] int? anio)
     {
-        return Ok(await Mediator.Send(new GetDashboardQuery()));
+        return Ok(await Mediator.Send(new GetDashboardQuery
+        {
+            Mes = mes,
+            Anio = anio
+        }));
     }
 
     [HttpGet("Cajero")]

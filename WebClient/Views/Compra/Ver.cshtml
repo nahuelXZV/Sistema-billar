@@ -1,0 +1,72 @@
+@using Domain.Constants
+@using WebClient.Models.Purchases
+@model CompraViewModel
+
+@{
+	ViewData["Title"] = "Detalle de compra";
+	ViewData["Module"] = "Compras";
+	ViewData["Action"] = "Ver compra";
+	ViewData["Url"] = Url.Action("Listado", "Compra");
+	var compra = Model.Compra;
+	var esRegistrada = compra.Estado == (short)Constantes.EstadoCompra.Registrada;
+}
+
+@section ActionBar {
+	<div class="iu-tools">
+		<div class="iu-tools-actions">
+			<a asp-controller="Compra" asp-action="Listado" class="iu-btn iu-btn-secondary"><i class="bi bi-arrow-left"></i> Volver al listado</a>
+		</div>
+	</div>
+}
+
+<section class="iu-show">
+	<div class="iu-grid iu-grid-2">
+		<section class="iu-sec">
+			<div class="iu-head"><div><h2>@compra.Numero</h2><p class="iu-note mb-0">@compra.Fecha.ToString("dd/MM/yyyy HH:mm")</p></div></div>
+			<div class="iu-form">
+				<div><label class="form-label">Proveedor</label><p>@compra.Proveedor?.NombreComercial</p></div>
+				<div><label class="form-label">Almacén</label><p>@compra.Almacen?.Nombre</p></div>
+				<div class="iu-span-2"><label class="form-label">Observación</label><p>@(string.IsNullOrWhiteSpace(compra.Observacion) ? "Sin observación" : compra.Observacion)</p></div>
+			</div>
+		</section>
+
+		<section class="iu-sec">
+			<div class="iu-head"><div><h2>Estado</h2></div></div>
+			@if (esRegistrada)
+			{
+				<form asp-controller="Compra" asp-action="Anular" method="post" onsubmit="return confirm('¿Está seguro de anular esta compra? El inventario será revertido.');">
+					@Html.AntiForgeryToken()
+					<input type="hidden" name="id" value="@compra.Id" />
+					<div class="iu-form">
+						<div>
+							<label class="form-label" for="motivo">Motivo de anulación <span class="text-danger">*</span></label>
+							<textarea id="motivo" name="motivo" class="form-control" required maxlength="500" placeholder="Indique el motivo de la anulación..."></textarea>
+							<br />
+						</div>
+					</div><div class="d-flex align-items-end"><button type="submit" class="iu-btn iu-btn-danger"><i class="bi bi-x-circle"></i> Anular compra</button></div>
+				</form>
+			}
+			else
+			{
+				<p><span class="iu-chip tone-danger">Anulada</span></p>
+				<p class="iu-note">@compra.MotivoAnulacion</p>
+			}
+		</section>
+	</div>
+
+	<section class="iu-sec mt-3">
+		<div class="iu-head"><div><h2>Productos</h2></div></div>
+		<div class="iu-table">
+			<table class="inv-table">
+				<thead><tr><th>Producto</th><th>Unidad</th><th>Lote</th><th>Cantidad</th><th>Costo unitario</th><th>Descuento</th><th>Total</th></tr></thead>
+				<tbody>
+					@foreach (var detalle in compra.ListaDetalles)
+					{
+						<tr><td>@detalle.NombreProducto</td><td>@detalle.NombreUnidadMedida</td><td>@(detalle.Lote?.Codigo ?? "Sin lote")</td><td>@detalle.Cantidad</td><td>@detalle.CostoUnitario.ToString("N2") Bs.</td><td>@detalle.Descuento.ToString("N2") Bs.</td><td>@detalle.Total.ToString("N2") Bs.</td></tr>
+					}
+				</tbody>
+				<tfoot><tr><th colspan="6" class="text-end">Total</th><th>@compra.Total.ToString("N2") Bs.</th></tr></tfoot>
+			</table>
+		</div>
+	</section>
+</section>

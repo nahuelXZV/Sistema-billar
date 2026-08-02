@@ -3,6 +3,7 @@ using Domain.Interfaces.Services.Contact;
 using Domain.Interfaces.Services.Configuration;
 using Domain.Interfaces.Services.General;
 using Domain.Interfaces.Services.Inventory;
+using Domain.Interfaces.Services.Purchases;
 using Domain.Interfaces.Services.Sales;
 using Domain.Interfaces.Services.Security;
 using Domain.Interfaces.Services.Shared;
@@ -32,6 +33,7 @@ public class AppServices : IAppServices
     private ITraspasoInventarioService _traspasoInventarioService;
     private IListaPreciosService _listaPrecioService;
     private ILoteService _loteService;
+    private ICompraService _compraService;
     private ITipoMesaService _tipoMesaService;
     private IMesasService _mesasService;
     private IVendedorService _vendedorService;
@@ -70,6 +72,7 @@ public class AppServices : IAppServices
     public ITraspasoInventarioService TraspasoInventarioService => _traspasoInventarioService ??= _serviceProvider.GetService<ITraspasoInventarioService>();
     public IListaPreciosService ListaPreciosService => _listaPrecioService ??= _serviceProvider.GetService<IListaPreciosService>();
     public ILoteService LoteService => _loteService ??= _serviceProvider.GetService<ILoteService>();
+    public ICompraService CompraService => _compraService ??= _serviceProvider.GetService<ICompraService>();
     #endregion
 
     #region CONFIGURACION

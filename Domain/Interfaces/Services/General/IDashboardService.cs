@@ -4,6 +4,6 @@ namespace Domain.Interfaces.Services.General;
 
 public interface IDashboardService
 {
-    Task<DashboardDTO> Get();
+    Task<DashboardDTO> Get(int mes, int anio);
     Task<DashboardCajeroDTO> GetCajero();
 }

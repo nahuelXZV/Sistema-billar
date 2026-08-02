@@ -32,11 +32,31 @@ else if (Dashboard is not null)
 			<div>
 				<span class="iu-kicker">Analitica del negocio</span>
 				<h1>Rendimiento general</h1>
-				<p>Compara ventas, consumo de productos y uso de mesas en los periodos recientes.</p>
+				<p>Compara ventas, compras y rentabilidad en el periodo seleccionado.</p>
 			</div>
-			<div class="home-dashboard-updated">
-				<i class="bi bi-arrow-repeat"></i>
-				<span>Actualizado @Dashboard.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</span>
+			<div class="home-dashboard-controls">
+				<div class="home-dashboard-filter" aria-label="Periodo del dashboard">
+					<i class="bi bi-calendar3"></i>
+					<select class="home-dashboard-select" @bind="SelectedMonth" aria-label="Mes">
+						@foreach (var month in Months)
+						{
+							<option value="@month.Key">@month.Value</option>
+						}
+					</select>
+					<select class="home-dashboard-select" @bind="SelectedYear" aria-label="Anio">
+						@foreach (var year in Years)
+						{
+							<option value="@year">@year</option>
+						}
+					</select>
+					<button type="button" class="home-dashboard-filter-button" @onclick="LoadDashboardAsync">
+						Aplicar
+					</button>
+				</div>
+				<div class="home-dashboard-updated">
+					<i class="bi bi-arrow-repeat"></i>
+					<span>Actualizado @Dashboard.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")</span>
+				</div>
 			</div>
 		</section>
 
@@ -46,91 +66,90 @@ else if (Dashboard is not null)
 					<i class="bi bi-cash-coin"></i>
 				</div>
 				<div class="home-kpi-content">
-					<span>Ventas del mes</span>
-					<strong>@FormatCurrency(Dashboard.VentasMesActual)</strong>
-					<small>Facturacion acumulada del mes actual</small>
-				</div>
-			</article>
-
-			<article class="iu-sec home-kpi-card">
-				<div class="home-kpi-icon tone-primary">
-					<i class="bi bi-graph-up-arrow"></i>
-				</div>
-				<div class="home-kpi-content">
-					<span>Ventas en 12 meses</span>
-					<strong>@FormatCurrency(Dashboard.VentasUltimosDoceMeses)</strong>
-					<small>@Dashboard.CantidadVentasUltimosDoceMeses operaciones registradas</small>
+					<span>Ventas netas</span>
+					<strong>@FormatCurrency(Dashboard.VentasNetas)</strong>
+					<small>Facturacion neta del periodo seleccionado</small>
 				</div>
 			</article>
 
 			<article class="iu-sec home-kpi-card">
 				<div class="home-kpi-icon tone-warning">
-					<i class="bi bi-clock-history"></i>
+					<i class="bi bi-bag-check"></i>
 				</div>
 				<div class="home-kpi-content">
-					<span>Horas de mesa</span>
-					<strong>@Dashboard.HorasMesaUltimosDoceMeses.ToString("N1")</strong>
-					<small>Tiempo consumido en los ultimos 12 meses</small>
+					<span>Compras</span>
+					<strong>@FormatCurrency(Dashboard.Compras)</strong>
+					<small>Compras registradas en el periodo</small>
 				</div>
 			</article>
 
 			<article class="iu-sec home-kpi-card">
-				<div class="home-kpi-icon tone-danger">
-					<i class="bi bi-box-seam"></i>
+				<div class="home-kpi-icon tone-success">
+					<i class="bi bi-coin"></i>
 				</div>
 				<div class="home-kpi-content">
-					<span>Unidades vendidas</span>
-					<strong>@Dashboard.UnidadesVendidasUltimosDoceMeses.ToString("N0")</strong>
-					<small>Productos vendidos en los ultimos 12 meses</small>
+					<span>Utilidad bruta</span>
+					<strong>@FormatCurrency(Dashboard.UtilidadBruta)</strong>
+					<small>Ventas netas menos costo de lo vendido</small>
+				</div>
+			</article>
+
+			<article class="iu-sec home-kpi-card">
+				<div class="home-kpi-icon tone-warning">
+					<i class="bi bi-percent"></i>
+				</div>
+				<div class="home-kpi-content">
+					<span>Margen bruto</span>
+					<strong>@FormatPercentage(Dashboard.MargenBruto)</strong>
+					<small>Utilidad bruta sobre ventas netas</small>
 				</div>
 			</article>
 		</div>
 
-		<div class="home-chart-grid">
-			<section class="iu-sec home-chart-card">
+		<div class="home-commercial-grid">
+			<section class="iu-sec home-chart-card home-commercial-chart-card">
 				<div class="iu-head">
 					<div>
-						<span class="iu-kicker">Demanda de sala</span>
-						<h2>Mesas mas usadas</h2>
+						<span class="iu-kicker">Evolucion mensual</span>
+						<h2>Ventas vs. compras</h2>
 					</div>
-					<span class="home-chart-period">Ultimos 12 meses</span>
+					<span class="home-chart-period">12 meses hasta @Months.First(month => month.Key == Dashboard.Mes).Value @Dashboard.Anio</span>
 				</div>
 
-				@if (Dashboard.MesasMasUsadas.Count > 0)
-				{
-					<div class="home-chart">
-						<ApexChart TItem="DashboardChartItemDTO">
-							<ApexPointSeries TItem="DashboardChartItemDTO"
-											 Items="Dashboard.MesasMasUsadas"
-											 Name="Usos"
-											 SeriesType="SeriesType.Bar"
-											 XValue="item => item.Etiqueta"
-											 YValue="item => item.Valor" />
-						</ApexChart>
-					</div>
-				}
-				else
-				{
-					<DashboardEmptyState Message="Aun no hay usos de mesa registrados en este periodo." />
-				}
+				<div class="home-chart home-commercial-chart">
+					<ApexChart TItem="DashboardComparisonItemDTO" Options="ComparisonChartOptions">
+						<ApexPointSeries TItem="DashboardComparisonItemDTO"
+										 Items="Dashboard.VentasVsCompras"
+										 Name="Ventas"
+										 SeriesType="SeriesType.Area"
+										 XValue="item => item.Etiqueta"
+										 YValue="item => item.Ventas" />
+						<ApexPointSeries TItem="DashboardComparisonItemDTO"
+										 Items="Dashboard.VentasVsCompras"
+										 Name="Compras"
+										 SeriesType="SeriesType.Line"
+										 XValue="item => item.Etiqueta"
+										 YValue="item => item.Compras" />
+					</ApexChart>
+				</div>
 			</section>
 
-			<section class="iu-sec home-chart-card">
+			<section class="iu-sec home-chart-card home-result-card">
 				<div class="iu-head">
 					<div>
-						<span class="iu-kicker">Preferencias de consumo</span>
-						<h2>Productos mas vendidos</h2>
+						<span class="iu-kicker">Rentabilidad</span>
+						<h2>Resultado del mes</h2>
 					</div>
-					<span class="home-chart-period">Top 7</span>
+					<span class="home-chart-period">@Months.First(month => month.Key == Dashboard.Mes).Value @Dashboard.Anio</span>
 				</div>
 
-				@if (Dashboard.ProductosMasVendidos.Count > 0)
+				@if (Dashboard.VentasNetas > 0)
 				{
-					<div class="home-chart">
-						<ApexChart TItem="DashboardChartItemDTO">
+					<div class="home-result-chart">
+						<ApexChart TItem="DashboardChartItemDTO" Options="ResultChartOptions">
 							<ApexPointSeries TItem="DashboardChartItemDTO"
-											 Items="Dashboard.ProductosMasVendidos"
-											 Name="Unidades"
+											 Items="MonthlyResult"
+											 Name="Resultado"
 											 SeriesType="SeriesType.Donut"
 											 XValue="item => item.Etiqueta"
 											 YValue="item => item.Valor" />
@@ -139,50 +158,155 @@ else if (Dashboard is not null)
 				}
 				else
 				{
-					<DashboardEmptyState Message="Aun no hay productos vendidos en este periodo." />
+					<DashboardEmptyState Message="Aun no hay ventas registradas en este mes." />
+				}
+
+				<div class="home-result-summary">
+					<div>
+						<span>Ventas netas</span>
+						<strong>@FormatCurrency(Dashboard.VentasNetas)</strong>
+					</div>
+					<div>
+						<span>Costo de ventas</span>
+						<strong>@FormatCurrency(Dashboard.CostoVentas)</strong>
+					</div>
+					<div class="home-result-profit">
+						<span>Utilidad bruta</span>
+						<strong>@FormatCurrency(Dashboard.UtilidadBruta)</strong>
+						<small>@FormatPercentage(Dashboard.MargenBruto) de margen</small>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<div class="home-ranking-grid">
+			<section class="iu-sec home-ranking-card">
+				<div class="iu-head">
+					<div>
+						<span class="iu-kicker">Contribución comercial</span>
+						<h2>Productos más rentables</h2>
+					</div>
+					<span class="home-chart-period">Top 5</span>
+				</div>
+
+				@if (Dashboard.ProductosRentables.Count > 0)
+				{
+					<div class="home-ranking-list home-ranking-list--success">
+						@foreach (var product in Dashboard.ProductosRentables.Select((item, index) => new { Item = item, Index = index }))
+						{
+							<div class="home-ranking-item">
+								<span class="home-ranking-position">@(product.Index + 1)</span>
+								<div class="home-ranking-content">
+									<div class="home-ranking-copy">
+										<strong>@product.Item.Etiqueta</strong>
+										<span>@FormatCurrency(product.Item.Valor)</span>
+									</div>
+									<div class="home-ranking-track">
+										<div class="home-ranking-bar" style="width: @GetBarWidth(product.Item.Valor, Dashboard.ProductosRentables)%"></div>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				}
+				else
+				{
+					<DashboardEmptyState Message="Aun no hay productos rentables en este periodo." />
+				}
+				@if (Dashboard.ProductosRentables.Count > 0)
+				{
+					<div class="home-ranking-footer">
+						<span>Utilidad estimada del Top 5</span>
+						<strong>@FormatCurrency(Dashboard.ProductosRentables.Sum(item => item.Valor))</strong>
+					</div>
 				}
 			</section>
 
-			<section class="iu-sec home-chart-card">
+			<section class="iu-sec home-ranking-card">
 				<div class="iu-head">
 					<div>
-						<span class="iu-kicker">Tendencia anual</span>
-						<h2>Ventas por mes</h2>
+						<span class="iu-kicker">Abastecimiento</span>
+						<h2>Compras por proveedor</h2>
 					</div>
-					<span class="home-chart-period">12 meses</span>
+					<span class="home-chart-period">@Months.First(month => month.Key == Dashboard.Mes).Value</span>
 				</div>
 
-				<div class="home-chart">
-					<ApexChart TItem="DashboardChartItemDTO">
-						<ApexPointSeries TItem="DashboardChartItemDTO"
-										 Items="Dashboard.VentasPorMes"
-										 Name="Ventas"
-										 SeriesType="SeriesType.Area"
-										 XValue="item => item.Etiqueta"
-										 YValue="item => item.Valor" />
-					</ApexChart>
-				</div>
+				@if (Dashboard.ComprasPorProveedor.Count > 0)
+				{
+					<div class="home-ranking-list home-ranking-list--warning">
+						@foreach (var supplier in Dashboard.ComprasPorProveedor.Select((item, index) => new { Item = item, Index = index }))
+						{
+							<div class="home-ranking-item">
+								<span class="home-ranking-position">@(supplier.Index + 1)</span>
+								<div class="home-ranking-content">
+									<div class="home-ranking-copy">
+										<strong>@supplier.Item.Etiqueta</strong>
+										<span class="home-ranking-metric">
+											<b>@FormatPercentage(GetShare(supplier.Item.Valor, Dashboard.Compras))</b>
+											<small>@FormatCurrency(supplier.Item.Valor)</small>
+										</span>
+									</div>
+									<div class="home-ranking-track">
+										<div class="home-ranking-bar" style="width: @GetBarWidth(supplier.Item.Valor, Dashboard.ComprasPorProveedor)%"></div>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				}
+				else
+				{
+					<DashboardEmptyState Message="Aun no hay compras registradas en este periodo." />
+				}
+				@if (Dashboard.ComprasPorProveedor.Count > 0)
+				{
+					<div class="home-ranking-footer">
+						<span>Total comprado</span>
+						<strong>@FormatCurrency(Dashboard.Compras)</strong>
+					</div>
+				}
 			</section>
 
-			<section class="iu-sec home-chart-card">
+			<section class="iu-sec home-ranking-card">
 				<div class="iu-head">
 					<div>
-						<span class="iu-kicker">Ritmo reciente</span>
-						<h2>Ventas por semana</h2>
+						<span class="iu-kicker">Demanda de sala</span>
+						<h2>Mesas más usadas</h2>
 					</div>
-					<span class="home-chart-period">8 semanas</span>
+					<span class="home-chart-period">Top 5</span>
 				</div>
 
-				<div class="home-chart">
-					<ApexChart TItem="DashboardChartItemDTO">
-						<ApexPointSeries TItem="DashboardChartItemDTO"
-										 Items="Dashboard.VentasPorSemana"
-										 Name="Ventas"
-										 SeriesType="SeriesType.Line"
-										 XValue="item => item.Etiqueta"
-										 YValue="item => item.Valor" />
-					</ApexChart>
-				</div>
+				@if (Dashboard.MesasMasUsadas.Count > 0)
+				{
+					<div class="home-ranking-list home-ranking-list--primary">
+						@foreach (var table in Dashboard.MesasMasUsadas.Select((item, index) => new { Item = item, Index = index }))
+						{
+							<div class="home-ranking-item">
+								<span class="home-ranking-position">@(table.Index + 1)</span>
+								<div class="home-ranking-content">
+									<div class="home-ranking-copy">
+										<strong>@table.Item.Etiqueta</strong>
+										<span>@table.Item.Valor.ToString("N0") usos</span>
+									</div>
+									<div class="home-ranking-track">
+										<div class="home-ranking-bar" style="width: @GetBarWidth(table.Item.Valor, Dashboard.MesasMasUsadas)%"></div>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				}
+				else
+				{
+					<DashboardEmptyState Message="Aun no hay usos de mesa registrados en este periodo." />
+				}
+				@if (Dashboard.MesasMasUsadas.Count > 0)
+				{
+					<div class="home-ranking-footer">
+						<span>Usos registrados</span>
+						<strong>@Dashboard.MesasMasUsadas.Sum(item => item.Valor).ToString("N0")</strong>
+					</div>
+				}
 			</section>
 		</div>
 

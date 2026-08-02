@@ -22,16 +22,6 @@
 	<link href="~/css/venta.css" rel="stylesheet" asp-append-version="true" />
 }
 
-@section Scripts {
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			document.body.classList.remove('sidebar-open');
-			document.body.classList.remove('sidebar-mini');
-			document.body.classList.add('sidebar-collapse');
-		});
-	</script>
-}
-
 <component type="typeof(MainComponent)"
 		   param-ComponentTypeName="typeof(VentaMesasComponent).FullName"
 		   param-Parameters="@componentParameters"

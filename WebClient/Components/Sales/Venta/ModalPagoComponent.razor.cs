@@ -126,6 +126,11 @@ public partial class ModalPagoComponent
     #endregion
 
     #region Métodos de pago
+    private void SeleccionarMetodoPago(long metodoPagoId)
+    {
+        SelectedMetodoPagoId = metodoPagoId;
+    }
+
     private void AgregarMetodoPago()
     {
         var metodoPago = MetodosPago.FirstOrDefault(metodo => metodo.Id == SelectedMetodoPagoId);
