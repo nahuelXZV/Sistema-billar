@@ -1,3 +1,4 @@
+using Application.Helpers;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
@@ -143,7 +144,8 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
             throw;
         }
 
-        venta.Numero = $"V-{venta.Fecha:yyyyMMdd}-{venta.Id:D8}";
+        //venta.Numero = $"V-{venta.Fecha:yyyyMMdd}-{venta.Id:D8}";
+        venta.Numero = GenerarCodigoHelper.Generar("V", venta.Id);
         _ventaRepository.Update(venta);
         await _ventaRepository.UnitOfWork.SaveEntitiesAsync(tokenCancelacion);
 

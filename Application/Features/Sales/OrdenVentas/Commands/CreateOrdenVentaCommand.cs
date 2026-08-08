@@ -1,4 +1,5 @@
 using Application.Common.Utils;
+using Application.Helpers;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Common;
@@ -43,7 +44,9 @@ public class CreateOrdenVentaCommandHandler : ICommandHandler<CreateOrdenVentaCo
         orden = await _ordenRepository.AddAsync(orden);
         await _ordenRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
 
-        orden.Numero = $"OV-{orden.FechaApertura:yyyyMMdd}-{orden.Id:D8}";
+        //orden.Numero = $"OV-{orden.FechaApertura:yyyyMMdd}-{orden.Id:D8}";
+        orden.Numero = GenerarCodigoHelper.Generar("OV", orden.Id);
+
         _ordenRepository.Update(orden);
 
         var usoMesa = new UsoMesa

@@ -20,17 +20,17 @@
 
 				<div>
 					<IUSelectFilterComponent TItem="AlmacenDTO" TValue="long"
-						Label="Almacén" Placeholder="Selecciona el almacén" Options="@ListaAlmacenes"
-						GetText="@(almacen => almacen.Nombre)" GetValue="@(almacen => almacen.Id)"
-						@bind-Value="Compra.IdAlmacen" Required="true" />
+											 Label="Almacén" Placeholder="Selecciona el almacén" Options="@ListaAlmacenes"
+											 GetText="@(almacen => almacen.Nombre)" GetValue="@(almacen => almacen.Id)"
+											 @bind-Value="Compra.IdAlmacen" Required="true" />
 					<ValidationMessage For="@(() => Compra.IdAlmacen)" />
 				</div>
 
 				<div class="iu-span-2">
 					<IUSelectFilterComponent TItem="ProveedorDTO" TValue="long"
-						Label="Proveedor" Placeholder="Selecciona el proveedor" Options="@ListaProveedores"
-						GetText="@(proveedor => proveedor.NombreComercial)" GetValue="@(proveedor => proveedor.Id)"
-						@bind-Value="Compra.IdProveedor" @bind-Value:after="ProveedorSeleccionado" Required="true" />
+											 Label="Proveedor" Placeholder="Selecciona el proveedor" Options="@ListaProveedores"
+											 GetText="@(proveedor => proveedor.NombreComercial)" GetValue="@(proveedor => proveedor.Id)"
+											 @bind-Value="Compra.IdProveedor" @bind-Value:after="ProveedorSeleccionado" Required="true" />
 					<ValidationMessage For="@(() => Compra.IdProveedor)" />
 				</div>
 
@@ -52,24 +52,24 @@
 			<div class="iu-form">
 				<div class="iu-span-2">
 					<IUSelectFilterComponent TItem="ProductoDTO" TValue="long"
-						Label="Producto" Placeholder="Selecciona un producto" Options="@ListaProductos"
-						GetText="@(producto => producto.Nombre)" GetValue="@(producto => producto.Id)"
-						@bind-Value="IdProductoSeleccionado" @bind-Value:after="ProductoSeleccionado" />
+											 Label="Producto" Placeholder="Selecciona un producto" Options="@ListaProductos"
+											 GetText="@(producto => producto.Nombre)" GetValue="@(producto => producto.Id)"
+											 @bind-Value="IdProductoSeleccionado" @bind-Value:after="ProductoSeleccionado" />
 				</div>
 
 				<div>
 					<IUSelectFilterComponent TItem="ProductoConversionDTO" TValue="long?"
-						Label="Unidad de medida" Placeholder="Selecciona una unidad" Options="@ConversionesDisponibles"
-						GetText="ObtenerEtiquetaConversion" GetValue="@(conversion => (long?)conversion.Id)"
-						Disabled="@(IdProductoSeleccionado == 0)" @bind-Value="IdConversionSeleccionada"
-						@bind-Value:after="ConversionSeleccionada" />
+											 Label="Unidad de medida" Placeholder="Selecciona una unidad" Options="@ConversionesDisponibles"
+											 GetText="ObtenerEtiquetaConversion" GetValue="@(conversion => (long?)conversion.Id)"
+											 Disabled="@(IdProductoSeleccionado == 0)" @bind-Value="IdConversionSeleccionada"
+											 @bind-Value:after="ConversionSeleccionada" />
 				</div>
 
 				<div>
 					<IUSelectFilterComponent TItem="LoteDTO" TValue="long?"
-						Label="Lote" Placeholder="Sin lote" Options="@LotesDisponibles"
-						GetText="@(lote => lote.Codigo)" GetValue="@(lote => (long?)lote.Id)"
-						Disabled="@(IdProductoSeleccionado == 0)" @bind-Value="IdLoteSeleccionado" />
+											 Label="Lote" Placeholder="Sin lote" Options="@LotesDisponibles"
+											 GetText="@(lote => lote.Codigo)" GetValue="@(lote => (long?)lote.Id)"
+											 Disabled="@(IdProductoSeleccionado == 0)" @bind-Value="IdLoteSeleccionado" />
 				</div>
 
 				<div>

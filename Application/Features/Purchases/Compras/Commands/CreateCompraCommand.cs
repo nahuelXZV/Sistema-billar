@@ -1,4 +1,5 @@
 using Application.Features.Inventory.TransaccionInventarios.Command;
+using Application.Helpers;
 using Application.Interfaces;
 using Domain.Common;
 using Domain.Constants;
@@ -95,9 +96,7 @@ public class CreateCompraCommandHandler : ICommandHandler<CreateCompraCommand, R
             ListaDetalles = detalles
         };
 
-        foreach (var detalle in compra.ListaDetalles
-                     .GroupBy(detalle => new { detalle.IdProducto, detalle.IdProductoConversion })
-                     .Select(grupo => grupo.Last()))
+        foreach (var detalle in compra.ListaDetalles.GroupBy(detalle => new { detalle.IdProducto, detalle.IdProductoConversion }).Select(grupo => grupo.Last()))
         {
             detalle.Compra = compra;
         }
@@ -105,7 +104,9 @@ public class CreateCompraCommandHandler : ICommandHandler<CreateCompraCommand, R
         await _compraRepository.AddAsync(compra);
         await _compraRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
 
-        compra.Numero = $"C-{compra.Fecha:yyyyMMdd}-{compra.Id:D8}";
+        //compra.Numero = $"C-{compra.Fecha:yyyyMMdd}-{compra.Id:D8}";
+        compra.Numero = GenerarCodigoHelper.Generar("C", compra.Id);
+
         _compraRepository.Update(compra);
         await _compraRepository.UnitOfWork.SaveEntitiesAsync(cancellationToken);
 
