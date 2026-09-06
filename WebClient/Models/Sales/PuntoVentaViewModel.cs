@@ -8,21 +8,24 @@ public class PuntoVentaViewModel
 {
     public Guid? IdempotencyKey { get; set; }
     public long? IdOrdenVenta { get; set; }
+    public bool FinalizarOrdenVenta { get; set; }
     public long? IdUsoMesa { get; set; }
     public long? IdMesa { get; set; }
     public long IdVendedor { get; set; }
     public long? IdListaPrecio { get; set; }
     public string NombreVendedor { get; set; } = string.Empty;
+    public long IdClienteDefault { get; set; }
     public ClienteDTO? ClienteSeleccionado { get; set; }
+    public List<ClienteDTO> Clientes { get; set; } = [];
 
     #region Datos Venta
     public string NotaVenta { get; set; } = string.Empty;
     public decimal DescuentoGlobal { get; set; }
     public decimal RecargoGlobal { get; set; }
-    public decimal Cambio => Math.Max(0, TotalPagado - MontoTotal);
-    public decimal SubTotalSeleccionado => ProductosPagar.Where(item => item.IsSelected).Sum(item => item.Total);
-    public decimal TotalPagado => DetallePagos.Sum(payment => payment.MontoTotal);
-    public decimal MontoTotal => Math.Max(0, SubTotalSeleccionado - DescuentoGlobal + RecargoGlobal);
+    public decimal Cambio => RedondearMoneda(Math.Max(0, TotalPagado - MontoTotal));
+    public decimal SubTotalSeleccionado => RedondearMoneda(ProductosPagar.Where(item => item.IsSelected).Sum(item => item.Total));
+    public decimal TotalPagado => RedondearMoneda(DetallePagos.Sum(payment => payment.MontoTotal));
+    public decimal MontoTotal => RedondearMoneda(Math.Max(0, SubTotalSeleccionado - DescuentoGlobal + RecargoGlobal));
 
     public List<ItemsViewModel> DetalleItems { get; set; } = [];
     public List<DetallesPago> DetallePagos { get; set; } = [];
@@ -51,6 +54,7 @@ public class PuntoVentaViewModel
             Fecha = DateTime.Now,
             IdCliente = ClienteSeleccionado!.Id,
             IdOrdenVenta = IdOrdenVenta,
+            FinalizarOrdenVenta = FinalizarOrdenVenta,
             IdVendedor = IdVendedor,
             TotalPagado = TotalPagado,
             Cambio = Cambio,
@@ -93,6 +97,9 @@ public class PuntoVentaViewModel
             throw new Exception("Debe seleccionar un cliente");
         }
     }
+
+    private static decimal RedondearMoneda(decimal monto) =>
+        Math.Round(monto, 2, MidpointRounding.AwayFromZero);
 }
 
 public class Categorias
@@ -129,6 +136,7 @@ public class ProductoSeleccionado
 public class ItemsViewModel
 {
     public long? IdOrdenVentaDetalle { get; set; }
+    public long? IdCliente { get; set; }
     public long IdProducto { get; set; }
     public long? IdProductoConversion { get; set; }
     public string Nombre { get; set; } = string.Empty;
@@ -138,13 +146,14 @@ public class ItemsViewModel
     public decimal Cantidad { get; set; }
     public decimal PrecioUnitario { get; set; }
     public bool EsTiempoMesa { get; set; }
-    public decimal Total => Cantidad * PrecioUnitario;
+    public decimal Total => Math.Round(Cantidad * PrecioUnitario, 2, MidpointRounding.AwayFromZero);
 }
 
 public class CantidadModificada
 {
     public long ProductId { get; set; }
     public long? ProductConversionId { get; set; }
+    public long? IdCliente { get; set; }
     public bool EsTiempoMesa { get; set; }
     public decimal Cantidad { get; set; }
 }
@@ -163,6 +172,7 @@ public class DetallesPago
 public class ProductosPagar
 {
     public long? IdOrdenVentaDetalle { get; set; }
+    public long? IdCliente { get; set; }
     public long IdProducto { get; set; }
     public long? IdProductoConversion { get; set; }
     public string Nombre { get; set; } = string.Empty;
@@ -174,5 +184,5 @@ public class ProductosPagar
     public decimal PrecioUnitario { get; set; }
     public bool EsTiempoMesa { get; set; }
     public bool IsSelected { get; set; }
-    public decimal Total => CantidadPagar * PrecioUnitario;
+    public decimal Total => Math.Round(CantidadPagar * PrecioUnitario, 2, MidpointRounding.AwayFromZero);
 }

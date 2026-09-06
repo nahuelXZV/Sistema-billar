@@ -27,6 +27,7 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
     {
         await NormalizarProductosYPreciosAsync(solicitud.Venta, tokenCancelacion);
         ValidarImportes(solicitud.Venta);
+        await ValidarFinalizacionOrdenAsync(solicitud.Venta, tokenCancelacion);
         return new Response<bool>(true);
     }
 
@@ -217,6 +218,46 @@ public class ValidarVentaCommandHandler : ICommandHandler<ValidarVentaCommand, R
             }
 
             NormalizarVentaDirecta(detalle, producto, conversiones, precios);
+        }
+    }
+
+    private async Task ValidarFinalizacionOrdenAsync(VentaDTO venta, CancellationToken tokenCancelacion)
+    {
+        if (!venta.FinalizarOrdenVenta)
+        {
+            return;
+        }
+
+        if (!venta.IdOrdenVenta.HasValue || venta.IdOrdenVenta.Value <= 0)
+        {
+            throw new InvalidOperationException("Solo se puede finalizar una orden de venta existente.");
+        }
+
+        var detallesOrden = await _productoRepository.Query<OrdenVentaDetalle>()
+            .Where(detalle => !detalle.Eliminado && detalle.IdOrdenVenta == venta.IdOrdenVenta.Value)
+            .ToListAsync(tokenCancelacion);
+
+        if (detallesOrden.Count == 0)
+        {
+            throw new InvalidOperationException("La orden no tiene detalles pendientes para finalizar.");
+        }
+
+        var detallesPagados = venta.ListaDetalles ?? [];
+        if (detallesPagados.Any(detalle => !detalle.IdOrdenVentaDetalle.HasValue))
+        {
+            throw new InvalidOperationException("Para finalizar la orden, todos los detalles pagados deben pertenecer a la orden.");
+        }
+
+        foreach (var detalleOrden in detallesOrden)
+        {
+            var cantidadPagada = detallesPagados
+                .Where(detalle => detalle.IdOrdenVentaDetalle == detalleOrden.Id)
+                .Sum(detalle => detalle.Cantidad);
+
+            if (Utils.Redondear(cantidadPagada) != Utils.Redondear(detalleOrden.Cantidad))
+            {
+                throw new InvalidOperationException("Para finalizar la orden, todos sus detalles deben pagarse por completo.");
+            }
         }
     }
 

@@ -27,11 +27,13 @@ else
 
 			<div class="col-xl-3">
 				<ResumenVentaComponent PuntoVenta="Model.PuntoVenta"
+									   MostrarSelectorCliente="EsVentaMesa"
 									   OnEliminarItem="EliminarItem"
 									   OnIncrementarCantidad="IncrementarCantidad"
-									   OnDecrementarCantidad="ReducirCantidad"
-									   OnCantidadModificada="SetearCantidad"
-									   OnLimpiarVenta="SolicitarLimpiarVenta"
+								   OnDecrementarCantidad="ReducirCantidad"
+								   OnCantidadModificada="SetearCantidad"
+								   OnClienteModificado="CambiarClienteDetalle"
+								   OnLimpiarVenta="SolicitarLimpiarVenta"
 									   MostrarGuardar="EsVentaMesa"
 									   Guardando="GuardandoOrden"
 									   OnGuardar="GuardarOrdenAsync"
@@ -41,6 +43,7 @@ else
 
 		<ModalPagoComponent PuntoVenta="Model.PuntoVenta"
 							BloquearPagoTiempo="BloquearPagoTiempo"
+							EsOrdenVenta="EsVentaMesa"
 							@bind-Visible="MostrarModalPago"
 							OnPaymentConfirmed="PagoConfirmado" />
 	</section>

@@ -9,9 +9,9 @@ public static class UtilsExtensions
         return cantidad.ToString("0.##", CultureInfo.InvariantCulture);
     }
 
-    public static void Redondear(this decimal cantidad, short cantidadDecimales = 2)
+    public static decimal Redondear(this decimal cantidad, short cantidadDecimales = 2)
     {
-        cantidad = Math.Round(cantidad, cantidadDecimales, MidpointRounding.AwayFromZero);
+        return Math.Round(cantidad, cantidadDecimales, MidpointRounding.AwayFromZero);
     }
 
     public static string FormatoDinero(this decimal cantidad, short cantidadDecimales = 2)

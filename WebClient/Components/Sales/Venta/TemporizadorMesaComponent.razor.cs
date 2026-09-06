@@ -234,6 +234,7 @@ public partial class TemporizadorMesaComponent : IAsyncDisposable
             var precioUnidad = ProductoTiempo.PreciosVenta.FirstOrDefault();
             Venta.PuntoVenta.DetalleItems.Add(new ItemsViewModel
             {
+                IdCliente = Venta.PuntoVenta.IdClienteDefault,
                 IdProducto = ProductoTiempo.Id,
                 IdProductoConversion = precioUnidad?.IdProductoConversion,
                 Nombre = ProductoTiempo.Nombre,

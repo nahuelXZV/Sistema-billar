@@ -93,7 +93,9 @@ public partial class VentaMesasComponent
             IdVendedor = puntoVentaBase.IdVendedor,
             IdListaPrecio = puntoVentaBase.IdListaPrecio,
             NombreVendedor = puntoVentaBase.NombreVendedor,
+            IdClienteDefault = puntoVentaBase.IdClienteDefault,
             ClienteSeleccionado = puntoVentaBase.ClienteSeleccionado,
+            Clientes = puntoVentaBase.Clientes,
             RootCategories = puntoVentaBase.RootCategories
         };
 
@@ -137,6 +139,7 @@ public partial class VentaMesasComponent
         puntoVenta.DetalleItems = ordenMesa.Detalles.Select(detalle => new ItemsViewModel
         {
             IdOrdenVentaDetalle = detalle.Id,
+            IdCliente = detalle.IdCliente ?? puntoVenta.IdClienteDefault,
             IdProducto = detalle.IdProducto,
             IdProductoConversion = detalle.IdProductoConversion,
             Nombre = detalle.NombreProducto,
@@ -205,6 +208,7 @@ public partial class VentaMesasComponent
             Detalles = puntoVenta.DetalleItems.Select(detalleVenta => new OrdenMesaDetalleDTO
             {
                 Id = detalleVenta.IdOrdenVentaDetalle ?? 0,
+                IdCliente = detalleVenta.IdCliente,
                 IdProducto = detalleVenta.IdProducto,
                 IdProductoConversion = detalleVenta.IdProductoConversion,
                 NombreProducto = detalleVenta.Nombre,
@@ -233,6 +237,7 @@ public partial class VentaMesasComponent
             var detalle = ordenGuardada.Detalles.FirstOrDefault(detalle =>
                 detalle.IdProducto == detalleVenta.IdProducto &&
                 detalle.IdProductoConversion == detalleVenta.IdProductoConversion &&
+                detalle.IdCliente == detalleVenta.IdCliente &&
                 detalle.EsTiempoMesa == detalleVenta.EsTiempoMesa);
 
             detalleVenta.IdOrdenVentaDetalle = detalle?.Id;
@@ -243,6 +248,7 @@ public partial class VentaMesasComponent
             var detalle = ordenGuardada.Detalles.FirstOrDefault(detalle =>
                 detalle.IdProducto == itemPago.IdProducto &&
                 detalle.IdProductoConversion == itemPago.IdProductoConversion &&
+                detalle.IdCliente == itemPago.IdCliente &&
                 detalle.EsTiempoMesa == itemPago.EsTiempoMesa);
 
             itemPago.IdOrdenVentaDetalle = detalle?.Id;
@@ -259,9 +265,11 @@ public partial class VentaMesasComponent
         foreach (var itemPago in ModeloVentaSeleccionada.PuntoVenta.ProductosPagar.Where(detallePago => detallePago.IsSelected))
         {
             var itemVenta = ModeloVentaSeleccionada.PuntoVenta.DetalleItems.FirstOrDefault(detalleVenta =>
-                detalleVenta.IdProducto == itemPago.IdProducto &&
-                detalleVenta.IdProductoConversion == itemPago.IdProductoConversion &&
-                detalleVenta.EsTiempoMesa == itemPago.EsTiempoMesa);
+                detalleVenta.IdOrdenVentaDetalle == itemPago.IdOrdenVentaDetalle ||
+                (detalleVenta.IdProducto == itemPago.IdProducto &&
+                 detalleVenta.IdProductoConversion == itemPago.IdProductoConversion &&
+                 detalleVenta.IdCliente == itemPago.IdCliente &&
+                 detalleVenta.EsTiempoMesa == itemPago.EsTiempoMesa));
 
             if (itemVenta is not null)
             {
@@ -367,9 +375,19 @@ public partial class VentaMesasComponent
                 {
                     detalle.IdProducto,
                     detalle.IdProductoConversion,
+                    detalle.IdCliente,
                     detalle.Nombre,
                     detalle.Cantidad,
                     detalle.PrecioUnitario
+                })
+                .ToList(),
+            DetallesTiempo = puntoVenta.DetalleItems
+                .Where(detalle => detalle.EsTiempoMesa)
+                .Select(detalle => new
+                {
+                    detalle.IdProducto,
+                    detalle.IdProductoConversion,
+                    detalle.IdCliente
                 })
                 .ToList()
         };

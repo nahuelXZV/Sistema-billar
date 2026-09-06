@@ -13,6 +13,7 @@ public partial class ModalPagoComponent
     [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
     [Parameter] public EventCallback<IReadOnlyList<ItemsViewModel>> OnPaymentConfirmed { get; set; }
     [Parameter] public bool BloquearPagoTiempo { get; set; }
+    [Parameter] public bool EsOrdenVenta { get; set; }
 
     private List<MetodoPagoDTO> MetodosPago { get; set; } = [];
     private bool _wasVisible;
@@ -23,7 +24,7 @@ public partial class ModalPagoComponent
     private long SelectedMetodoPagoId { get; set; }
     private decimal MontoPagar { get; set; }
 
-    private decimal MontoPendiente => Math.Max(0, PuntoVenta.MontoTotal - PuntoVenta.TotalPagado);
+    private decimal MontoPendiente => RedondearMoneda(Math.Max(0, PuntoVenta.MontoTotal - PuntoVenta.TotalPagado));
     private bool HasSelectedItems => PuntoVenta.ProductosPagar.Any(item => item.IsSelected && item.CantidadPagar > 0);
     private bool CanAddPaymentMethod => HasSelectedItems && PuntoVenta.MontoTotal > 0 && SelectedMetodoPagoId > 0 && MontoPagar > 0;
     private bool CanConfirmPayment => !IsSubmitting && HasSelectedItems && PuntoVenta.MontoTotal > 0 && PuntoVenta.TotalPagado >= PuntoVenta.MontoTotal;
@@ -44,10 +45,12 @@ public partial class ModalPagoComponent
         SelectedMetodoPagoId = MetodosPago.FirstOrDefault()?.Id ?? 0;
         PuntoVenta.DetallePagos.Clear();
         IsNoteOpen = false;
+        PuntoVenta.FinalizarOrdenVenta = false;
 
         PuntoVenta.ProductosPagar = PuntoVenta.DetalleItems.Select(item => new ProductosPagar
         {
             IdOrdenVentaDetalle = item.IdOrdenVentaDetalle,
+            IdCliente = item.IdCliente,
             IdProducto = item.IdProducto,
             IdProductoConversion = item.IdProductoConversion,
             Nombre = item.Nombre,
@@ -61,7 +64,7 @@ public partial class ModalPagoComponent
             IsSelected = !(BloquearPagoTiempo && item.EsTiempoMesa)
         }).ToList();
 
-        MontoPagar = PuntoVenta.MontoTotal;
+        MontoPagar = RedondearMoneda(PuntoVenta.MontoTotal);
     }
 
     private void CambiarSeleccion(ProductosPagar item, object? valor)
@@ -76,6 +79,11 @@ public partial class ModalPagoComponent
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
+    private string GetNombreCliente(long? idCliente)
+    {
+        return PuntoVenta.Clientes.FirstOrDefault(cliente => cliente.Id == idCliente)?.Nombre ?? "Sin cliente";
+    }
+
     private async Task LoadMetodosPagoAsync()
     {
         MetodosPago = await AppServices.MetodoPagoService.GetAll();
@@ -83,7 +91,7 @@ public partial class ModalPagoComponent
 
         if (MontoPagar <= 0)
         {
-            MontoPagar = PuntoVenta.MontoTotal;
+            MontoPagar = RedondearMoneda(PuntoVenta.MontoTotal);
         }
     }
 
@@ -95,8 +103,7 @@ public partial class ModalPagoComponent
             return;
         }
 
-        item.CantidadPagar = Math.Min(item.CantidadDisponible, item.CantidadPagar + 1);
-        item.CantidadPagar.Redondear();
+        item.CantidadPagar = Math.Min(item.CantidadDisponible, item.CantidadPagar + 1).Redondear();
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
@@ -107,8 +114,7 @@ public partial class ModalPagoComponent
             return;
         }
 
-        item.CantidadPagar = Math.Max(0.01m, item.CantidadPagar - 1);
-        item.CantidadPagar.Redondear();
+        item.CantidadPagar = Math.Max(0.01m, item.CantidadPagar - 1).Redondear();
         ResetSuggestedPaymentAmountIfEmpty();
     }
 
@@ -119,8 +125,7 @@ public partial class ModalPagoComponent
             return;
         }
 
-        item.CantidadPagar = Math.Clamp(quantity, 0.01m, item.CantidadDisponible);
-        item.CantidadPagar.Redondear();
+        item.CantidadPagar = Math.Clamp(quantity, 0.01m, item.CantidadDisponible).Redondear();
         ResetSuggestedPaymentAmountIfEmpty();
     }
     #endregion
@@ -134,7 +139,8 @@ public partial class ModalPagoComponent
     private void AgregarMetodoPago()
     {
         var metodoPago = MetodosPago.FirstOrDefault(metodo => metodo.Id == SelectedMetodoPagoId);
-        if (metodoPago is null || MontoPagar <= 0)
+        var montoPagar = RedondearMoneda(MontoPagar);
+        if (metodoPago is null || montoPagar <= 0)
         {
             return;
         }
@@ -142,7 +148,7 @@ public partial class ModalPagoComponent
         var existingPayment = PuntoVenta.DetallePagos.FirstOrDefault(payment => payment.IdMetodoPago == metodoPago.Id);
         if (existingPayment is not null)
         {
-            existingPayment.MontoTotal = MontoPagar;
+            existingPayment.MontoTotal = montoPagar;
         }
         else
         {
@@ -153,7 +159,7 @@ public partial class ModalPagoComponent
                 Nombre = metodoPago.Nombre,
                 Abreviatura = metodoPago.Abreviatura,
                 Icono = metodoPago.Icono,
-                MontoTotal = MontoPagar,
+                MontoTotal = montoPagar,
             });
         }
 
@@ -184,6 +190,7 @@ public partial class ModalPagoComponent
             .Select(item => new ItemsViewModel
             {
                 IdOrdenVentaDetalle = item.IdOrdenVentaDetalle,
+                IdCliente = item.IdCliente,
                 IdProducto = item.IdProducto,
                 IdProductoConversion = item.IdProductoConversion,
                 Nombre = item.Nombre,
@@ -222,9 +229,17 @@ public partial class ModalPagoComponent
     {
         if (PuntoVenta.DetallePagos.Count == 0)
         {
-            MontoPagar = PuntoVenta.MontoTotal;
+            MontoPagar = RedondearMoneda(PuntoVenta.MontoTotal);
         }
     }
+
+    private void SetearMontoPagar(ChangeEventArgs args)
+    {
+        MontoPagar = RedondearMoneda(ParseQuantity(args.Value));
+    }
+
+    private static decimal RedondearMoneda(decimal monto) =>
+        Math.Round(monto, 2, MidpointRounding.AwayFromZero);
 
     private void ToggleNote()
     {

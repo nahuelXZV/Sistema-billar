@@ -1,6 +1,7 @@
 @using WebClient.Components.Shared.Elements
 @using WebClient.Extensions
 @using WebClient.Models.Sales
+@using System.Globalization
 @inherits Components.MainBaseComponent;
 
 <IUModal Title="Pagar venta"
@@ -32,13 +33,16 @@
 							@foreach (var item in PuntoVenta.ProductosPagar)
 							{
 								<article class="venta-pos-payment-line @(item.IsSelected ? "is-selected" : string.Empty)">
-									<label class="venta-pos-payment-check">
-										<input type="checkbox"
-											   disabled="@(BloquearPagoTiempo && item.EsTiempoMesa)"
-											   checked="@item.IsSelected"
-											   @onchange="@((args) => CambiarSeleccion(item, args.Value))" />
-										<span>@item.Nombre</span>
-									</label>
+									<div class="venta-pos-payment-product">
+										<label class="venta-pos-payment-check">
+											<input type="checkbox"
+												   disabled="@(BloquearPagoTiempo && item.EsTiempoMesa)"
+												   checked="@item.IsSelected"
+												   @onchange="@((args) => CambiarSeleccion(item, args.Value))" />
+											<span>@item.Nombre</span>
+										</label>
+										<small class="venta-pos-payment-item-client">@GetNombreCliente(item.IdCliente)</small>
+									</div>
 
 									@if (!item.EsTiempoMesa && !string.IsNullOrWhiteSpace(item.NombreUnidadMedida))
 									{
@@ -172,8 +176,8 @@
 										<input type="number"
 											   min="0"
 											   step="0.01"
-											   @bind-value="MontoPagar"
-											   @bind-value:event="oninput" />
+											   value="@MontoPagar.ToString("0.00", CultureInfo.InvariantCulture)"
+											   @onchange="SetearMontoPagar" />
 									</div>
 								</label>
 
@@ -249,6 +253,14 @@
 								</tfoot>
 							</table>
 						</div>
+
+						@if (EsOrdenVenta)
+						{
+							<label class="venta-pos-payment-finish-order">
+								<input type="checkbox" @bind="PuntoVenta.FinalizarOrdenVenta" disabled="@IsSubmitting" />
+								<span>Finalizar orden de venta</span>
+							</label>
+						}
 					</div>
 				</section>
 			</div>

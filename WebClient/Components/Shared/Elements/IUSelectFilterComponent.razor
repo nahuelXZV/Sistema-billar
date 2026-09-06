@@ -28,7 +28,7 @@
 			   aria-expanded="@IsOpen.ToString().ToLowerInvariant()"
 			   aria-controls="@MenuId" />
 
-		@if (HasSelection && !Disabled)
+		@if (HasSelection && !Disabled && AllowClear)
 		{
 			<button type="button"
 					class="iu-filter-select-clear"
@@ -89,6 +89,8 @@
 	[Parameter] public string Id { get; set; } = $"iu-select-filter-{Guid.NewGuid():N}";
 	[Parameter] public bool Required { get; set; }
 	[Parameter] public bool Disabled { get; set; }
+	[Parameter] public bool AllowClear { get; set; } = true;
+	[Parameter] public bool ClearSelectionOnInput { get; set; } = true;
 	[Parameter] public int MaxResults { get; set; } = 250;
 
 	[Parameter] public IEnumerable<TItem> Options { get; set; } = Enumerable.Empty<TItem>();
@@ -178,7 +180,7 @@
 		DisplayText = SearchText;
 		IsOpen = true;
 
-		if (HasSelection)
+		if (HasSelection && ClearSelectionOnInput)
 		{
 			HasSelection = false;
 			Value = default;

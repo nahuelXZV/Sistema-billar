@@ -32,6 +32,7 @@ public static class OrdenMesaUtils
             Detalles = detalles.Select(detalle => new OrdenMesaDetalleDTO
             {
                 Id = detalle.Id,
+                IdCliente = detalle.IdCliente,
                 IdProducto = detalle.IdProducto,
                 IdProductoConversion = detalle.IdProductoConversion,
                 NombreProducto = detalle.NombreProducto,
@@ -58,6 +59,7 @@ public static class OrdenMesaUtils
             return new OrdenVentaDetalle
             {
                 IdOrdenVenta = idOrdenVenta,
+                IdCliente = detalle.IdCliente ?? solicitud.IdCliente,
                 IdProducto = detalle.IdProducto,
                 IdProductoConversion = detalle.IdProductoConversion,
                 IdUsoMesa = detalle.EsTiempoMesa ? idUsoMesa : null,

@@ -1,5 +1,7 @@
 @using WebClient.Extensions
+@using WebClient.Components.Shared.Elements
 @using WebClient.Models.Sales
+@using Domain.DTOs.Contact
 
 <aside class="venta-pos-summary-panel">
 	<div class="venta-pos-summary-header d-flex justify-content-between align-items-center gap-2">
@@ -22,29 +24,58 @@
 	<div class="venta-pos-order-list d-flex flex-column m-0 mb-2">
 		@foreach (var item in PuntoVenta.DetalleItems)
 		{
-			<article class="venta-pos-order-item">
-				<div class="venta-pos-order-content d-flex flex-column">
-					<div class="venta-pos-order-head d-flex justify-content-between align-items-center gap-2">
-						<strong>@item.Nombre</strong>
-						@if (!item.EsTiempoMesa)
-						{
-							<button type="button" class="venta-pos-remove-button" @onclick="@(() => EliminarItem(item))">
-								<i class="bi bi-x-lg"></i>
-							</button>
-						}
+			<article class="venta-pos-order-item @(!MostrarSelectorCliente ? "is-without-client" : string.Empty)">
+				<div class="venta-pos-order-details">
+					<div class="venta-pos-order-copy d-flex flex-column">
+						<div class="venta-pos-order-product-header">
+							<div class="venta-pos-order-product-info">
+								<strong>@item.Nombre</strong>
+
+								@if (!item.EsTiempoMesa && !string.IsNullOrWhiteSpace(item.NombreUnidadMedida))
+								{
+									<span class="venta-pos-order-unit">
+										@item.NombreUnidadMedida · @($"{item.PrecioUnitario.FormatoDinero()} c/u")
+									</span>
+								}
+							</div>
+
+							@if (!item.EsTiempoMesa)
+							{
+								<button type="button"
+										class="venta-pos-remove-button"
+										title="Eliminar detalle"
+										aria-label="Eliminar @item.Nombre"
+										@onclick="@(() => SolicitarEliminacionItem(item))">
+									<i class="bi bi-x-lg" aria-hidden="true"></i>
+								</button>
+							}
+						</div>
 					</div>
 
-					@if (!item.EsTiempoMesa && !string.IsNullOrWhiteSpace(item.NombreUnidadMedida))
+					@if (MostrarSelectorCliente)
 					{
-						<span class="venta-pos-order-unit">
-							@item.NombreUnidadMedida · @($"{item.PrecioUnitario.FormatoDinero()} c/u")
-						</span>
+						<div class="venta-pos-order-client">
+							<IUSelectFilterComponent TItem="ClienteDTO"
+													 TValue="long?"
+													 Label="Cliente"
+													 Placeholder="Buscar cliente..."
+													 Options="@PuntoVenta.Clientes"
+													 GetText="@(cliente => cliente.Nombre)"
+													 GetValue="@(cliente => (long?)cliente.Id)"
+													 Required="true"
+													 AllowClear="false"
+													 ClearSelectionOnInput="false"
+													 @bind-Value="item.IdCliente"
+													 @bind-Value:after="@(() => ClienteModificado(item))" />
+						</div>
 					}
+				</div>
 
-					<div class="venta-pos-order-row d-flex justify-content-between align-items-center gap-2">
+				<div class="venta-pos-order-actions">
+					<div class="venta-pos-order-quantity">
 						@if (item.EsTiempoMesa)
 						{
-							<span>@($"{item.Cantidad:0.00} horas")</span>
+							<span class="venta-pos-order-time">@($"{item.Cantidad:0.00} horas")</span>
 						}
 						else
 						{
@@ -61,9 +92,9 @@
 								</button>
 							</div>
 						}
-
-						<strong class="venta-pos-order-price">@item.Total.FormatoDinero()</strong>
 					</div>
+
+					<strong class="venta-pos-order-price">@item.Total.FormatoDinero()</strong>
 				</div>
 			</article>
 		}
@@ -105,3 +136,44 @@
 		</button>
 	</div>
 </aside>
+
+<IUModal Title="Eliminar detalle" @bind-Visible="MostrarConfirmacionEliminar">
+	<Body>
+		<div class="venta-pos-delete-detail-modal">
+			<div class="venta-pos-delete-detail-confirmation">
+				<i class="bi bi-exclamation-octagon" aria-hidden="true"></i>
+				<div>
+					<strong>¿Eliminar este detalle de la venta?</strong>
+					<span>
+						@(ItemPendienteEliminacion is null
+							? "Esta acción no se puede deshacer."
+							: $"Se quitará {ItemPendienteEliminacion.Nombre} de la venta.")
+					</span>
+				</div>
+			</div>
+		</div>
+	</Body>
+	<Footer>
+		<button type="button"
+				class="venta-pos-client-modal-button is-secondary"
+				disabled="@EliminandoItem"
+				@onclick="CancelarEliminacionItem">
+			Cancelar
+		</button>
+		<button type="button"
+				class="venta-pos-client-modal-button is-danger"
+				disabled="@(EliminandoItem || ItemPendienteEliminacion is null)"
+				@onclick="ConfirmarEliminacionItemAsync">
+			@if (EliminandoItem)
+			{
+				<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+				<span>Eliminando...</span>
+			}
+			else
+			{
+				<i class="bi bi-trash3" aria-hidden="true"></i>
+				<span>Sí, eliminar</span>
+			}
+		</button>
+	</Footer>
+</IUModal>

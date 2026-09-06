@@ -1,3 +1,4 @@
+using Domain.DTOs.Contact;
 using Domain.DTOs.Inventory;
 
 namespace Domain.DTOs.Sales;
@@ -6,6 +7,7 @@ public class OrdenVentaDetalleDTO
 {
     public long Id { get; set; }
     public long IdOrdenVenta { get; set; }
+    public long? IdCliente { get; set; }
     public long IdProducto { get; set; }
     public long? IdProductoConversion { get; set; }
     public long? IdUsoMesa { get; set; }
@@ -23,6 +25,7 @@ public class OrdenVentaDetalleDTO
     public string Observacion { get; set; } = string.Empty;
 
     public ProductoDTO? Producto { get; set; }
+    public ClienteDTO? Cliente { get; set; }
     public ProductoConversionDTO? ProductoConversion { get; set; }
     public UsoMesaDTO? UsoMesa { get; set; }
     public VendedorDTO? Vendedor { get; set; }

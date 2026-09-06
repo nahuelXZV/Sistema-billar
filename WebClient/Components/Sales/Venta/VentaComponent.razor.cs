@@ -29,7 +29,15 @@ public partial class VentaComponent
         }
         else
         {
-            ClienteDefault = Model.PuntoVenta.ClienteSeleccionado!;
+            ClienteDefault = Model.PuntoVenta.ClienteSeleccionado
+                ?? await AppServices.ClienteService.GetById(AdminConfig.Personalizaciones.IdClienteDefault);
+
+            if (Model.PuntoVenta.Clientes.Count == 0)
+            {
+                Model.PuntoVenta.Clientes = await AppServices.ClienteService.GetAll();
+            }
+
+            Model.PuntoVenta.IdClienteDefault = ClienteDefault.Id;
         }
     }
 
@@ -40,6 +48,8 @@ public partial class VentaComponent
 
         var puntoVenta = PuntoVentaUtils.Create(categoriasBase, Model.Vendedor);
         puntoVenta.ClienteSeleccionado = ClienteDefault;
+        puntoVenta.IdClienteDefault = ClienteDefault.Id;
+        puntoVenta.Clientes = await AppServices.ClienteService.GetAll();
         return puntoVenta;
     }
 
@@ -61,17 +71,19 @@ public partial class VentaComponent
 
             foreach (var paidItem in paidItems)
             {
-                var orderItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item =>
-                    item.IdProducto == paidItem.IdProducto &&
-                    item.IdProductoConversion == paidItem.IdProductoConversion &&
-                    item.EsTiempoMesa == paidItem.EsTiempoMesa);
+                var orderItem = paidItem.IdOrdenVentaDetalle.HasValue
+                    ? Model.PuntoVenta.DetalleItems.FirstOrDefault(item => item.IdOrdenVentaDetalle == paidItem.IdOrdenVentaDetalle)
+                    : Model.PuntoVenta.DetalleItems.FirstOrDefault(item =>
+                        item.IdProducto == paidItem.IdProducto &&
+                        item.IdProductoConversion == paidItem.IdProductoConversion &&
+                        item.IdCliente == paidItem.IdCliente &&
+                        item.EsTiempoMesa == paidItem.EsTiempoMesa);
                 if (orderItem is null)
                 {
                     continue;
                 }
 
-                orderItem.Cantidad = orderItem.Cantidad - paidItem.Cantidad;
-                orderItem.Cantidad.Redondear();
+                orderItem.Cantidad = (orderItem.Cantidad - paidItem.Cantidad).Redondear();
                 if (orderItem.Cantidad <= 0)
                 {
                     Model.PuntoVenta.DetalleItems.Remove(orderItem);
@@ -129,16 +141,17 @@ public partial class VentaComponent
         var existingItem = Model.PuntoVenta.DetalleItems.FirstOrDefault(item =>
             item.IdProducto == product.Id &&
             item.IdProductoConversion == precioUnidad.IdProductoConversion &&
+            item.IdCliente == Model.PuntoVenta.IdClienteDefault &&
             !item.EsTiempoMesa);
         if (existingItem is not null)
         {
-            existingItem.Cantidad = existingItem.Cantidad + 1;
-            existingItem.Cantidad.Redondear();
+            existingItem.Cantidad = (existingItem.Cantidad + 1).Redondear();
             return;
         }
 
         Model.PuntoVenta.DetalleItems.Add(new ItemsViewModel
         {
+            IdCliente = Model.PuntoVenta.IdClienteDefault,
             IdProducto = product.Id,
             IdProductoConversion = precioUnidad.IdProductoConversion,
             Nombre = product.Nombre,
@@ -175,14 +188,14 @@ public partial class VentaComponent
         var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(orderItem =>
             orderItem.IdProducto == quantityChange.ProductId &&
             orderItem.IdProductoConversion == quantityChange.ProductConversionId &&
+            orderItem.IdCliente == quantityChange.IdCliente &&
             orderItem.EsTiempoMesa == quantityChange.EsTiempoMesa);
         if (item is null)
         {
             return;
         }
 
-        item.Cantidad = quantityChange.Cantidad;
-        item.Cantidad.Redondear();
+        item.Cantidad = quantityChange.Cantidad.Redondear();
         if (item.Cantidad <= 0)
         {
             Model.PuntoVenta.DetalleItems.Remove(item);
@@ -239,17 +252,41 @@ public partial class VentaComponent
             return;
         }
 
-        item.Cantidad = item.Cantidad + delta;
-        item.Cantidad.Redondear();
+        item.Cantidad = (item.Cantidad + delta).Redondear();
         if (item.Cantidad <= 0)
         {
             Model.PuntoVenta.DetalleItems.Remove(item);
         }
     }
 
+    private void CambiarClienteDetalle(ItemsViewModel itemSeleccionado)
+    {
+        var item = Model.PuntoVenta.DetalleItems.FirstOrDefault(item => ReferenceEquals(item, itemSeleccionado));
+        if (item is null || !item.IdCliente.HasValue)
+        {
+            return;
+        }
+
+        var itemConMismoCliente = Model.PuntoVenta.DetalleItems.FirstOrDefault(itemActual =>
+            !ReferenceEquals(itemActual, item) &&
+            itemActual.IdProducto == item.IdProducto &&
+            itemActual.IdProductoConversion == item.IdProductoConversion &&
+            itemActual.IdCliente == item.IdCliente &&
+            itemActual.EsTiempoMesa == item.EsTiempoMesa);
+
+        if (itemConMismoCliente is null)
+        {
+            return;
+        }
+
+        itemConMismoCliente.Cantidad = (itemConMismoCliente.Cantidad + item.Cantidad).Redondear();
+        Model.PuntoVenta.DetalleItems.Remove(item);
+    }
+
     private static bool MismoDetalle(ItemsViewModel item, ItemsViewModel seleccionado) =>
         item.IdProducto == seleccionado.IdProducto &&
         item.IdProductoConversion == seleccionado.IdProductoConversion &&
+        item.IdCliente == seleccionado.IdCliente &&
         item.EsTiempoMesa == seleccionado.EsTiempoMesa;
     #endregion
 }

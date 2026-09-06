@@ -79,6 +79,7 @@ public class CreateVentaCommandHandler : ICommandHandler<CreateVentaCommand, Res
             {
                 IdOrdenVenta = venta.IdOrdenVenta.Value,
                 TotalVenta = venta.Total,
+                FinalizarOrdenVenta = solicitud.VentaDTO.FinalizarOrdenVenta,
                 DetallesPagados = solicitud.VentaDTO.ListaDetalles ?? []
             }, tokenCancelacion);
         }

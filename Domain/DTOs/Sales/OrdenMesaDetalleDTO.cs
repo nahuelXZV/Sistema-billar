@@ -3,6 +3,7 @@ namespace Domain.DTOs.Sales;
 public class OrdenMesaDetalleDTO
 {
     public long Id { get; set; }
+    public long? IdCliente { get; set; }
     public long IdProducto { get; set; }
     public long? IdProductoConversion { get; set; }
     public string NombreProducto { get; set; } = string.Empty;

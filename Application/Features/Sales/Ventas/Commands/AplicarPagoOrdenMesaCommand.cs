@@ -13,6 +13,7 @@ public class AplicarPagoOrdenMesaCommand : ICommand<Response<bool>>
 {
     public long IdOrdenVenta { get; set; }
     public decimal TotalVenta { get; set; }
+    public bool FinalizarOrdenVenta { get; set; }
     public IReadOnlyCollection<VentaDetalleDTO> DetallesPagados { get; set; } = [];
 }
 
@@ -53,7 +54,10 @@ public class AplicarPagoOrdenMesaCommandHandler : ICommandHandler<AplicarPagoOrd
         }
 
         RecalcularOrden(orden, detallesOrden, solicitud.TotalVenta);
-        CerrarOrdenSiCorresponde(orden, usoMesa, detallesOrden);
+        if (solicitud.FinalizarOrdenVenta)
+        {
+            FinalizarOrden(orden, usoMesa, detallesOrden);
+        }
 
         _ordenRepository.Update(orden);
         await _ordenRepository.UnitOfWork.SaveEntitiesAsync(tokenCancelacion);
@@ -112,13 +116,16 @@ public class AplicarPagoOrdenMesaCommandHandler : ICommandHandler<AplicarPagoOrd
         orden.SaldoPendiente = orden.Total;
     }
 
-    private void CerrarOrdenSiCorresponde(OrdenVenta orden, UsoMesa usoMesa, IReadOnlyCollection<OrdenVentaDetalle> detallesOrden)
+    private void FinalizarOrden(OrdenVenta orden, UsoMesa usoMesa, IReadOnlyCollection<OrdenVentaDetalle> detallesOrden)
     {
-        var puedeCerrar = detallesOrden.Count == 0 && (usoMesa.Estado == (short)EstadoUsoMesa.Finalizado || usoMesa.TarifaAplicada <= 0);
-
-        if (!puedeCerrar)
+        if (detallesOrden.Count > 0)
         {
-            return;
+            throw new InvalidOperationException("No se puede finalizar la orden porque aún tiene detalles pendientes de pago.");
+        }
+
+        if (usoMesa.Estado == (short)EstadoUsoMesa.EnCurso)
+        {
+            throw new InvalidOperationException("Debe finalizar el cronómetro antes de finalizar la orden.");
         }
 
         var ahora = DateTime.Now;

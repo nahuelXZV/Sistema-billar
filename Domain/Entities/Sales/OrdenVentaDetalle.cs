@@ -1,10 +1,12 @@
 using Domain.Entities.Inventory;
+using Domain.Entities.Contact;
 
 namespace Domain.Entities.Sales;
 
 public class OrdenVentaDetalle : Entity
 {
     public long IdOrdenVenta { get; set; }
+    public long? IdCliente { get; set; }
     public long IdProducto { get; set; }
     public long? IdProductoConversion { get; set; }
     public long? IdUsoMesa { get; set; }
@@ -22,6 +24,7 @@ public class OrdenVentaDetalle : Entity
     public string Observacion { get; set; } = string.Empty;
 
     public OrdenVenta? OrdenVenta { get; set; }
+    public Cliente? Cliente { get; set; }
     public Producto? Producto { get; set; }
     public ProductoConversion? ProductoConversion { get; set; }
     public UsoMesa? UsoMesa { get; set; }

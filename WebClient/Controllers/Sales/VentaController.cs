@@ -31,9 +31,7 @@ public class VentaController : MainController
 
         var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
         model.PuntoVenta = PuntoVentaUtils.Create(categoriasBase, model.Vendedor);
-
-        var cliente = await _appServices.ClienteService.GetById(_adminConfig.Personalizaciones.IdClienteDefault);
-        model.PuntoVenta.ClienteSeleccionado = cliente;
+        await ConfigurarClientesAsync(model.PuntoVenta);
 
         return View(model);
     }
@@ -48,9 +46,19 @@ public class VentaController : MainController
 
         var categoriasBase = await _appServices.CategoriaService.GetCategoriasBase();
         model.PuntoVenta = PuntoVentaUtils.Create(categoriasBase, model.Vendedor);
-        var cliente = await _appServices.ClienteService.GetById(_adminConfig.Personalizaciones.IdClienteDefault);
-        model.PuntoVenta.ClienteSeleccionado = cliente;
+        await ConfigurarClientesAsync(model.PuntoVenta);
         return View(model);
+    }
+
+    private async Task ConfigurarClientesAsync(PuntoVentaViewModel puntoVenta)
+    {
+        var clientes = await _appServices.ClienteService.GetAll();
+        var clientePredeterminado = clientes.FirstOrDefault(cliente => cliente.Id == _adminConfig.Personalizaciones.IdClienteDefault)
+            ?? throw new InvalidOperationException("El cliente predeterminado no está disponible.");
+
+        puntoVenta.Clientes = clientes;
+        puntoVenta.IdClienteDefault = clientePredeterminado.Id;
+        puntoVenta.ClienteSeleccionado = clientePredeterminado;
     }
 
     private async Task<(VentaViewModel Model, IActionResult? Error)> CrearModeloConTurnoActivo()

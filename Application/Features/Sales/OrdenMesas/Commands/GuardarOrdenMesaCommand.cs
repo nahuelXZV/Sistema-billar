@@ -3,6 +3,7 @@ using Application.Features.Sales.OrdenVentas.Commands;
 using Application.Interfaces;
 using Domain.Common;
 using Domain.DTOs.Sales;
+using Domain.Entities.Contact;
 using Domain.Entities.Inventory;
 using Domain.Entities.Sales;
 using Infraestructure.Interfaces;
@@ -50,6 +51,7 @@ public class GuardarOrdenMesaCommandHandler : ICommandHandler<GuardarOrdenMesaCo
 
         ValidarSolicitud(request.OrdenMesa);
         await ValidarProductos(request.OrdenMesa.Detalles, tokenCancelacion);
+        await ValidarClientes(request.OrdenMesa, tokenCancelacion);
         await NormalizarPresentacionesYPrecios(request.OrdenMesa, tokenCancelacion);
 
         if (ordenId == 0)
@@ -101,6 +103,36 @@ public class GuardarOrdenMesaCommandHandler : ICommandHandler<GuardarOrdenMesaCo
             .CountAsync(producto => ids.Contains(producto.Id) && producto.Activo && !producto.Eliminado, tokenCancelacion);
 
         if (cantidadProductosValidos != ids.Count) throw new InvalidOperationException("La orden contiene productos inexistentes o inactivos.");
+    }
+
+    private async Task ValidarClientes(OrdenMesaDTO ordenMesa, CancellationToken tokenCancelacion)
+    {
+        foreach (var detalle in ordenMesa.Detalles)
+        {
+            detalle.IdCliente ??= ordenMesa.IdCliente;
+        }
+
+        var idsClientes = ordenMesa.Detalles
+            .Select(detalle => detalle.IdCliente)
+            .ToList();
+
+        if (idsClientes.Any(idCliente => !idCliente.HasValue || idCliente.Value <= 0))
+        {
+            throw new InvalidOperationException("Cada detalle de la orden debe tener un cliente asignado.");
+        }
+
+        var idsClientesDistintos = idsClientes
+            .Select(idCliente => idCliente!.Value)
+            .Distinct()
+            .ToList();
+
+        var cantidadClientesValidos = await _productoRepository.Query<Cliente>()
+            .CountAsync(cliente => idsClientesDistintos.Contains(cliente.Id) && !cliente.Eliminado, tokenCancelacion);
+
+        if (cantidadClientesValidos != idsClientesDistintos.Count)
+        {
+            throw new InvalidOperationException("La orden contiene clientes inexistentes o eliminados.");
+        }
     }
 
     private async Task NormalizarPresentacionesYPrecios(OrdenMesaDTO ordenMesa, CancellationToken tokenCancelacion)
@@ -233,7 +265,7 @@ public class GuardarOrdenMesaCommandHandler : ICommandHandler<GuardarOrdenMesaCo
 
         var duplicados = ordenMesa.Detalles
             .Where(detalle => !detalle.EsTiempoMesa)
-            .GroupBy(detalle => new { detalle.IdProducto, detalle.IdProductoConversion })
+            .GroupBy(detalle => new { detalle.IdProducto, detalle.IdProductoConversion, detalle.IdCliente })
             .Any(grupo => grupo.Count() > 1);
 
         if (duplicados)

@@ -149,6 +149,7 @@ public class GeneralProfile : Profile
             .ForMember(dest => dest.ListaDetalles, opt => opt.Ignore())
             .ForMember(dest => dest.ListaUsoMesas, opt => opt.Ignore());
         CreateMap<OrdenVentaDetalleDTO, OrdenVentaDetalle>()
+            .ForMember(dest => dest.Cliente, opt => opt.Ignore())
             .ForMember(dest => dest.ProductoConversion, opt => opt.Ignore());
         CreateMap<VentaDTO, Venta>()
             .ForMember(dest => dest.IdempotencyKey, opt => opt.Ignore())

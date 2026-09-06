@@ -12,6 +12,8 @@ public class OrdenVentaDetalleConfiguration : IEntityTypeConfiguration<OrdenVent
 
         builder.HasKey(a => a.Id);
 
+        builder.HasIndex(a => a.IdCliente);
+
         builder.Property(a => a.Cantidad)
             .HasPrecision(18, 2);
 
@@ -39,6 +41,12 @@ public class OrdenVentaDetalleConfiguration : IEntityTypeConfiguration<OrdenVent
         builder.HasOne(a => a.OrdenVenta)
             .WithMany(a => a.ListaDetalles)
             .HasForeignKey(a => a.IdOrdenVenta);
+
+        builder.HasOne(a => a.Cliente)
+            .WithMany()
+            .HasForeignKey(a => a.IdCliente)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
         builder.HasOne(a => a.Producto)
             .WithMany()
